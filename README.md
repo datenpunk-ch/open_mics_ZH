@@ -24,14 +24,3 @@ Wo kann man wann in Zürich lachen (oder selbst auf der Bühne stehen)?
 
 - **Repository:** [github.com/datenpunk-ch/open_mics_ZH](https://github.com/datenpunk-ch/open_mics_ZH)
 - **Organisation / Contributor:** [datenpunk-ch](https://github.com/datenpunk-ch)
-
-### Git (Commit-Autor: datenpunk-ch)
-
-Im Projektordner (lokal, nur dieses Repo):
-
-```text
-git config user.name "datenpunk-ch"
-git config user.email "datenpunk.ch@gmail.com"
-```
-
-Remote **`origin`:** [https://github.com/datenpunk-ch/open_mics_ZH.git](https://github.com/datenpunk-ch/open_mics_ZH.git) — falls noch nicht gesetzt: `git remote add origin https://github.com/datenpunk-ch/open_mics_ZH.git`

@@ -1,0 +1,1609 @@
+{
+  "enriched_at": "2026-04-11T16:06:08.162365+00:00",
+  "listing_scraped_at": "2026-04-11T16:04:27.424442+00:00",
+  "listing_source": "eventfrog",
+  "listing_source_url": "https://eventfrog.ch/en/events/zuerich/comedy-cabaret.html?searchTerm=open+mic&geoRadius=10",
+  "event_count": 27,
+  "events": [
+    {
+      "url": "https://eventfrog.ch/en/p/groups/thursday-open-mic-comedy-zurich-7322895273490950362.html",
+      "title": "Tickets Event group until Jul 30 Thursday Open Mic Comedy, Zurich 15 Events Auer & Co., Zürich, Zürich (CH)",
+      "path": "/en/p/groups/thursday-open-mic-comedy-zurich-7322895273490950362.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:04:37.157554+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/groups/thursday-open-mic-comedy-zurich-7322895273490950362.html",
+        "host": "eventfrog.ch",
+        "title_tag": "Thursday Open Mic Comedy, Zurich in Zürich | Comedy & Cabaret",
+        "og_title": "Thursday Open Mic Comedy, Zurich in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/groups/thursday-open-mic-comedy-zurich-7322895273490950362.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/groups/color-comedy-open-mic-zuerichs-funniest-stand-up-7405948073317250257.html",
+      "title": "Tickets Event group until May 5 Color comedy tuesday open mic 4 Events Mama Shelter, Zürich (CH)",
+      "path": "/en/p/groups/color-comedy-open-mic-zuerichs-funniest-stand-up-7405948073317250257.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:04:40.324177+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/groups/color-comedy-open-mic-zuerichs-funniest-stand-up-7405948073317250257.html",
+        "host": "eventfrog.ch",
+        "title_tag": "Color Comedy Open Mic: Zürich’s Funniest Stand-Up in Zürich | Comedy & Cabaret",
+        "og_title": "Color Comedy Open Mic: Zürich’s Funniest Stand-Up in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/groups/color-comedy-open-mic-zuerichs-funniest-stand-up-7405948073317250257.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/groups/wednesday-open-mic-comedy-zurich-7322872166394914763.html",
+      "title": "Tickets Event group until Jul 29 Wednesday Comedy Kiss Open Mic, Zurich 16 Events Auer & Co., Zürich, Zürich (CH)",
+      "path": "/en/p/groups/wednesday-open-mic-comedy-zurich-7322872166394914763.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:04:43.549124+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/groups/wednesday-open-mic-comedy-zurich-7322872166394914763.html",
+        "host": "eventfrog.ch",
+        "title_tag": "Wednesday Open Mic Comedy, Zurich in Zürich | Comedy & Cabaret",
+        "og_title": "Wednesday Open Mic Comedy, Zurich in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/groups/wednesday-open-mic-comedy-zurich-7322872166394914763.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/groups/dini-muetter-comedy-open-mic-7402400053803883617.html",
+      "title": "Tickets Event group until Jun 9 Dini Muetter Comedy - Open Mic 25 Events VIOR, Zürich (CH)",
+      "path": "/en/p/groups/dini-muetter-comedy-open-mic-7402400053803883617.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:04:46.851324+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/groups/dini-muetter-comedy-open-mic-7402400053803883617.html",
+        "host": "eventfrog.ch",
+        "title_tag": "Dini Muetter Comedy - Open Mic in Zürich | Comedy & Cabaret",
+        "og_title": "Dini Muetter Comedy - Open Mic in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/groups/dini-muetter-comedy-open-mic-7402400053803883617.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/pulp-non-fiction-storytelling-open-mic-zurich-7447274059618853866.html",
+      "title": "Tickets May 10 Pulp Non-Fiction Storytelling Open Mic Zurich 10 May, Sunday, 19:00 ROBIN's Coffee, Zürich (CH)",
+      "path": "/en/p/theatre-stage/comedy-cabaret/pulp-non-fiction-storytelling-open-mic-zurich-7447274059618853866.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:04:50.307815+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/pulp-non-fiction-storytelling-open-mic-zurich-7447274059618853866.html",
+        "host": "eventfrog.ch",
+        "title_tag": "Pulp Non-Fiction Storytelling Open Mic Zurich in Zürich | Comedy & Cabaret",
+        "og_title": "Pulp Non-Fiction Storytelling Open Mic Zurich in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [
+          [
+            {
+              "@context": "http://schema.org",
+              "@type": "Event",
+              "name": "Pulp Non-Fiction Storytelling Open Mic Zurich",
+              "startDate": "2026-05-10T19:00:00+0200",
+              "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/pulp-non-fiction-storytelling-open-mic-zurich-7447274059618853866.html",
+              "endDate": "2026-05-10T21:00:00+0200",
+              "eventStatus": "https://schema.org/EventScheduled",
+              "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+              "location": {
+                "@type": "Place",
+                "name": "ROBIN's Coffee",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "Zähringerstrasse 33",
+                  "addressLocality": "Zürich",
+                  "postalCode": "8001",
+                  "addressCountry": "Switzerland"
+                }
+              },
+              "image": [
+                "https://eventfrog.ch/upload/rm/pu/lp/pulpnon-fiction-2026-ef-FMULTCHP.png?_=1775568499000"
+              ],
+              "description": "Storytelling is an art from that has evolved with us over millennia. It is in our DNA to share stories. Let's keep this ancient tradition alive in the funkiest way. Join us for an unforgettable evening where laughter intertwines with the strange and the surreal, as comedian Albert Louw and his extraordinary friends share their most captivating tales! Gather with us at the ROBIN'S Bar & Coffee. Admission is free, and while donations are appreciated, what's most important is your presence! Reserve your spot now to ensure you don't miss out on a seat.         The show will be hosted by local comedian and everyday storyteller Albert Louw and feature some of Switzerland's wide variety of storytellers, each telling true stories from all different kinds of backgrounds.",
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "name": "Free reservations",
+                  "price": "0.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-05-10T19:00:00+0200",
+                  "priceValidUntil": "2026-05-10T21:00:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/pulp-non-fiction-storytelling-open-mic-zurich-7447274059618853866.html"
+                },
+                {
+                  "@type": "Offer",
+                  "name": "Donate in advance",
+                  "price": "20.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-05-10T19:00:00+0200",
+                  "priceValidUntil": "2026-05-10T21:00:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/pulp-non-fiction-storytelling-open-mic-zurich-7447274059618853866.html"
+                }
+              ],
+              "organizer": {
+                "@type": "Organization",
+                "name": "Albert Louw",
+                "logo": "https://eventfrog.ch/upload/rm/lo/go/logo-classic-586VDMJH-6DGYJQ18.webp"
+              },
+              "keywords": "Theatre & Stage / Comedy & Cabaret, ROBIN's Coffee, Zürich, 10.05.2026"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/pu/lp/pulpnon-fiction-2026-ef-JNFXX0ZS.webp",
+              "copyrightNotice": "Albert Louw",
+              "uploadDate": "2026-04-07T15:28:11+0200"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/lo/go/logo-classic-586VDMJH-6DGYJQ18.webp",
+              "copyrightNotice": "Albert Louw",
+              "uploadDate": "2024-11-06T09:29:37+0100"
+            }
+          ]
+        ],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/pulp-non-fiction-storytelling-open-mic-zurich-7447274059618853866.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/groups/funny-women-zurich-comedy-open-mic-7256690401515381606.html",
+      "title": "Tickets Event group until Jun 9 Funny Women Zurich - Open Mic in English 3 Events Gleis, Zürich (CH)",
+      "path": "/en/p/groups/funny-women-zurich-comedy-open-mic-7256690401515381606.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:04:53.703190+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/groups/funny-women-zurich-comedy-open-mic-7256690401515381606.html",
+        "host": "eventfrog.ch",
+        "title_tag": "Funny Women Zurich - Comedy Open Mic in Zürich | Comedy & Cabaret",
+        "og_title": "Funny Women Zurich - Comedy Open Mic in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/groups/funny-women-zurich-comedy-open-mic-7256690401515381606.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zurich-7439773372123216028.html",
+      "title": "Tickets May 18 COMEDY CONNECTION – Stand-up Comedy Open Mic Zurich 18 May, Monday, 20:00 Regenbogen Bar, Zürich (CH)",
+      "path": "/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zurich-7439773372123216028.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:04:57.036263+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zurich-7439773372123216028.html",
+        "host": "eventfrog.ch",
+        "title_tag": "COMEDY CONNECTION – Stand-up Comedy Open Mic Zurich in Zürich | Comedy & Cabaret",
+        "og_title": "COMEDY CONNECTION – Stand-up Comedy Open Mic Zurich in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [
+          [
+            {
+              "@context": "http://schema.org",
+              "@type": "Event",
+              "name": "COMEDY CONNECTION – Stand-up Comedy Open Mic Zurich",
+              "startDate": "2026-05-18T20:00:00+0200",
+              "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zurich-7439773372123216028.html",
+              "endDate": "2026-05-18T22:00:00+0200",
+              "eventStatus": "https://schema.org/EventScheduled",
+              "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+              "location": {
+                "@type": "Place",
+                "name": "Regenbogen Bar",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "Rosengasse 6",
+                  "addressLocality": "Zürich",
+                  "postalCode": "8001",
+                  "addressCountry": "Switzerland"
+                }
+              },
+              "image": [
+                "https://eventfrog.ch/upload/rm/fl/ye/flyer-teal-ROIC9YVC.webp?_=1773780196000"
+              ],
+              "description": "Open Mic Zurich - Stand-up Comedy Night | Comedy Connection Zurich's stage for fresh Comedy! Comedy Connection brings a fresh stand-up comedy show to Regenbogen Bar Zurich. Look forward to a varied evening with newcomer and established comedians testing new material, creating spontaneous moments, and delivering their best punchlines. Expect a mix of sharp observations, bold humor, and surprising highlights -- perfect for a fun night out with friends or a spontaneous comedy visit in Zurich. Seats are limited! 🗓️ Date: May 11th     ⏰ Show starts: 20:00     📍 Location: Regenbogen Bar, Rosengasse 6, 8001 Zurich     🎙 Host: Roza Nazar Comedy Connection - connecting comedians with audiences, one punchline at a time.",
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "name": "I want to laugh",
+                  "price": "5.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-05-18T20:00:00+0200",
+                  "priceValidUntil": "2026-05-18T22:00:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zurich-7439773372123216028.html"
+                },
+                {
+                  "@type": "Offer",
+                  "name": "I love comedy",
+                  "price": "8.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-05-18T20:00:00+0200",
+                  "priceValidUntil": "2026-05-18T22:00:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zurich-7439773372123216028.html"
+                }
+              ],
+              "organizer": {
+                "@type": "Organization",
+                "name": "Comedy Connection",
+                "logo": "https://eventfrog.ch/upload/rm/3Y/XV/3-YXV9C62S.webp"
+              },
+              "keywords": "Theatre & Stage / Comedy & Cabaret, Regenbogen Bar, Zürich, 18.05.2026"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/fl/ye/flyer-teal-ROIC9YVC.webp",
+              "copyrightNotice": "Roza Nazar",
+              "uploadDate": "2026-03-17T21:43:01+0100"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/3Y/XV/3-YXV9C62S.webp",
+              "copyrightNotice": "Roza Nazar",
+              "uploadDate": "2026-03-03T17:47:21+0100"
+            }
+          ]
+        ],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zurich-7439773372123216028.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zuerich-7433166106594944364.html",
+      "title": "Tickets Apr 13 COMEDY CONNECTION – Stand-up Comedy Open Mic Zürich 13 April, Monday, 20:00 Regenbogen Bar, Zürich (CH)",
+      "path": "/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zuerich-7433166106594944364.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:05:00.269600+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zuerich-7433166106594944364.html",
+        "host": "eventfrog.ch",
+        "title_tag": "COMEDY CONNECTION – Stand-up Comedy Open Mic Zürich in Zürich | Comedy & Cabaret",
+        "og_title": "COMEDY CONNECTION – Stand-up Comedy Open Mic Zürich in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [
+          [
+            {
+              "@context": "http://schema.org",
+              "@type": "Event",
+              "name": "COMEDY CONNECTION – Stand-up Comedy Open Mic Zürich",
+              "startDate": "2026-04-13T20:00:00+0200",
+              "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zuerich-7433166106594944364.html",
+              "endDate": "2026-04-13T22:00:00+0200",
+              "eventStatus": "https://schema.org/EventScheduled",
+              "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+              "location": {
+                "@type": "Place",
+                "name": "Regenbogen Bar",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "Rosengasse 6",
+                  "addressLocality": "Zürich",
+                  "postalCode": "8001",
+                  "addressCountry": "Switzerland"
+                }
+              },
+              "image": [
+                "https://eventfrog.ch/upload/rm/fl/ye/flyer-DOWQWT35.webp?_=1772555993000"
+              ],
+              "description": "Open Mic Zürich - Stand-up Comedy Night | Comedy Connection Zürichs Bühne für frische Comedy! Comedy Connection bringt eine frische Open Mic Stand-up Comedy Show in die Regenbogen Bar Zürich. Freu dich auf einen abwechslungsreichen Abend mit Newcomern und etablierten Comedians, die neues Material testen, spontane Momente kreieren und ihre besten Punchlines präsentieren. Dich erwartet eine Mischung aus scharfen Beobachtungen, mutigem Humor und überraschenden Highlights - perfekt für einen unterhaltsamen Abend mit Freunden oder einen spontanen Comedy-Besuch in Zürich. Sitze sind limitiert! 📅 Datum: 13. April     ⏰ Showbeginn: 20:00     📍 Location: Regenbogen Bar, Rosengasse 6, 8001 Zürich     🎙 Moderation: Roza Nazar Comedy Connection - wir verbinden Comedians mit Publikum, eine Punchline nach der anderen.",
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "name": "normal",
+                  "price": "5.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-04-13T20:00:00+0200",
+                  "priceValidUntil": "2026-04-13T22:00:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zuerich-7433166106594944364.html"
+                },
+                {
+                  "@type": "Offer",
+                  "name": "an der Tür",
+                  "price": "8.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-04-13T20:00:00+0200",
+                  "priceValidUntil": "2026-04-13T22:00:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zuerich-7433166106594944364.html"
+                }
+              ],
+              "organizer": {
+                "@type": "Organization",
+                "name": "Comedy Connection",
+                "logo": "https://eventfrog.ch/upload/rm/3Y/XV/3-YXV9C62S.webp"
+              },
+              "keywords": "Theatre & Stage / Comedy & Cabaret, Regenbogen Bar, Zürich, 13.04.2026"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/fl/ye/flyer-DOWQWT35.webp",
+              "copyrightNotice": "Roza Nazar",
+              "uploadDate": "2026-03-03T17:39:05+0100"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/3Y/XV/3-YXV9C62S.webp",
+              "copyrightNotice": "Roza Nazar",
+              "uploadDate": "2026-03-03T17:47:21+0100"
+            }
+          ]
+        ],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zuerich-7433166106594944364.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/groups/in-your-face-english-stand-up-comedy-open-mic-in-zurich-7132091334890862636.html",
+      "title": "Tickets Event group until Jul 30 IN YOUR FACE Comedy Brew - English Stand-Up Comedy Open Mic 16 Events ROBIN's Coffee, Zürich (CH)",
+      "path": "/en/p/groups/in-your-face-english-stand-up-comedy-open-mic-in-zurich-7132091334890862636.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:05:03.331223+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/groups/in-your-face-english-stand-up-comedy-open-mic-in-zurich-7132091334890862636.html",
+        "host": "eventfrog.ch",
+        "title_tag": "IN YOUR FACE - English Stand-Up Comedy Open Mic in Zurich in Zürich | Comedy & Cabaret",
+        "og_title": "IN YOUR FACE - English Stand-Up Comedy Open Mic in Zurich in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/groups/in-your-face-english-stand-up-comedy-open-mic-in-zurich-7132091334890862636.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zuerich-7433166106754328517.html",
+      "title": "Tickets May 11 COMEDY CONNECTION – Stand-up Comedy Open Mic Zürich 11 May, Monday, 20:00 Regenbogen Bar, Zürich (CH)",
+      "path": "/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zuerich-7433166106754328517.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:05:06.723694+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zuerich-7433166106754328517.html",
+        "host": "eventfrog.ch",
+        "title_tag": "COMEDY CONNECTION – Stand-up Comedy Open Mic Zürich in Zürich | Comedy & Cabaret",
+        "og_title": "COMEDY CONNECTION – Stand-up Comedy Open Mic Zürich in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [
+          [
+            {
+              "@context": "http://schema.org",
+              "@type": "Event",
+              "name": "COMEDY CONNECTION – Stand-up Comedy Open Mic Zürich",
+              "startDate": "2026-05-11T20:00:00+0200",
+              "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zuerich-7433166106754328517.html",
+              "endDate": "2026-05-11T22:00:00+0200",
+              "eventStatus": "https://schema.org/EventScheduled",
+              "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+              "location": {
+                "@type": "Place",
+                "name": "Regenbogen Bar",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "Rosengasse 6",
+                  "addressLocality": "Zürich",
+                  "postalCode": "8001",
+                  "addressCountry": "Switzerland"
+                }
+              },
+              "image": [
+                "https://eventfrog.ch/upload/rm/fl/ye/flyer-JOU24LOI.webp?_=1772556719000"
+              ],
+              "description": "Open Mic Zürich - Stand-up Comedy Night | Comedy Connection Zürichs Bühne für frische Comedy! Comedy Connection bringt eine frische Open Mic Stand-up Comedy Show in die Regenbogen Bar Zürich. Freu dich auf einen abwechslungsreichen Abend mit Newcomern und etablierten Comedians, die neues Material testen, spontane Momente kreieren und ihre besten Punchlines präsentieren. Dich erwartet eine Mischung aus scharfen Beobachtungen, mutigem Humor und überraschenden Highlights - perfekt für einen unterhaltsamen Abend mit Freunden oder einen spontanen Comedy-Besuch in Zürich. Sitze sind limitiert! 📅 Datum: 11. Mai     ⏰ Showbeginn: 20:00     📍 Location: Regenbogen Bar, Rosengasse 6, 8001 Zürich     🎙 Moderation: Roza Nazar (@rozanazarcomedy @comedyconnection_live) Comedy Connection - wir verbinden Comedians mit Publikum, eine Punchline nach der anderen.",
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "name": "normal",
+                  "price": "5.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-05-11T20:00:00+0200",
+                  "priceValidUntil": "2026-05-11T22:00:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zuerich-7433166106754328517.html"
+                },
+                {
+                  "@type": "Offer",
+                  "name": "an der Tür",
+                  "price": "8.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-05-11T20:00:00+0200",
+                  "priceValidUntil": "2026-05-11T22:00:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zuerich-7433166106754328517.html"
+                }
+              ],
+              "organizer": {
+                "@type": "Organization",
+                "name": "Comedy Connection",
+                "logo": "https://eventfrog.ch/upload/rm/3Y/XV/3-YXV9C62S.webp"
+              },
+              "keywords": "Theatre & Stage / Comedy & Cabaret, Regenbogen Bar, Zürich, 11.05.2026"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/fl/ye/flyer-JOU24LOI.webp",
+              "copyrightNotice": "Roza Nazar",
+              "uploadDate": "2026-03-03T17:51:54+0100"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/3Y/XV/3-YXV9C62S.webp",
+              "copyrightNotice": "Roza Nazar",
+              "uploadDate": "2026-03-03T17:47:21+0100"
+            }
+          ]
+        ],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zuerich-7433166106754328517.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/groups/la-tarima-comedia-en-espanol-7415721905318030787.html",
+      "title": "Tickets Event group until Jun 11 La Tarima - Comedia en Español - ZURICH 4 Events Monroe, Zürich (CH)",
+      "path": "/en/p/groups/la-tarima-comedia-en-espanol-7415721905318030787.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:05:09.837748+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/groups/la-tarima-comedia-en-espanol-7415721905318030787.html",
+        "host": "eventfrog.ch",
+        "title_tag": "La Tarima - Comedia en Español",
+        "og_title": "La Tarima - Comedia en Español",
+        "h1": "",
+        "ld_json": [],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/groups/la-tarima-comedia-en-espanol-7415721905318030787.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/ck-presents-richard-cunha-immigrant-friend-7423077190135186182.html",
+      "title": "Tickets Nov 6 CK Presents: Richard Cunha - Immigrant Friend 06 November, Friday, 20:00 ComedyHaus, Zürich (CH)",
+      "path": "/en/p/theatre-stage/comedy-cabaret/ck-presents-richard-cunha-immigrant-friend-7423077190135186182.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:05:13.262092+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/ck-presents-richard-cunha-immigrant-friend-7423077190135186182.html",
+        "host": "eventfrog.ch",
+        "title_tag": "CK Presents: Richard Cunha - Immigrant Friend in Zürich | Comedy & Cabaret",
+        "og_title": "CK Presents: Richard Cunha - Immigrant Friend in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [
+          [
+            {
+              "@context": "http://schema.org",
+              "@type": "Event",
+              "name": "CK Presents: Richard Cunha - Immigrant Friend",
+              "startDate": "2026-11-06T20:00:00+0100",
+              "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/ck-presents-richard-cunha-immigrant-friend-7423077190135186182.html",
+              "endDate": "2026-11-06T22:00:00+0100",
+              "eventStatus": "https://schema.org/EventScheduled",
+              "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+              "location": {
+                "@type": "Place",
+                "name": "ComedyHaus",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "Albisriederstrasse 16",
+                  "addressLocality": "Zürich",
+                  "postalCode": "8003",
+                  "addressCountry": "Switzerland"
+                }
+              },
+              "image": [
+                "https://eventfrog.ch/upload/rm/im/mi/immigrant-friend-1568-x-958-px-FQQNBKBP.png?_=1769799565000"
+              ],
+              "description": "Just 3 years ago Richard Cunha was doing his first open mic with Comedy Kiss, now we proudly present his first solo show ever! The first dates sold out within a week, so here we are with a further date for you. Here's what he has to say about this show:     This show is about figuring out how to make real connections, regardless of how good your passport is. Around 3 years ago, I quit my job to follow my dream of making people laugh. Swiss immigration didn't like that, but my Swiss friends did! With the support of wonderful immigrant-loving people, I finally made it. This is my first solo, and it is an homage to kindness, frienship and my permit B. There will be plenty of jokes and real, yet unbelievable, stories. See you there, friend.      -----  FAQ and More Info: Q: What time should I arrive?     A: Doors open at 19:00. Arrive early to grab a drink and secure the best seats. Q: What language is the show?     A: The show is in English. Q: What kind of comedy will I see? Will it be offensive?     A: We can't guarantee you won't be offended since this is very relative. In the show description, you'll find links to help you decide if that comedian is right for you. Ultimately, our goal is to bring good times and laughter to Switzerland and not to hurt feelings. Q: Can I buy tickets at the door?     A: Yes! Via Twint, but only if there are no shows or tickets are still available Note: Photos of the show will be taken for promotional purposes.",
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "name": "Regular Ticket",
+                  "price": "34.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-11-06T20:00:00+0100",
+                  "priceValidUntil": "2026-11-06T22:00:00+0100",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/ck-presents-richard-cunha-immigrant-friend-7423077190135186182.html"
+                },
+                {
+                  "@type": "Offer",
+                  "name": "Group Ticket",
+                  "price": "28.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-11-06T20:00:00+0100",
+                  "priceValidUntil": "2026-11-06T22:00:00+0100",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/ck-presents-richard-cunha-immigrant-friend-7423077190135186182.html"
+                }
+              ],
+              "organizer": {
+                "@type": "Organization",
+                "name": "Shane Norton",
+                "logo": "https://eventfrog.ch/upload/rm/co/me/comedy-kiss-switzerland-7GE3JZ7L.webp"
+              },
+              "keywords": "Theatre & Stage / Comedy & Cabaret, ComedyHaus, Zürich, 06.11.2026"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/im/mi/immigrant-friend-1568-x-958-px-MIBVP4PG.webp",
+              "copyrightNotice": "Richard Cunha",
+              "uploadDate": "2026-01-30T19:58:43+0100"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/co/me/comedy-kiss-switzerland-7GE3JZ7L.webp",
+              "copyrightNotice": "Shane Norton",
+              "uploadDate": "2019-09-27T14:44:14+0200"
+            }
+          ]
+        ],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/ck-presents-richard-cunha-immigrant-friend-7423077190135186182.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/groups/jokes-jokes-jokes-english-stand-up-comedy-show-7413564801610218198.html",
+      "title": "Tickets Event group until Jun 30 Jokes, Jokes, Jokes - English Stand-up comedy show 6 Events ROBIN'S bar & coffee, Zürich (CH)",
+      "path": "/en/p/groups/jokes-jokes-jokes-english-stand-up-comedy-show-7413564801610218198.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:05:16.275131+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/groups/jokes-jokes-jokes-english-stand-up-comedy-show-7413564801610218198.html",
+        "host": "eventfrog.ch",
+        "title_tag": "Jokes, Jokes, Jokes - English Stand-up comedy show in Zürich | Comedy & Cabaret",
+        "og_title": "Jokes, Jokes, Jokes - English Stand-up comedy show in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/groups/jokes-jokes-jokes-english-stand-up-comedy-show-7413564801610218198.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/sunday-comedy-night-at-cooper-s-7445944148354413444.html",
+      "title": "Tickets Apr 26 Sunday Comedy Night at Cooper's 26 April, Sunday, 19:30 Cooper's Pub, Zürich (CH)",
+      "path": "/en/p/theatre-stage/comedy-cabaret/sunday-comedy-night-at-cooper-s-7445944148354413444.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:05:19.674742+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/sunday-comedy-night-at-cooper-s-7445944148354413444.html",
+        "host": "eventfrog.ch",
+        "title_tag": "Sunday Comedy Night at Cooper's in Zürich | Comedy & Cabaret",
+        "og_title": "Sunday Comedy Night at Cooper's in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [
+          [
+            {
+              "@context": "http://schema.org",
+              "@type": "Event",
+              "name": "Sunday Comedy Night at Cooper's",
+              "startDate": "2026-04-26T19:30:00+0200",
+              "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/sunday-comedy-night-at-cooper-s-7445944148354413444.html",
+              "endDate": "2026-04-26T21:30:00+0200",
+              "eventStatus": "https://schema.org/EventScheduled",
+              "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+              "location": {
+                "@type": "Place",
+                "name": "Cooper's Pub",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "Schaffhauserstrasse 359",
+                  "addressLocality": "Zürich",
+                  "postalCode": "8050",
+                  "addressCountry": "Switzerland"
+                }
+              },
+              "image": [
+                "https://eventfrog.ch/upload/rm/co/op/cooper-s-pub-poster-april-2026-horizontal-1.webp?_=1775251566000"
+              ],
+              "description": "End your weekend with laughs, drinks, and good vibes at Cooper's Pub! Join us for an English Stand-up Comedy Night where seasoned comics test fresh material and newcomers take their very first steps on stage. Free entry. Bring friends. 🍻 FAQ      Is the show in English? → Yes, all performances are in English.       What's an Open Mic? → Anyone can sign up and perform! Expect a mix of amateurs and pros trying out new material.       Can I perform too? → Absolutely! Comment SPOT on the facebook event page or drop a line to your host Łukasz at lukas.segiet@gmail.com with SPOT in the subject.       How do reservations work? → Tickets are available on Eventfrog. Seating is free (no assigned seats), so come early to grab a good spot.    See you at Cooper's!",
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "name": "Donation",
+                  "price": "10.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-04-26T19:30:00+0200",
+                  "priceValidUntil": "2026-04-26T21:30:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/sunday-comedy-night-at-cooper-s-7445944148354413444.html"
+                },
+                {
+                  "@type": "Offer",
+                  "name": "Reservation",
+                  "price": "0.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-04-26T19:30:00+0200",
+                  "priceValidUntil": "2026-04-26T21:30:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/sunday-comedy-night-at-cooper-s-7445944148354413444.html"
+                }
+              ],
+              "organizer": {
+                "@type": "Organization",
+                "name": "&#321;ukasz Segiet"
+              },
+              "keywords": "Theatre & Stage / Comedy & Cabaret, Cooper's Pub, Zürich, 26.04.2026"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/co/op/cooper-s-pub-poster-april-2026-horizontal-1.webp",
+              "copyrightNotice": "Łukasz Segiet",
+              "uploadDate": "2026-04-03T23:24:59+0200"
+            }
+          ]
+        ],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/sunday-comedy-night-at-cooper-s-7445944148354413444.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-14th-7441817235675421515.html",
+      "title": "Tickets Apr 14 Kon-Tiki Comedy - April 14th 14 April, Tuesday, 19:30 KON-TIKI, Zürich (CH)",
+      "path": "/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-14th-7441817235675421515.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:05:23.213240+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-14th-7441817235675421515.html",
+        "host": "eventfrog.ch",
+        "title_tag": "Kon-Tiki Comedy - April 14th in Zürich | Comedy & Cabaret",
+        "og_title": "Kon-Tiki Comedy - April 14th in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [
+          [
+            {
+              "@context": "http://schema.org",
+              "@type": "Event",
+              "name": "Kon-Tiki Comedy -  April 14th",
+              "startDate": "2026-04-14T19:30:00+0200",
+              "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-14th-7441817235675421515.html",
+              "endDate": "2026-04-14T21:30:00+0200",
+              "eventStatus": "https://schema.org/EventScheduled",
+              "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+              "location": {
+                "@type": "Place",
+                "name": "KON-TIKI",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "Niederdorfstrasse 24",
+                  "addressLocality": "Zürich",
+                  "postalCode": "8001",
+                  "addressCountry": "Switzerland"
+                }
+              },
+              "image": [
+                "https://eventfrog.ch/upload/rm/11/96/1-19-6JRI879G.webp?_=1774267525000"
+              ],
+              "description": "Kon-Tiki Comedy! Zurich's longest standing weekly Comedy Night : English Standup at Kon-Tiki Bar since 2018 Kon-Tiki Comedy has long become a staple of Tuesday Nights in Zurich! Veterans, regulars, amateurs & newbies from all around the world show up to make people laugh. This Comedy Open Mic is regularly Hosted by Ahmet Bilge. Kon-Tiki Comedy is the place for English Standup in central Zurich. Come join & laugh with us! Frequently Asked Questions: ------------------------------------------------------------------------------------------------------------------------------------- Q: Is the show in English? A: YES. Kon-Tiki Comedy is always in English. Q: What's the difference of a Comedy Open Mic from a regular Comedy Show? A: Anybody who wants can go on stage at a Comedy Open Mic. A bunch of Comedians will be there, but they will be trying out jokes, because this is how Comedians find out if something is funny or not, so you get to be there at the birthplace of jokes. Often Comedy Open Mics are more casual & but also funny as well!        Q: Can I perform Comedy also?     A: Yes of course! Just contact theamericanstandupshow@gmail.com if you're interested in performing. Or directly go to the event page on facebook & write SPOT inside the event discussion. You'll be confirmed later & will get 5minutes to start off with. Anybody can sign up!        Q: What about these seats? A : First come first served rule applies! Especially since Kon-Tiki Comedy is popular, often it is packed inside, so come early for good seats. What's early? Anything before 19:00 & you will have your seat of choice. If you come after 19:30 especially you are not guaranteed a seat! Q : What about the late show?  Depending on the turnout a late show is also available most of the time, please check the ticket page to see if there is a late show option. Basically if you can buy tickets to the late show, it's happening, if it's not an option for a ticket it's not! Both shows might be consolidated into one if there's not enough ticket sold for the late show. In this case you will recieve an e-mail telling you so. Q : Can I refund my ticket?  There are no refunds allowed because it becomes too much work for a simple Comedy Open Mic, so only buy your ticket if you know you're for sure going to be able to make it. But if for some reason you can't make it, you are welcome to use your ticket for any future Kon-Tiki Comedy Shows. Just write an e-mail to exchange. Q : Can I buy tickets at the door? No please don't. Technically we can but it complicates everything, so just buy them online. Just to persuade you NOT to ask to buy at the door: Tickets at the door are 20.-CHF. Please buy online : ) Q: Will it be funny? A : You betcha. You can't do a regular show since 2018 & not be funny. Any other questions: Email: theamericanstandupshow@gmail.com with the title Kon-Tiki Comedy But if it's any of the questions covered by the FAQ above, I will still answer it, but first I will insult you. Legal Disclaimer: Comedians may film their sets as well as the audience during the comedy show. By buying a ticket you consent to being filmed in this public space. If you ever have a problem with any clip published online you are very welcome to contact us & ask to have it removed, we are happy to accomodate you. Thank you for your understanding.",
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "name": "ADMISSION",
+                  "price": "15.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-04-14T19:30:00+0200",
+                  "priceValidUntil": "2026-04-14T21:30:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-14th-7441817235675421515.html"
+                }
+              ],
+              "organizer": {
+                "@type": "Organization",
+                "name": "Ahmet Bilge Cetinkaya"
+              },
+              "keywords": "Theatre & Stage / Comedy & Cabaret, KON-TIKI, Zürich, 14.04.2026"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/11/96/1-19-6JRI879G.webp",
+              "copyrightNotice": "cx",
+              "uploadDate": "2026-03-23T13:05:21+0100"
+            }
+          ]
+        ],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-14th-7441817235675421515.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-21st-7441817599552301255.html",
+      "title": "Tickets Apr 21 Kon-Tiki Comedy - April 21st 21 April, Tuesday, 19:30 KON-TIKI, Zürich (CH)",
+      "path": "/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-21st-7441817599552301255.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:05:26.667527+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-21st-7441817599552301255.html",
+        "host": "eventfrog.ch",
+        "title_tag": "Kon-Tiki Comedy - April 21st in Zürich | Comedy & Cabaret",
+        "og_title": "Kon-Tiki Comedy - April 21st in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [
+          [
+            {
+              "@context": "http://schema.org",
+              "@type": "Event",
+              "name": "Kon-Tiki Comedy -  April 21st",
+              "startDate": "2026-04-21T19:30:00+0200",
+              "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-21st-7441817599552301255.html",
+              "endDate": "2026-04-21T21:30:00+0200",
+              "eventStatus": "https://schema.org/EventScheduled",
+              "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+              "location": {
+                "@type": "Place",
+                "name": "KON-TIKI",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "Niederdorfstrasse 24",
+                  "addressLocality": "Zürich",
+                  "postalCode": "8001",
+                  "addressCountry": "Switzerland"
+                }
+              },
+              "image": [
+                "https://eventfrog.ch/upload/rm/13/8B/1-38-BL0Y7INN.jpg?_=1774267607000"
+              ],
+              "description": "Kon-Tiki Comedy! Zurich's longest standing weekly Comedy Night : English Standup at Kon-Tiki Bar since 2018 Kon-Tiki Comedy has long become a staple of Tuesday Nights in Zurich! Veterans, regulars, amateurs & newbies from all around the world show up to make people laugh. This Comedy Open Mic is regularly Hosted by Ahmet Bilge. Kon-Tiki Comedy is the place for English Standup in central Zurich. Come join & laugh with us! Frequently Asked Questions: ------------------------------------------------------------------------------------------------------------------------------------- Q: Is the show in English? A: YES. Kon-Tiki Comedy is always in English. Q: What's the difference of a Comedy Open Mic from a regular Comedy Show? A: Anybody who wants can go on stage at a Comedy Open Mic. A bunch of Comedians will be there, but they will be trying out jokes, because this is how Comedians find out if something is funny or not, so you get to be there at the birthplace of jokes. Often Comedy Open Mics are more casual & but also funny as well!        Q: Can I perform Comedy also?     A: Yes of course! Just contact theamericanstandupshow@gmail.com if you're interested in performing. Or directly go to the event page on facebook & write SPOT inside the event discussion. You'll be confirmed later & will get 5minutes to start off with. Anybody can sign up!        Q: What about these seats? A : First come first served rule applies! Especially since Kon-Tiki Comedy is popular, often it is packed inside, so come early for good seats. What's early? Anything before 19:00 & you will have your seat of choice. If you come after 19:30 especially you are not guaranteed a seat! Q : What about the late show?  Depending on the turnout a late show is also available most of the time, please check the ticket page to see if there is a late show option. Basically if you can buy tickets to the late show, it's happening, if it's not an option for a ticket it's not! Both shows might be consolidated into one if there's not enough ticket sold for the late show. In this case you will recieve an e-mail telling you so. Q : Can I refund my ticket?  There are no refunds allowed because it becomes too much work for a simple Comedy Open Mic, so only buy your ticket if you know you're for sure going to be able to make it. But if for some reason you can't make it, you are welcome to use your ticket for any future Kon-Tiki Comedy Shows. Just write an e-mail to exchange. Q : Can I buy tickets at the door? No please don't. Technically we can but it complicates everything, so just buy them online. Just to persuade you NOT to ask to buy at the door: Tickets at the door are 20.-CHF. Please buy online : ) Q: Will it be funny? A : You betcha. You can't do a regular show since 2018 & not be funny. Any other questions: Email: theamericanstandupshow@gmail.com with the title Kon-Tiki Comedy But if it's any of the questions covered by the FAQ above, I will still answer it, but first I will insult you. Legal Disclaimer: Comedians may film their sets as well as the audience during the comedy show. By buying a ticket you consent to being filmed in this public space. If you ever have a problem with any clip published online you are very welcome to contact us & ask to have it removed, we are happy to accomodate you. Thank you for your understanding.",
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "name": "ADMISSION",
+                  "price": "15.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-04-21T19:30:00+0200",
+                  "priceValidUntil": "2026-04-21T21:30:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-21st-7441817599552301255.html"
+                }
+              ],
+              "organizer": {
+                "@type": "Organization",
+                "name": "Ahmet Bilge Cetinkaya"
+              },
+              "keywords": "Theatre & Stage / Comedy & Cabaret, KON-TIKI, Zürich, 21.04.2026"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/13/8U/1-38-UB9YMMBP.webp",
+              "copyrightNotice": "cx",
+              "uploadDate": "2026-03-23T13:06:42+0100"
+            }
+          ]
+        ],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-21st-7441817599552301255.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-28th-7441817850271023595.html",
+      "title": "Tickets Apr 28 Kon-Tiki Comedy - April 28th 28 April, Tuesday, 19:30 KON-TIKI, Zürich (CH)",
+      "path": "/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-28th-7441817850271023595.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:05:30.298512+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-28th-7441817850271023595.html",
+        "host": "eventfrog.ch",
+        "title_tag": "Kon-Tiki Comedy - April 28th in Zürich | Comedy & Cabaret",
+        "og_title": "Kon-Tiki Comedy - April 28th in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [
+          [
+            {
+              "@context": "http://schema.org",
+              "@type": "Event",
+              "name": "Kon-Tiki Comedy -  April 28th",
+              "startDate": "2026-04-28T19:30:00+0200",
+              "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-28th-7441817850271023595.html",
+              "endDate": "2026-04-28T21:30:00+0200",
+              "eventStatus": "https://schema.org/EventScheduled",
+              "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+              "location": {
+                "@type": "Place",
+                "name": "KON-TIKI",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "Niederdorfstrasse 24",
+                  "addressLocality": "Zürich",
+                  "postalCode": "8001",
+                  "addressCountry": "Switzerland"
+                }
+              },
+              "image": [
+                "https://eventfrog.ch/upload/rm/ed/it/edited-imh4017-min-PD7XAROA.webp?_=1774267654000"
+              ],
+              "description": "Kon-Tiki Comedy! Zurich's longest standing weekly Comedy Night : English Standup at Kon-Tiki Bar since 2018 Kon-Tiki Comedy has long become a staple of Tuesday Nights in Zurich! Veterans, regulars, amateurs & newbies from all around the world show up to make people laugh. This Comedy Open Mic is regularly Hosted by Ahmet Bilge. Kon-Tiki Comedy is the place for English Standup in central Zurich. Come join & laugh with us! Frequently Asked Questions: ------------------------------------------------------------------------------------------------------------------------------------- Q: Is the show in English? A: YES. Kon-Tiki Comedy is always in English. Q: What's the difference of a Comedy Open Mic from a regular Comedy Show? A: Anybody who wants can go on stage at a Comedy Open Mic. A bunch of Comedians will be there, but they will be trying out jokes, because this is how Comedians find out if something is funny or not, so you get to be there at the birthplace of jokes. Often Comedy Open Mics are more casual & but also funny as well!        Q: Can I perform Comedy also?     A: Yes of course! Just contact theamericanstandupshow@gmail.com if you're interested in performing. Or directly go to the event page on facebook & write SPOT inside the event discussion. You'll be confirmed later & will get 5minutes to start off with. Anybody can sign up!        Q: What about these seats? A : First come first served rule applies! Especially since Kon-Tiki Comedy is popular, often it is packed inside, so come early for good seats. What's early? Anything before 19:00 & you will have your seat of choice. If you come after 19:30 especially you are not guaranteed a seat! Q : What about the late show?  Depending on the turnout a late show is also available most of the time, please check the ticket page to see if there is a late show option. Basically if you can buy tickets to the late show, it's happening, if it's not an option for a ticket it's not! Both shows might be consolidated into one if there's not enough ticket sold for the late show. In this case you will recieve an e-mail telling you so. Q : Can I refund my ticket?  There are no refunds allowed because it becomes too much work for a simple Comedy Open Mic, so only buy your ticket if you know you're for sure going to be able to make it. But if for some reason you can't make it, you are welcome to use your ticket for any future Kon-Tiki Comedy Shows. Just write an e-mail to exchange. Q : Can I buy tickets at the door? No please don't. Technically we can but it complicates everything, so just buy them online. Just to persuade you NOT to ask to buy at the door: Tickets at the door are 20.-CHF. Please buy online : ) Q: Will it be funny? A : You betcha. You can't do a regular show since 2018 & not be funny. Any other questions: Email: theamericanstandupshow@gmail.com with the title Kon-Tiki Comedy But if it's any of the questions covered by the FAQ above, I will still answer it, but first I will insult you. Legal Disclaimer: Comedians may film their sets as well as the audience during the comedy show. By buying a ticket you consent to being filmed in this public space. If you ever have a problem with any clip published online you are very welcome to contact us & ask to have it removed, we are happy to accomodate you. Thank you for your understanding.",
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "name": "ADMISSION",
+                  "price": "15.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-04-28T19:30:00+0200",
+                  "priceValidUntil": "2026-04-28T21:30:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-28th-7441817850271023595.html"
+                }
+              ],
+              "organizer": {
+                "@type": "Organization",
+                "name": "Ahmet Bilge Cetinkaya"
+              },
+              "keywords": "Theatre & Stage / Comedy & Cabaret, KON-TIKI, Zürich, 28.04.2026"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/ed/it/edited-imh4017-min-PD7XAROA.webp",
+              "copyrightNotice": "cx",
+              "uploadDate": "2026-03-23T13:07:31+0100"
+            }
+          ]
+        ],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-28th-7441817850271023595.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-may-5th-7444770727775980641.html",
+      "title": "Tickets May 5 Kon-Tiki Comedy - May 5th 05 May, Tuesday, 19:30 KON-TIKI, Zürich (CH)",
+      "path": "/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-may-5th-7444770727775980641.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:05:34.564738+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-may-5th-7444770727775980641.html",
+        "host": "eventfrog.ch",
+        "title_tag": "Kon-Tiki Comedy - May 5th in Zürich | Comedy & Cabaret",
+        "og_title": "Kon-Tiki Comedy - May 5th in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [
+          [
+            {
+              "@context": "http://schema.org",
+              "@type": "Event",
+              "name": "Kon-Tiki Comedy -  May 5th",
+              "startDate": "2026-05-05T19:30:00+0200",
+              "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-may-5th-7444770727775980641.html",
+              "endDate": "2026-05-05T21:30:00+0200",
+              "eventStatus": "https://schema.org/EventScheduled",
+              "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+              "location": {
+                "@type": "Place",
+                "name": "KON-TIKI",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "Niederdorfstrasse 24",
+                  "addressLocality": "Zürich",
+                  "postalCode": "8001",
+                  "addressCountry": "Switzerland"
+                }
+              },
+              "image": [
+                "https://eventfrog.ch/upload/rm/ed/it/edited-imh4017-min-PD7XAROA.webp"
+              ],
+              "description": "Kon-Tiki Comedy! Zurich's longest standing weekly Comedy Night : English Standup at Kon-Tiki Bar since 2018 Kon-Tiki Comedy has long become a staple of Tuesday Nights in Zurich! Veterans, regulars, amateurs & newbies from all around the world show up to make people laugh. This Comedy Open Mic is regularly Hosted by Ahmet Bilge. Kon-Tiki Comedy is the place for English Standup in central Zurich. Come join & laugh with us! Frequently Asked Questions: ------------------------------------------------------------------------------------------------------------------------------------- Q: Is the show in English? A: YES. Kon-Tiki Comedy is always in English. Q: What's the difference of a Comedy Open Mic from a regular Comedy Show? A: Anybody who wants can go on stage at a Comedy Open Mic. A bunch of Comedians will be there, but they will be trying out jokes, because this is how Comedians find out if something is funny or not, so you get to be there at the birthplace of jokes. Often Comedy Open Mics are more casual & but also funny as well!        Q: Can I perform Comedy also?     A: Yes of course! Just contact theamericanstandupshow@gmail.com if you're interested in performing. Or directly go to the event page on facebook & write SPOT inside the event discussion. You'll be confirmed later & will get 5minutes to start off with. Anybody can sign up!        Q: What about these seats? A : First come first served rule applies! Especially since Kon-Tiki Comedy is popular, often it is packed inside, so come early for good seats. What's early? Anything before 19:00 & you will have your seat of choice. If you come after 19:30 especially you are not guaranteed a seat! Q : What about the late show?  Depending on the turnout a late show is also available most of the time, please check the ticket page to see if there is a late show option. Basically if you can buy tickets to the late show, it's happening, if it's not an option for a ticket it's not! Both shows might be consolidated into one if there's not enough ticket sold for the late show. In this case you will recieve an e-mail telling you so. Q : Can I refund my ticket?  There are no refunds allowed because it becomes too much work for a simple Comedy Open Mic, so only buy your ticket if you know you're for sure going to be able to make it. But if for some reason you can't make it, you are welcome to use your ticket for any future Kon-Tiki Comedy Shows. Just write an e-mail to exchange. Q : Can I buy tickets at the door? No please don't. Technically we can but it complicates everything, so just buy them online. Just to persuade you NOT to ask to buy at the door: Tickets at the door are 20.-CHF. Please buy online : ) Q: Will it be funny? A : You betcha. You can't do a regular show since 2018 & not be funny. Any other questions: Email: theamericanstandupshow@gmail.com with the title Kon-Tiki Comedy But if it's any of the questions covered by the FAQ above, I will still answer it, but first I will insult you. Legal Disclaimer: Comedians may film their sets as well as the audience during the comedy show. By buying a ticket you consent to being filmed in this public space. If you ever have a problem with any clip published online you are very welcome to contact us & ask to have it removed, we are happy to accomodate you. Thank you for your understanding.",
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "name": "ADMISSION",
+                  "price": "15.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-05-05T19:30:00+0200",
+                  "priceValidUntil": "2026-05-05T21:30:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-may-5th-7444770727775980641.html"
+                }
+              ],
+              "organizer": {
+                "@type": "Organization",
+                "name": "Ahmet Bilge Cetinkaya"
+              },
+              "keywords": "Theatre & Stage / Comedy & Cabaret, KON-TIKI, Zürich, 05.05.2026"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/ed/it/edited-imh4017-min-PD7XAROA.webp",
+              "copyrightNotice": "cx",
+              "uploadDate": "2026-03-31T17:40:58+0200"
+            }
+          ]
+        ],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-may-5th-7444770727775980641.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-may-12th-7444771038473274960.html",
+      "title": "Tickets May 12 Kon-Tiki Comedy - May 12th 12 May, Tuesday, 19:30 KON-TIKI, Zürich (CH)",
+      "path": "/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-may-12th-7444771038473274960.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:05:38.275035+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-may-12th-7444771038473274960.html",
+        "host": "eventfrog.ch",
+        "title_tag": "Kon-Tiki Comedy - May 12th in Zürich | Comedy & Cabaret",
+        "og_title": "Kon-Tiki Comedy - May 12th in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [
+          [
+            {
+              "@context": "http://schema.org",
+              "@type": "Event",
+              "name": "Kon-Tiki Comedy -  May 12th",
+              "startDate": "2026-05-12T19:30:00+0200",
+              "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-may-12th-7444771038473274960.html",
+              "endDate": "2026-05-12T21:30:00+0200",
+              "eventStatus": "https://schema.org/EventScheduled",
+              "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+              "location": {
+                "@type": "Place",
+                "name": "KON-TIKI",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "Niederdorfstrasse 24",
+                  "addressLocality": "Zürich",
+                  "postalCode": "8001",
+                  "addressCountry": "Switzerland"
+                }
+              },
+              "image": [
+                "https://eventfrog.ch/upload/rm/ed/it/edited-imh6707-min-J4CZV8CT.webp"
+              ],
+              "description": "Kon-Tiki Comedy! Zurich's longest standing weekly Comedy Night : English Standup at Kon-Tiki Bar since 2018 Kon-Tiki Comedy has long become a staple of Tuesday Nights in Zurich! Veterans, regulars, amateurs & newbies from all around the world show up to make people laugh. This Comedy Open Mic is regularly Hosted by Ahmet Bilge. Kon-Tiki Comedy is the place for English Standup in central Zurich. Come join & laugh with us! Frequently Asked Questions: ------------------------------------------------------------------------------------------------------------------------------------- Q: Is the show in English? A: YES. Kon-Tiki Comedy is always in English. Q: What's the difference of a Comedy Open Mic from a regular Comedy Show? A: Anybody who wants can go on stage at a Comedy Open Mic. A bunch of Comedians will be there, but they will be trying out jokes, because this is how Comedians find out if something is funny or not, so you get to be there at the birthplace of jokes. Often Comedy Open Mics are more casual & but also funny as well!        Q: Can I perform Comedy also?     A: Yes of course! Just contact theamericanstandupshow@gmail.com if you're interested in performing. Or directly go to the event page on facebook & write SPOT inside the event discussion. You'll be confirmed later & will get 5minutes to start off with. Anybody can sign up!        Q: What about these seats? A : First come first served rule applies! Especially since Kon-Tiki Comedy is popular, often it is packed inside, so come early for good seats. What's early? Anything before 19:00 & you will have your seat of choice. If you come after 19:30 especially you are not guaranteed a seat! Q : What about the late show?  Depending on the turnout a late show is also available most of the time, please check the ticket page to see if there is a late show option. Basically if you can buy tickets to the late show, it's happening, if it's not an option for a ticket it's not! Both shows might be consolidated into one if there's not enough ticket sold for the late show. In this case you will recieve an e-mail telling you so. Q : Can I refund my ticket?  There are no refunds allowed because it becomes too much work for a simple Comedy Open Mic, so only buy your ticket if you know you're for sure going to be able to make it. But if for some reason you can't make it, you are welcome to use your ticket for any future Kon-Tiki Comedy Shows. Just write an e-mail to exchange. Q : Can I buy tickets at the door? No please don't. Technically we can but it complicates everything, so just buy them online. Just to persuade you NOT to ask to buy at the door: Tickets at the door are 20.-CHF. Please buy online : ) Q: Will it be funny? A : You betcha. You can't do a regular show since 2018 & not be funny. Any other questions: Email: theamericanstandupshow@gmail.com with the title Kon-Tiki Comedy But if it's any of the questions covered by the FAQ above, I will still answer it, but first I will insult you. Legal Disclaimer: Comedians may film their sets as well as the audience during the comedy show. By buying a ticket you consent to being filmed in this public space. If you ever have a problem with any clip published online you are very welcome to contact us & ask to have it removed, we are happy to accomodate you. Thank you for your understanding.",
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "name": "ADMISSION",
+                  "price": "15.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-05-12T19:30:00+0200",
+                  "priceValidUntil": "2026-05-12T21:30:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-may-12th-7444771038473274960.html"
+                }
+              ],
+              "organizer": {
+                "@type": "Organization",
+                "name": "Ahmet Bilge Cetinkaya"
+              },
+              "keywords": "Theatre & Stage / Comedy & Cabaret, KON-TIKI, Zürich, 12.05.2026"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/ed/it/edited-imh6707-min-J4CZV8CT.webp",
+              "copyrightNotice": "cx",
+              "uploadDate": "2026-03-31T17:42:12+0200"
+            }
+          ]
+        ],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-may-12th-7444771038473274960.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/funny-women-zurich-comedy-showcase-7401126106852530122.html",
+      "title": "Tickets Nov 5 Funny Women Zurich - Comedy Showcase 05 November, Thursday, 20:00 ComedyHaus, Zürich (CH)",
+      "path": "/en/p/theatre-stage/comedy-cabaret/funny-women-zurich-comedy-showcase-7401126106852530122.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:05:42.058930+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/funny-women-zurich-comedy-showcase-7401126106852530122.html",
+        "host": "eventfrog.ch",
+        "title_tag": "Funny Women Zurich - Comedy Showcase in Zürich | Comedy & Cabaret",
+        "og_title": "Funny Women Zurich - Comedy Showcase in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [
+          [
+            {
+              "@context": "http://schema.org",
+              "@type": "Event",
+              "name": "Funny Women Zurich - Comedy Showcase",
+              "startDate": "2026-11-05T20:00:00+0100",
+              "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/funny-women-zurich-comedy-showcase-7401126106852530122.html",
+              "endDate": "2026-11-05T22:00:00+0100",
+              "eventStatus": "https://schema.org/EventScheduled",
+              "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+              "location": {
+                "@type": "Place",
+                "name": "ComedyHaus",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "Albisriederstrasse 16",
+                  "addressLocality": "Zürich",
+                  "postalCode": "8003",
+                  "addressCountry": "Switzerland"
+                }
+              },
+              "image": [
+                "https://eventfrog.ch/upload/rm/co/py/copy-of-live-at-comedyhaus-1-UP966X4U.webp?_=1764566471000"
+              ],
+              "description": "Your comedy friends, aunties, and sisters are back! We're beyond excited to be back for another Funny Women Zurich Showcase - live at Comedyhaus on Thursday, November 5th! After our amazing first showcase in November 2025 and two seasons of Funny Women open mics that brought laughter to over 1000 people, we're taking things up a notch: Join us for an unforgettable comedy show featuring a stellar lineup of local stand-up talents and seasoned pros ready to light up the stage with their sharp wit, wild stories, and unstoppable energy. 📅 Date: Thursday, November 5th     📍 Venue: Comedyhaus     🎤 Show starts: 8:00 PM (doors: 7.30 PM) You don't want to miss this! __     This event is in English.     Line-up to be announced closer to the date.     Although this show features a female-only line-up, we welcome audience members of all genders.",
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "name": "Tickets for me, please!",
+                  "lowPrice": "28.0",
+                  "highPrice": "32.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-11-05T20:00:00+0100",
+                  "priceValidUntil": "2026-11-05T22:00:00+0100",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/funny-women-zurich-comedy-showcase-7401126106852530122.html"
+                },
+                {
+                  "@type": "Offer",
+                  "name": "Earliest early bird tickets for me, please!",
+                  "price": "22.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2025-12-01T00:00:00+0100",
+                  "priceValidUntil": "2026-08-05T23:59:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/funny-women-zurich-comedy-showcase-7401126106852530122.html"
+                }
+              ],
+              "organizer": {
+                "@type": "Organization",
+                "name": "Martina Hulme",
+                "url": "https://linktr.ee/funnywomenzurich?utm_source=linktree_profile_share&amp;ltsid=15a54f74-d98f-4ecd-a852-671709596497",
+                "logo": "https://eventfrog.ch/upload/rm/co/py/copy-of-fw-brick-wall-background-V0B-AMU7GTUN.webp"
+              },
+              "keywords": "Theatre & Stage / Comedy & Cabaret, ComedyHaus, Zürich, 05.11.2026"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/co/py/copy-of-live-at-comedyhaus-1-UP966X4U.webp",
+              "copyrightNotice": "Funny Women Zurich",
+              "uploadDate": "2025-12-01T06:20:02+0100"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/co/py/copy-of-fw-brick-wall-background-V0B-AMU7GTUN.webp",
+              "copyrightNotice": "Funny Women Zurich",
+              "uploadDate": "2025-06-08T21:48:53+0200"
+            }
+          ]
+        ],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/funny-women-zurich-comedy-showcase-7401126106852530122.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-kiss-presents-ali-siddiq-7425561797103498405.html",
+      "title": "Tickets Nov 11 Comedy Kiss Presents: Ali Siddiq 11 November, Wednesday, 19:30 Volkshaus Zürich Weisser Saal, Zürich (CH)",
+      "path": "/en/p/theatre-stage/comedy-cabaret/comedy-kiss-presents-ali-siddiq-7425561797103498405.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:05:45.898067+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-kiss-presents-ali-siddiq-7425561797103498405.html",
+        "host": "eventfrog.ch",
+        "title_tag": "Comedy Kiss Presents: Ali Siddiq in Zürich | Comedy & Cabaret",
+        "og_title": "Comedy Kiss Presents: Ali Siddiq in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [
+          [
+            {
+              "@context": "http://schema.org",
+              "@type": "Event",
+              "name": "Comedy Kiss Presents: Ali Siddiq",
+              "startDate": "2026-11-11T19:30:00+0100",
+              "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-kiss-presents-ali-siddiq-7425561797103498405.html",
+              "endDate": "2026-11-11T20:45:00+0100",
+              "eventStatus": "https://schema.org/EventScheduled",
+              "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+              "location": {
+                "@type": "Place",
+                "name": "Volkshaus Zürich  Weisser Saal",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "Stauffacherstrasse 60",
+                  "addressLocality": "Zürich",
+                  "postalCode": "8004",
+                  "addressCountry": "Switzerland"
+                }
+              },
+              "image": [
+                "https://eventfrog.ch/upload/rm/al/is/ali-siddiq-flyer-1-WHLPDTSM.webp?_=1770801919000"
+              ],
+              "description": "Ali Siddiq, one of the most compelling storytellers in stand-up today is bringing his show to Zurich Raw, gripping, and deeply human, Ali Siddiq is one of the most compelling storytellers in stand-up today. Raised in Houston and shaped by lived experience, his comedy blends honesty, resilience, and unforgettable true stories. He made history as the first comedian to release a four-part stand-up series, THE DOMINO EFFECT 1-4, amassing over 50 million views and turning each chapter into a must-watch event.  Ali's reach extends far beyond the stage -- he has been featured on The Joe Rogan Experience, Club Shay Shay, 85 South, The Breakfast Club, Kill Tony, VladTV, Your Mom's House, Good Morning America, and dozens of other top shows and podcasts, making him one of the most recognized and requested voices in comedy today. I've been a fan after having seen him on YouTube several years ago. He's a stand out stand up comedian and much loved by comedy fans. Our Open Mic Community WhatsApp nearly exploded on the news that he is coming to Zurich, so don't miss out.    Vulture     Stand-up comedy's most prolific storyteller. Comedy Central - This Is Not Happening     One of the most iconic comedy stories ever told. ------ Tell everyone about it and buy your tickets now!   Doors open at 19:00.  Arrive early to get a drink.  The show is in English  Photos of the show may be taken for promotional purposes.   Check out our future shows as www.comedykiss.ch and follow us on Instagram at @comedykiss.ch for funny videos, show updates and more.",
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "name": "Front",
+                  "price": "62.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-11-11T19:30:00+0100",
+                  "priceValidUntil": "2026-11-11T20:45:00+0100",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-kiss-presents-ali-siddiq-7425561797103498405.html"
+                },
+                {
+                  "@type": "Offer",
+                  "name": "Middle",
+                  "price": "52.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-11-11T19:30:00+0100",
+                  "priceValidUntil": "2026-11-11T20:45:00+0100",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-kiss-presents-ali-siddiq-7425561797103498405.html"
+                },
+                {
+                  "@type": "Offer",
+                  "name": "Back",
+                  "price": "42.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-11-11T19:30:00+0100",
+                  "priceValidUntil": "2026-11-11T20:45:00+0100",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-kiss-presents-ali-siddiq-7425561797103498405.html"
+                }
+              ],
+              "organizer": {
+                "@type": "Organization",
+                "name": "Shane Norton",
+                "logo": "https://eventfrog.ch/upload/rm/co/me/comedy-kiss-switzerland-7GE3JZ7L.webp"
+              },
+              "keywords": "Theatre & Stage / Comedy & Cabaret, Volkshaus Zürich  Weisser Saal, Zürich, 11.11.2026"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/al/is/ali-siddiq-flyer-1-WHLPDTSM.webp",
+              "copyrightNotice": "Shane Norton",
+              "uploadDate": "2026-02-11T10:25:14+0100"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/co/me/comedy-kiss-switzerland-7GE3JZ7L.webp",
+              "copyrightNotice": "Shane Norton",
+              "uploadDate": "2019-09-27T14:44:14+0200"
+            }
+          ]
+        ],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-kiss-presents-ali-siddiq-7425561797103498405.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/milan-milanski-schwugo-7363322248093009943.html",
+      "title": "Tickets Apr 23 Milan Milanski - Schwugo 23 April, Thursday, 20:00 Caverno Bülach, Bülach (CH)",
+      "path": "/en/p/theatre-stage/comedy-cabaret/milan-milanski-schwugo-7363322248093009943.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:05:50.771465+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/milan-milanski-schwugo-7363322248093009943.html",
+        "host": "eventfrog.ch",
+        "title_tag": "Milan Milanski - Schwugo in Bülach | Comedy & Cabaret",
+        "og_title": "Milan Milanski - Schwugo in Bülach | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [
+          [
+            {
+              "@context": "http://schema.org",
+              "@type": "Event",
+              "name": "Milan Milanski - Schwugo",
+              "startDate": "2026-04-23T20:00:00+0200",
+              "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/milan-milanski-schwugo-7363322248093009943.html",
+              "endDate": "2026-04-23T22:00:00+0200",
+              "eventStatus": "https://schema.org/EventScheduled",
+              "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+              "location": {
+                "@type": "Place",
+                "name": "Caverno Bülach",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "Feldstrasse 86",
+                  "addressLocality": "Bülach",
+                  "postalCode": "8180",
+                  "addressCountry": "Switzerland"
+                }
+              },
+              "image": [
+                "https://eventfrog.ch/upload/rm/sc/hw/schwugo-23-04-26-fb-7T0C3AI0.webp?_=1755553119000"
+              ],
+              "description": "Was wie eine Beleidigung klingt, ist in Milanskis Welt eher die Erfindung eines     Superhelden. In seinem ersten abendfüllenden Programm geht es eben genau um diese     Reise: Vom Coming Out zu Coming of Age, von Plattenbau und Arbeiterklasse zu RTL2     und Britney Spears. Seine Comedy ist lustig, ein bisschen loco und in erster Linie     verdammt ehrlich. Milan nimmt uns mit auf eine Achterbahnfahrt durch sein bisheriges     Leben und scheut sich nicht, auch die schrägsten und (je nach Gusto) peinlichsten     Momente zu teilen.     Milan Milanski ist seit Jahren in aller Munde und damit ist jetzt nicht „das gemeint. Sei es     als Moderator des erfolgreichsten Open Mics der Schweiz oder als Außenreporter von     Stefan Büssers „Late Nite Switzerland - der Schwugo liefert und gehört zu den jungen     Wilden der hiesigen Comedyszene. Mit seinem unnachahmlichen Stil und seiner scharfen     Zunge trifft er den Nerv der Generation Y und denen die da gerne dazugehören wollen.     Also Karten kaufen und den inneren Schwugo heraufbeschwören! Milan Milanski Unser Restaurant ist vor der Vorstellung für euch geöffnet, geniesst ein gemütliches Essen, bevor die Show beginnt! Reservation erwünscht. Tischreservierung fürs Abendessen Eintritt     Vorverkauf 30.- / Abendkasse 35.- Restaurant ab 17:00 (19:00 letzte Essensbestellung für Gäste der Show) Türöffnung Eventsaal 19:00 Showbeginn 20:00 Bestuhlter Anlass | freie Platzwahl",
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "name": "Sitzplatz",
+                  "price": "30.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-04-23T20:00:00+0200",
+                  "priceValidUntil": "2026-04-23T18:45:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/milan-milanski-schwugo-7363322248093009943.html"
+                }
+              ],
+              "organizer": {
+                "@type": "Organization",
+                "name": "Caverno Event GmbH",
+                "url": "https://www.caverno.ch",
+                "logo": "https://eventfrog.ch/upload/rm/lo/go/logo-caverno-LN5313VP-DB0S8PRJ.webp"
+              },
+              "keywords": "Theatre & Stage / Comedy & Cabaret, Caverno Bülach, Bülach, 23.04.2026"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/sc/hw/schwugo-23-04-26-fb-7T0C3AI0.webp",
+              "copyrightNotice": "Milan Milanski",
+              "uploadDate": "2025-08-18T23:34:09+0200"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/lo/go/logo-caverno-LN5313VP-DB0S8PRJ.webp",
+              "copyrightNotice": "Caverno",
+              "uploadDate": "2024-08-09T17:51:30+0200"
+            }
+          ]
+        ],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/milan-milanski-schwugo-7363322248093009943.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/schroedinger-s-mic-english-stand-up-comedy-7447281090010553582.html",
+      "title": "Tickets Apr 30 Schrödinger's Mic: English stand-up comedy 30 April, Thursday, 20:00 CAB StuZ (ETH Building), Zürich (CH)",
+      "path": "/en/p/theatre-stage/comedy-cabaret/schroedinger-s-mic-english-stand-up-comedy-7447281090010553582.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:05:54.443081+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/schroedinger-s-mic-english-stand-up-comedy-7447281090010553582.html",
+        "host": "eventfrog.ch",
+        "title_tag": "Schrödinger's Mic: English stand-up comedy in Zürich | Comedy & Cabaret",
+        "og_title": "Schrödinger's Mic: English stand-up comedy in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [
+          [
+            {
+              "@context": "http://schema.org",
+              "@type": "Event",
+              "name": "Schrödinger's Mic: English stand-up comedy",
+              "startDate": "2026-04-30T20:00:00+0200",
+              "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/schroedinger-s-mic-english-stand-up-comedy-7447281090010553582.html",
+              "endDate": "2026-04-30T22:00:00+0200",
+              "eventStatus": "https://schema.org/EventScheduled",
+              "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+              "location": {
+                "@type": "Place",
+                "name": "CAB StuZ (ETH Building)",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "Universitätstrasse 6",
+                  "addressLocality": "Zürich",
+                  "postalCode": "8006",
+                  "addressCountry": "Switzerland"
+                }
+              },
+              "image": [
+                "https://eventfrog.ch/upload/rm/sc/hr/schrodinger-s-mic-show-flyer-2400-x--WIG7CIB4.webp?_=1775570465000"
+              ],
+              "description": "Are you the one who always sends memes? The loudest laugh in the group chat? The friend who says just one drink and somehow stays out all night? Then this comedy show is for you. Join us for Schrödinger's Mic, a night of English stand-up comedy brought to you by ESN Zürich and ESN Winterthur. Expect a lineup of some of the best comedians on the Swiss comedy scene, delivering sharp jokes, chaotic stories, and the kind of humour that keeps you laughing long after the show is over. Whether you come with friends, a date, your flatmates, or just by yourself, this is the perfect excuse to grab a drink, relax, and enjoy a great night out. Don't miss out - see you there, fam!        We're also excited to welcome a lineup of standout comedians from the Swiss comedy scene. The night will be hosted by headliner Richard Cunha,  with performances from Matteo Hermann, Martina Hulme, Łukasz Segiet, Val Ann, and Pouya! A few things to know before the show:   The performance will be in English  Doors open at 19:00, and the show begins at 20:00  Drinks will be available before the show and during the intermission  Photos will be taken during the event for promotional purposes, and possibly for someone's Hinge profile.  For more information, you can contact the ESN representative: Matteo Hermann (mherman@student.ethz.ch) ",
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "name": "with ESN card",
+                  "price": "6.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-04-30T20:00:00+0200",
+                  "priceValidUntil": "2026-04-30T22:00:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/schroedinger-s-mic-english-stand-up-comedy-7447281090010553582.html"
+                },
+                {
+                  "@type": "Offer",
+                  "name": "without ESN card",
+                  "price": "10.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-04-30T20:00:00+0200",
+                  "priceValidUntil": "2026-04-30T22:00:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/schroedinger-s-mic-english-stand-up-comedy-7447281090010553582.html"
+                }
+              ],
+              "organizer": {
+                "@type": "Organization",
+                "name": "ESN Zurich",
+                "logo": "https://eventfrog.ch/upload/rm/es/nz/esn-zurich-logo-4-EN6L237L-RJ571VBJ.webp"
+              },
+              "keywords": "Theatre & Stage / Comedy & Cabaret, CAB StuZ (ETH Building), Zürich, 30.04.2026"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/sc/hr/schrodinger-s-mic-show-flyer-2400-x--WIG7CIB4.webp",
+              "copyrightNotice": "SaraB",
+              "uploadDate": "2026-04-07T16:00:52+0200"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/es/nz/esn-zurich-logo-4-EN6L237L-RJ571VBJ.webp",
+              "copyrightNotice": "ESN Zurich",
+              "uploadDate": "2025-01-30T12:39:20+0100"
+            }
+          ]
+        ],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/schroedinger-s-mic-english-stand-up-comedy-7447281090010553582.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/groups/comedy-kiss-showcases-7288875292138941999.html",
+      "title": "Tickets Event group until Jun 16 Comedy Kiss Showcase 4 Events Auer & Co., Zürich (CH)",
+      "path": "/en/p/groups/comedy-kiss-showcases-7288875292138941999.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:05:57.593706+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/groups/comedy-kiss-showcases-7288875292138941999.html",
+        "host": "eventfrog.ch",
+        "title_tag": "Comedy Kiss Showcases in Zürich | Comedy & Cabaret",
+        "og_title": "Comedy Kiss Showcases in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/groups/comedy-kiss-showcases-7288875292138941999.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/the-big-comedy-kiss-with-finlay-christie-7423346539005755486.html",
+      "title": "Tickets Apr 18 The Big Comedy Kiss with Finlay Christie 18 April, Saturday, 19:30 SOHO, Zürich (CH)",
+      "path": "/en/p/theatre-stage/comedy-cabaret/the-big-comedy-kiss-with-finlay-christie-7423346539005755486.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:06:01.148128+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/the-big-comedy-kiss-with-finlay-christie-7423346539005755486.html",
+        "host": "eventfrog.ch",
+        "title_tag": "The Big Comedy Kiss with Finlay Christie in Zürich | Comedy & Cabaret",
+        "og_title": "The Big Comedy Kiss with Finlay Christie in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [
+          [
+            {
+              "@context": "http://schema.org",
+              "@type": "Event",
+              "name": "The Big Comedy Kiss with Finlay Christie",
+              "startDate": "2026-04-18T19:30:00+0200",
+              "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/the-big-comedy-kiss-with-finlay-christie-7423346539005755486.html",
+              "endDate": "2026-04-18T21:30:00+0200",
+              "eventStatus": "https://schema.org/EventScheduled",
+              "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+              "location": {
+                "@type": "Place",
+                "name": "SOHO",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "Guthirtstrasse 3",
+                  "addressLocality": "Zürich",
+                  "postalCode": "8037",
+                  "addressCountry": "Schweiz"
+                }
+              },
+              "image": [
+                "https://eventfrog.ch/upload/rm/bi/gc/big-comedy-kiss-feb-2026-finlay-2-MSUI7JWU.webp?_=1775570815000"
+              ],
+              "description": "The Biggest Comedy Kiss keeps getting Bigger and Better! Our much-loved comedy night is back -- and this time, we're turning up the spotlight!     We've gone all out to make this our most exciting edition yet, featuring one incredible international star alongside some of the finest local comedians in Switzerland. Finlay Christie - Finlay is young but he's been on the circuit now for what feels forever. At 19, he was the youngest ever winner of the prestigious So You Think You're Funny competition, and then developed into a YouTube sensation with over 450k subscribers and 200m views. He's been a comedian that I've been keen to get over into Switzerland for ages, so it's a pleasure to finally be able to do so. He has appeared on 8 out of 10 Cats Does Countdown (Channel 4), The Stand-Up Sketch Show (ITV2), Comedy Central Live, Person on a Chair (Channel 4), The BBC New Comedy Awards, Get Off My Phone! (Dave) and Jokes Only An AI Can Tell (Channel 4). He has performed at Montreal's Just For Laughs festival and across Europe for the Comedy Store.       Delivering a hugely impressive debut that could legitimately see him labelled as the voice of his generation★★★★ Chortle   Finlay Christie's OK Zoomer is a show you need to see at the Fringe this year… will leave you in stitches ★★★★ Entertainment Now  Outstanding… he will be taking the comedy world by storm, catch him now while you can ★★★★ One4Review  Finlay Christie will be the future of stand-up comedy ★★★★ Broadway Baby ----- Teddy Hall - Since learning his trade as a comedian in London, Teddy has been performing across Europe for half a decade, exciting audiences with an unpredictable and quick-witted brand of comedy all about language, mental health, sexuality, and dentists. Headlining shows across Europe and featuring on television in Switzerland, Germany, Austria, and Romania, Teddy's comedy veers from the profound to the inane to the stupid, keeping audiences on their toes, despite this being a very uncomfortable way to sit. ----- Łukasz Segiet - There are many planets in the universe and Łukasz lives on one of them. He likes jokes, comedy, space, travel, and jokes. Łukasz knows how microphones work and how to use a mic stand. Which is a useful skill in the business of comedy. His offbeat and unique style will certainly make you laugh. I know this because I can't keep a smile off my face when he's on stage. Spread the word and check out our future shows at www.comedykiss.ch and follow us on Instagram at @comedykiss.ch. ----- FAQ and More Info: Q: What time should I arrive?     A: Doors open at 18:30. Arrive early to grab a drink, order some food, and secure the best seats. Email  info@soho-zurich.ch to reserve your table. Q: What language is the show?     A: The show is in English. Q: What kind of comedy will I see? Will it be offensive?     A: We can't guarantee you won't be offended since this is very relative. In the show description, you'll find links to help you decide if that comedian is right for you. Ultimately, our goal is to bring good times and laughter to Switzerland and not to hurt feelings. Q: Can I buy tickets at the door?     A: Yes! Via Twint, but only if there are no shows or tickets are still available  Note: Photos of the show will be taken for promotional purposes.",
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "name": "Early-Bird Sale",
+                  "price": "32.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-04-18T19:30:00+0200",
+                  "priceValidUntil": "2026-04-18T21:30:00+0200",
+                  "availability": "https://schema.org/SoldOut",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/the-big-comedy-kiss-with-finlay-christie-7423346539005755486.html"
+                },
+                {
+                  "@type": "Offer",
+                  "name": "Regular",
+                  "price": "42.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-04-18T19:30:00+0200",
+                  "priceValidUntil": "2026-04-18T21:30:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/the-big-comedy-kiss-with-finlay-christie-7423346539005755486.html"
+                },
+                {
+                  "@type": "Offer",
+                  "name": "Group Discount (4+ people)",
+                  "price": "36.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-04-18T19:30:00+0200",
+                  "priceValidUntil": "2026-04-18T21:30:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/the-big-comedy-kiss-with-finlay-christie-7423346539005755486.html"
+                }
+              ],
+              "organizer": {
+                "@type": "Organization",
+                "name": "Shane Norton",
+                "logo": "https://eventfrog.ch/upload/rm/co/me/comedy-kiss-switzerland-7GE3JZ7L.webp"
+              },
+              "keywords": "Theatre & Stage / Comedy & Cabaret, SOHO, Zürich, 18.04.2026"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/bi/gc/big-comedy-kiss-feb-2026-finlay-2-MSUI7JWU.webp",
+              "copyrightNotice": "Shane Norton",
+              "uploadDate": "2026-04-07T16:06:45+0200"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/co/me/comedy-kiss-switzerland-7GE3JZ7L.webp",
+              "copyrightNotice": "Shane Norton",
+              "uploadDate": "2019-09-27T14:44:14+0200"
+            }
+          ]
+        ],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/the-big-comedy-kiss-with-finlay-christie-7423346539005755486.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/the-big-comedy-kiss-with-anuvab-pal-7428806130975924286.html",
+      "title": "Tickets Oct 10 The Big Comedy Kiss with Anuvab Pal 10 October, Saturday, 19:30 SOHO, Zürich (CH)",
+      "path": "/en/p/theatre-stage/comedy-cabaret/the-big-comedy-kiss-with-anuvab-pal-7428806130975924286.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:06:04.586781+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/the-big-comedy-kiss-with-anuvab-pal-7428806130975924286.html",
+        "host": "eventfrog.ch",
+        "title_tag": "The Big Comedy Kiss with Anuvab Pal in Zürich | Comedy & Cabaret",
+        "og_title": "The Big Comedy Kiss with Anuvab Pal in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [
+          [
+            {
+              "@context": "http://schema.org",
+              "@type": "Event",
+              "name": "The Big Comedy Kiss with Anuvab Pal",
+              "startDate": "2026-10-10T19:30:00+0200",
+              "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/the-big-comedy-kiss-with-anuvab-pal-7428806130975924286.html",
+              "endDate": "2026-10-10T21:30:00+0200",
+              "eventStatus": "https://schema.org/EventScheduled",
+              "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+              "location": {
+                "@type": "Place",
+                "name": "SOHO",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "Guthirtstrasse 3",
+                  "addressLocality": "Zürich",
+                  "postalCode": "8037",
+                  "addressCountry": "Schweiz"
+                }
+              },
+              "image": [
+                "https://eventfrog.ch/upload/rm/bi/gc/big-comedy-kiss-may-2026-anuvab-pal-IJRTN0DW.webp?_=1771165418000"
+              ],
+              "description": "Our much-loved comedy night is back -- and this time, we're turning up the spotlight!     We've gone all out to make this our most exciting edition yet, featuring one incredible international star alongside some of the finest local comedians in Switzerland. Anuvab Pal - Described by The New York Times as India's most intelligent comedian and by the BBC as India's answer to British wit, Anuvab Pal is one of the most globally recognised English-speaking comics to come out of India. His stand-up special The Nation Wants To Know has played over 500 sold-out shows from Mumbai to Sydney to San Francisco, while his hit show Empire -- a comedy about the history of the British Empire in India -- has toured internationally across 12 cities and is now available as a special on Amazon Prime UK as part of Soho Theatre Live. Beyond stand-up, Anuvab is a prolific writer and creator. He has written Bollywood films Loins of Punjab Presents and The President Is Coming, the latter developed by London's Royal Court Theatre. His play Chaos Theory became a bestselling novel, and he has created multiple sitcoms for Amazon Prime Video India. His work has been featured internationally in Time Magazine, CNN, BBC, The Wall Street Journal, The Economist, Financial Times and The New Yorker, among many others. On screen and radio, his credits include QI (BBC2), Big Asian Stand-Up (BBC2), The News Quiz (BBC Radio 4), The New Year's Eve International Show (BBC World Service) and Al Murray: Why Does Everyone Hate The British Empire (Sky History). He is also a regular contributor to the global satirical podcast The Bugle and writes a monthly column for The Economic Times. India's most intelligent comedian -- The New York Times     India's answer to British wit -- BBC     Spectacular ★★★★ -- India Today     Brilliant ★★★★ -- Time Out Mumbai     One of India's funniest people -- CNN     Very clever, very funny -- The Guardian ----- Chris Darwa is one of our local heavyweights. He's keen and commited to making you all laugh in English, and he's good at doing it. His current tour is selling well after his previous successful european tours in 2024 and 2023. Known for punch heavy anecdotes,  high energy, playful crowd work and brutal honesty, Chris's shows are always a unique experience and not to be missed! ----- Bianca Lala - Bianca Lala, a Prague-based stand-up comedian, producer, and writer, transforms life's absurdities into painfully relatable jokes. A semi-finalist in Prague's Funniest competition 2025 and featured on Red Mic, she produces weekly stand-up shows tackling everything from dating and sex to dark humor rooted in life's tragedies. Having performed in various sketchy venues across Europe--and surviving--Bianca recently appeared on national television in her native Romania (the sketchiest of all). As the co-founder of Unhinged Theatre, she also works behind the scenes, writing scripts and crafting chaotic yet entertaining plotlines. Spread the word and check out our future shows at www.comedykiss.ch and follow us on Instagram at @comedykiss.ch. ----- FAQ and More Info: Q: What time should I arrive?     A: Doors open at 18:30. Arrive early to grab a drink, order some food, and secure the best seats. Q: What language is the show?     A: The show is in English. Q: What kind of comedy will I see? Will it be offensive?     A: We can't guarantee you won't be offended since this is very relative. In the show description, you'll find links to help you decide if that comedian is right for you. Ultimately, our goal is to bring good times and laughter to Switzerland and not to hurt feelings. Q: Can I buy tickets at the door?     A: Yes! Via Twint, but only if there are no shows or tickets are still available  Note: Photos of the show will be taken for promotional purposes.",
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "name": "Early-Bird Sale",
+                  "price": "32.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-10-10T19:30:00+0200",
+                  "priceValidUntil": "2026-10-10T21:30:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/the-big-comedy-kiss-with-anuvab-pal-7428806130975924286.html"
+                },
+                {
+                  "@type": "Offer",
+                  "name": "Regular",
+                  "price": "42.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-10-10T19:30:00+0200",
+                  "priceValidUntil": "2026-10-10T21:30:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/the-big-comedy-kiss-with-anuvab-pal-7428806130975924286.html"
+                },
+                {
+                  "@type": "Offer",
+                  "name": "Group Discount (4+ people)",
+                  "price": "36.0",
+                  "priceCurrency": "CHF",
+                  "validFrom": "2026-10-10T19:30:00+0200",
+                  "priceValidUntil": "2026-10-10T21:30:00+0200",
+                  "availability": "https://schema.org/InStock",
+                  "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/the-big-comedy-kiss-with-anuvab-pal-7428806130975924286.html"
+                }
+              ],
+              "organizer": {
+                "@type": "Organization",
+                "name": "Shane Norton",
+                "logo": "https://eventfrog.ch/upload/rm/co/me/comedy-kiss-switzerland-7GE3JZ7L.webp"
+              },
+              "keywords": "Theatre & Stage / Comedy & Cabaret, SOHO, Zürich, 10.10.2026"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/bi/gc/big-comedy-kiss-may-2026-anuvab-pal-IJRTN0DW.webp",
+              "copyrightNotice": "Shane Norton",
+              "uploadDate": "2026-02-15T15:23:31+0100"
+            },
+            {
+              "@type": "ImageObject",
+              "contentUrl": "https://eventfrog.ch/upload/rm/co/me/comedy-kiss-switzerland-7GE3JZ7L.webp",
+              "copyrightNotice": "Shane Norton",
+              "uploadDate": "2019-09-27T14:44:14+0200"
+            }
+          ]
+        ],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/the-big-comedy-kiss-with-anuvab-pal-7428806130975924286.html",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "url": "https://eventfrog.ch/en/p/groups/down-under-comedy-7411510651711957320.html",
+      "title": "Tickets Event group until Jun 23 Down Under Comedy 6 Events ROBIN's Coffee, Zürich (CH)",
+      "path": "/en/p/groups/down-under-comedy-7411510651711957320.html",
+      "detail": {
+        "scraped_at": "2026-04-11T16:06:07.983576+00:00",
+        "kind": "event_page",
+        "url": "https://eventfrog.ch/en/p/groups/down-under-comedy-7411510651711957320.html",
+        "host": "eventfrog.ch",
+        "title_tag": "Down Under Comedy in Zürich | Comedy & Cabaret",
+        "og_title": "Down Under Comedy in Zürich | Comedy & Cabaret",
+        "h1": "",
+        "ld_json": [],
+        "meta": {
+          "url": "https://eventfrog.ch/en/p/groups/down-under-comedy-7411510651711957320.html",
+          "warnings": []
+        }
+      }
+    }
+  ]
+}
