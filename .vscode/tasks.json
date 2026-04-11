@@ -1,0 +1,48 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "CollectData (ein Skript: Setup + Scraping)",
+      "type": "shell",
+      "command": "\"${command:python.interpreterPath}\" \"${workspaceFolder}/collect_data.py\"",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "CollectData: beide Eventfrog-Quellen",
+      "type": "shell",
+      "command": "\"${command:python.interpreterPath}\" \"${workspaceFolder}/collect_data.py\" listing --source eventfrog eventfrog_de",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Quellen anzeigen (list-sources)",
+      "type": "shell",
+      "command": "\"${command:python.interpreterPath}\" \"${workspaceFolder}/collect_data.py\" list-sources",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
