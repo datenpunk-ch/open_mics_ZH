@@ -76,11 +76,21 @@ def main() -> int:
 
     print(f"[geocode] Geocoding {len(missing)} new locations…")
     for i, loc in enumerate(missing, start=1):
-        query = loc
+        candidates: list[str] = []
+        candidates.append(loc)
+        if "," in loc:
+            candidates.append(loc.split(",", 1)[1].strip())
         if "zürich" not in loc.lower() and "zurich" not in loc.lower():
-            query = f"{loc}, Zürich, Switzerland"
+            candidates.append(f"{loc}, Zürich, Switzerland")
+        # Deduplicate while preserving order
+        seen: set[str] = set()
+        candidates = [c for c in candidates if c and not (c in seen or seen.add(c))]
         try:
-            res = _nominatim_geocode(query)
+            res = None
+            for cand in candidates:
+                res = _nominatim_geocode(cand)
+                if res:
+                    break
         except Exception as e:
             print(f"[geocode] {i}/{len(missing)} FAILED: {loc} ({e})")
             res = None

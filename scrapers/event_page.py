@@ -56,6 +56,7 @@ def payload_from_event_html(url: str, html: str, meta_warnings: list[str]) -> di
     parsed_host = (urlparse(url).hostname or "").lower()
     soup = BeautifulSoup(html, "html.parser")
     og_title = soup.select_one('meta[property="og:title"]')
+    og_image = soup.select_one('meta[property="og:image"]')
     title_tag = soup.find("title")
     h1 = soup.find("h1")
     text_preview = _visible_text_preview(soup)
@@ -67,6 +68,7 @@ def payload_from_event_html(url: str, html: str, meta_warnings: list[str]) -> di
         "host": parsed_host,
         "title_tag": (title_tag.get_text(strip=True) if title_tag else "") or "",
         "og_title": (og_title.get("content") or "").strip() if og_title else "",
+        "og_image": (og_image.get("content") or "").strip() if og_image else "",
         "h1": (h1.get_text(" ", strip=True) if h1 else "") or "",
         "text_preview": text_preview,
         "ld_json": _parse_ld_json_scripts(html),

@@ -38,5 +38,50 @@
     "lat": 47.3757594,
     "lon": 8.5444649,
     "display_name": "Robin's coffee, Zähringerstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8092, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "CAB StuZ (ETH Building), Universitätstrasse 6, 8006, Zürich": {
+    "lat": 47.378314,
+    "lon": 8.548805,
+    "display_name": "food&lab, 6, Universitätstrasse, Oberstrass, Kreis 6, Zürich, Bezirk Zürich, Zürich, 8092, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "Caverno Bülach, Feldstrasse 86, 8180, Bülach": {
+    "lat": 47.508154,
+    "lon": 8.5400783,
+    "display_name": "86, Feldstrasse, Bülach, Bezirk Bülach, Zürich, 8180, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "Cooper's Pub, Schaffhauserstrasse 359, 8050, Zürich": {
+    "lat": 47.410739,
+    "lon": 8.5463648,
+    "display_name": "359, Schaffhauserstrasse, Oerlikon, Kreis 11, Zürich, Bezirk Zürich, Zürich, 8050, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "ROBIN'S bar & coffee, Zürich (CH)": {
+    "lat": 47.3744489,
+    "lon": 8.5410422,
+    "display_name": "Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "ROBIN's Coffee, Zähringerstrasse 33, 8001, Zürich": {
+    "lat": 47.3757274,
+    "lon": 8.5444631,
+    "display_name": "Citystudios, 33, Zähringerstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "Regenbogen Bar, Rosengasse 6, 8001, Zürich": {
+    "lat": 47.3730958,
+    "lon": 8.5432094,
+    "display_name": "6, Rosengasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "SOHO, Guthirtstrasse 3, 8037, Zürich": {
+    "lat": 47.3945408,
+    "lon": 8.5274664,
+    "display_name": "3, Guthirtstrasse, Wipkingen, Kreis 10, Zürich, Bezirk Zürich, Zürich, 8037, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "VIOR, Zürich (CH)": {
+    "lat": 47.3744489,
+    "lon": 8.5410422,
+    "display_name": "Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "Volkshaus Zürich  Weisser Saal, Stauffacherstrasse 60, 8004, Zürich": {
+    "lat": 47.375496,
+    "lon": 8.5271125,
+    "display_name": "60, Stauffacherstrasse, Langstrasse, Kreis 4, Zürich, Bezirk Zürich, Zürich, 8004, Schweiz/Suisse/Svizzera/Svizra"
   }
 }

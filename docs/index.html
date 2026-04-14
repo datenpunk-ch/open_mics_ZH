@@ -59,6 +59,22 @@
         height: calc(100vh - 140px);
         min-height: 520px;
       }
+      .banner {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        padding: 10px 12px;
+        background: rgba(0, 0, 0, 0.74);
+        color: var(--text);
+        font-size: 12px;
+        border-bottom: 1px solid rgba(255,255,255,0.18);
+        z-index: 5;
+        backdrop-filter: blur(6px);
+      }
+      .banner code {
+        color: var(--text);
+      }
       .controls {
         padding: 12px;
         border-bottom: 1px solid var(--border);
@@ -94,6 +110,13 @@
       .item {
         padding: 10px 0;
         border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+      .item.active {
+        background: rgba(77, 163, 255, 0.12);
+        border-bottom-color: rgba(77, 163, 255, 0.35);
+      }
+      .item.active a {
+        color: var(--accent);
       }
       .item a {
         color: var(--text);
@@ -144,7 +167,10 @@
 
     <div class="layout">
       <div class="card">
-        <div id="map"></div>
+        <div style="position: relative;">
+          <div class="banner" id="banner" style="display:none;"></div>
+          <div id="map"></div>
+        </div>
         <div class="footer-note" id="mapNote"></div>
       </div>
 
@@ -175,13 +201,14 @@
       crossorigin=""
     ></script>
     <script>
-      const map = L.map('map', { zoomControl: true }).setView([47.3769, 8.5417], 12);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors'
-      }).addTo(map);
+      let gmap = null;
+      let gInfoWindow = null;
+      let gMarkers = [];
 
-      const markersLayer = L.layerGroup().addTo(map);
+      let lmap = null;
+      let lMarkersLayer = null;
+
+      let _lastActiveId = null;
 
       function norm(s) {
         return (s || '').toString().trim().toLowerCase();
@@ -191,6 +218,29 @@
         if (!selected || selected === '__all__') return true;
         const parts = (cell || '').split(',').map(x => x.trim()).filter(Boolean);
         return parts.includes(selected);
+      }
+
+      function setActive(eventId) {
+        if (_lastActiveId) {
+          const prev = document.getElementById(_lastActiveId);
+          if (prev) prev.classList.remove('active');
+        }
+        _lastActiveId = eventId;
+        const el = document.getElementById(eventId);
+        if (el) {
+          el.classList.add('active');
+          el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
+
+      function clearMarkers() {
+        for (const m of gMarkers) {
+          m.setMap(null);
+        }
+        gMarkers = [];
+        if (lMarkersLayer) {
+          lMarkersLayer.clearLayers();
+        }
       }
 
       function render(events) {
@@ -210,11 +260,14 @@
 
         const items = document.getElementById('items');
         items.innerHTML = '';
-        markersLayer.clearLayers();
+        clearMarkers();
 
-        for (const e of filtered) {
+        for (let idx = 0; idx < filtered.length; idx++) {
+          const e = filtered[idx];
+          const eventId = `event-${idx}`;
           const div = document.createElement('div');
           div.className = 'item';
+          div.id = eventId;
 
           const a = document.createElement('a');
           a.href = e.url || '#';
@@ -241,13 +294,37 @@
           items.appendChild(div);
 
           if (typeof e.lat === 'number' && typeof e.lon === 'number') {
-            const m = L.marker([e.lat, e.lon]);
-            const popup = `<strong>${(e.title || '').replaceAll('<','&lt;')}</strong><br/>` +
-                          `${(e.weekday || '').replaceAll('<','&lt;')} ${(e.time || '').replaceAll('<','&lt;')}<br/>` +
-                          `${(e.location || '').replaceAll('<','&lt;')}<br/>` +
-                          (e.url ? `<a href="${e.url}" target="_blank" rel="noreferrer">Open link</a>` : '');
-            m.bindPopup(popup);
-            m.addTo(markersLayer);
+            if (gmap) {
+              const m = new google.maps.Marker({
+                position: { lat: e.lat, lng: e.lon },
+                map: gmap,
+                title: e.title || '(untitled)',
+              });
+              const safe = (s) => (s || '').toString().replaceAll('<','&lt;');
+              const popup = `<strong>${safe(e.title)}</strong><br/>` +
+                            `${safe(e.weekday)} ${safe(e.time)}<br/>` +
+                            `${safe(e.location)}<br/>` +
+                            (e.url ? `<a href="${e.url}" target="_blank" rel="noreferrer">Open link</a><br/>` : '') +
+                            (e.location ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.location)}" target="_blank" rel="noreferrer">Open in Google Maps</a>` : '');
+              m.addListener('click', () => {
+                setActive(eventId);
+                if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow();
+                gInfoWindow.setContent(popup);
+                gInfoWindow.open({ anchor: m, map: gmap });
+              });
+              gMarkers.push(m);
+            } else if (lmap && lMarkersLayer) {
+              const safe = (s) => (s || '').toString().replaceAll('<','&lt;');
+              const popup = `<strong>${safe(e.title)}</strong><br/>` +
+                            `${safe(e.weekday)} ${safe(e.time)}<br/>` +
+                            `${safe(e.location)}<br/>` +
+                            (e.url ? `<a href="${e.url}" target="_blank" rel="noreferrer">Open link</a><br/>` : '') +
+                            (e.location ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.location)}" target="_blank" rel="noreferrer">Open in Google Maps</a>` : '');
+              const marker = L.marker([e.lat, e.lon]);
+              marker.bindPopup(popup);
+              marker.on('click', () => setActive(eventId));
+              marker.addTo(lMarkersLayer);
+            }
           }
         }
 
@@ -256,14 +333,68 @@
           `Pins: ${pinned} / ${filtered.length} (run build-time geocoding to increase coverage).`;
       }
 
+      function getGoogleMapsKey() {
+        const params = new URLSearchParams(window.location.search);
+        const fromQuery = params.get('gmaps_key');
+        if (fromQuery) return fromQuery;
+        try {
+          return window.localStorage.getItem('open_mics_gmaps_key') || '';
+        } catch (e) {
+          return '';
+        }
+      }
+
+      function showBanner(html) {
+        const b = document.getElementById('banner');
+        b.style.display = 'block';
+        b.innerHTML = html;
+      }
+
       async function boot() {
         const resp = await fetch('./data/events.json', { cache: 'no-cache' });
         const payload = await resp.json();
         const events = payload.events || [];
 
+        const key = getGoogleMapsKey();
+        if (!key) {
+          // OSM fallback map
+          lmap = L.map('map', { zoomControl: true }).setView([47.3769, 8.5417], 12);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+          }).addTo(lmap);
+          lMarkersLayer = L.layerGroup().addTo(lmap);
+
+          showBanner(
+            `Using OpenStreetMap (no Google key). To enable Google basemap add <code>?gmaps_key=YOUR_KEY</code> ` +
+            `or set <code>localStorage.setItem('open_mics_gmaps_key','YOUR_KEY')</code>.`
+          );
+          document.getElementById('weekday').addEventListener('change', () => render(events));
+          document.getElementById('q').addEventListener('input', () => render(events));
+          render(events);
+          return;
+        }
+
+        // Load Google Maps JS API dynamically.
+        await new Promise((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&v=weekly`;
+          s.async = true;
+          s.onload = resolve;
+          s.onerror = reject;
+          document.head.appendChild(s);
+        });
+
+        gmap = new google.maps.Map(document.getElementById('map'), {
+          center: { lat: 47.3769, lng: 8.5417 },
+          zoom: 12,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: true,
+        });
+
         document.getElementById('weekday').addEventListener('change', () => render(events));
         document.getElementById('q').addEventListener('input', () => render(events));
-
         render(events);
       }
 

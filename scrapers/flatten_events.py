@@ -601,6 +601,44 @@ def _event_node_from_detail(detail: dict | None) -> dict | None:
     return None
 
 
+def _image_url_from_detail(detail: dict | None, node: dict | None) -> str:
+    # Prefer the schema.org Event image, then any ImageObject contentUrl.
+    if node:
+        img = node.get("image")
+        if isinstance(img, str) and img.strip():
+            return img.strip()
+        if isinstance(img, list):
+            for it in img:
+                if isinstance(it, str) and it.strip():
+                    return it.strip()
+
+    if not detail:
+        return ""
+
+    og_img = detail.get("og_image")
+    if isinstance(og_img, str) and og_img.strip():
+        return og_img.strip()
+
+    ld = detail.get("ld_json")
+    if not isinstance(ld, list):
+        return ""
+
+    for block in ld:
+        if isinstance(block, dict):
+            blocks = [block]
+        elif isinstance(block, list):
+            blocks = [x for x in block if isinstance(x, dict)]
+        else:
+            continue
+        for obj in blocks:
+            t = str(obj.get("@type") or "").strip()
+            if t.lower() == "imageobject":
+                cu = obj.get("contentUrl")
+                if isinstance(cu, str) and cu.strip():
+                    return cu.strip()
+    return ""
+
+
 def _titel_event(node: dict | None, detail: dict | None, listing_title: str) -> str:
     if node:
         n = (node.get("name") or "").strip()
@@ -679,6 +717,10 @@ def _flatten_row_and_key(event: dict) -> tuple[dict[str, str], str]:
 
     titel_event = _titel_event(node, detail, title)
     series_key = _series_identity_key(title=title, detail=detail, node=node)
+    desc_preview = ""
+    if detail and isinstance(detail.get("text_preview"), str):
+        desc_preview = re.sub(r"\s+", " ", detail["text_preview"]).strip()[:2000]
+    image_url = _image_url_from_detail(detail, node)
 
     row = {
         "Weekday": weekday,
@@ -690,6 +732,8 @@ def _flatten_row_and_key(event: dict) -> tuple[dict[str, str], str]:
         "Event_title": titel_event,
         "URL": url,
         "Listing_title": title[:200],
+        "Description_preview": desc_preview,
+        "Image_url": image_url,
     }
     return row, series_key
 
@@ -820,6 +864,8 @@ def cmd_flatten(args: argparse.Namespace) -> int:
         "Event_title",
         "URL",
         "Listing_title",
+        "Description_preview",
+        "Image_url",
     ]
 
     if args.output:
