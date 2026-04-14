@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
+from datetime import datetime, timezone
 
 import pandas as pd
 
@@ -34,7 +35,7 @@ def _norm(s: str) -> str:
     return " ".join(str(s or "").split()).strip()
 
 
-def _write_index_html(path: Path) -> None:
+def _write_index_html(path: Path, *, build_stamp: str) -> None:
     # Static page with optional Google Maps basemap (keyed) and free OSM fallback (Leaflet).
     html = f"""<!doctype html>
 <html lang="en">
@@ -42,6 +43,12 @@ def _write_index_html(path: Path) -> None:
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Open Mics Zurich</title>
+    <meta http-equiv="Cache-Control" content="no-store, max-age=0" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:opsz,wght@7..72,400,600,700&family=Karla:ital,wght@0,400,500,600;1,400&family=JetBrains+Mono:wght@400,600&display=swap" rel="stylesheet">
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -50,52 +57,87 @@ def _write_index_html(path: Path) -> None:
     />
     <style>
       :root {{
-        --bg: #0b0c10;
-        --panel: #12141b;
-        --text: #e9eefb;
-        --muted: #a8b2c7;
-        --border: rgba(255,255,255,0.12);
-        --accent: #4da3ff;
+        --color-bg: #ffffff;
+        --color-bg-soft: #f7f8f9;
+        --color-ink: #0f0f0f;
+        --color-ink-body: #171717;
+        --color-muted: #5f5f5f;
+        --color-rule: #d9dde1;
+        --color-accent: #3a677a;
+        --color-accent-hover: #2f5a6b;
+
+        --font-display: "Spectral", "Georgia", serif;
+        --font-ui: "Karla", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", ui-monospace, monospace;
       }}
       body {{
         margin: 0;
-        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-        background: var(--bg);
-        color: var(--text);
+        font-family: var(--font-ui);
+        background: var(--color-bg);
+        color: var(--color-ink-body);
+        line-height: 1.55;
+      }}
+      a {{
+        color: var(--color-accent);
+        text-decoration-color: var(--color-accent);
+        text-underline-offset: 3px;
+      }}
+      a:hover {{
+        color: var(--color-accent-hover);
+      }}
+      a:focus-visible {{
+        outline: 2px solid var(--color-accent);
+        outline-offset: 3px;
+      }}
+      .skip-link {{
+        position: absolute;
+        left: 12px;
+        top: 10px;
+        padding: 8px 10px;
+        background: var(--color-bg);
+        border: 1px solid var(--color-rule);
+        color: var(--color-ink);
+        font-family: var(--font-mono);
+        font-size: 12px;
+        text-decoration: none;
+        transform: translateY(-150%);
+      }}
+      .skip-link:focus {{
+        transform: translateY(0);
       }}
       header {{
-        padding: 14px 16px;
-        border-bottom: 1px solid var(--border);
-        background: linear-gradient(180deg, rgba(18,20,27,0.98), rgba(11,12,16,0.98));
-        position: sticky;
-        top: 0;
-        z-index: 10;
+        padding: 22px 28px 16px 28px;
+        border-bottom: 1px solid var(--color-rule);
+        background: var(--color-bg);
       }}
       header h1 {{
-        font-size: 16px;
-        margin: 0 0 6px 0;
-        letter-spacing: 0.2px;
+        font-family: var(--font-display);
+        font-size: 42px;
+        line-height: 1.05;
+        margin: 0 0 10px 0;
+        letter-spacing: -0.4px;
+        color: var(--color-ink);
       }}
       header .sub {{
-        color: var(--muted);
-        font-size: 12px;
+        color: var(--color-muted);
+        font-size: 14px;
+        max-width: 42rem;
       }}
       .layout {{
         display: grid;
         grid-template-columns: 1.35fr 0.85fr;
-        gap: 12px;
-        padding: 12px;
+        gap: 18px;
+        padding: 18px 28px 28px 28px;
       }}
       .card {{
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        overflow: hidden;
+        background: transparent;
+        border: none;
         min-height: 200px;
       }}
       #map {{
         height: calc(100vh - 140px);
         min-height: 520px;
+        border: 1px solid var(--color-rule);
       }}
       .banner {{
         position: absolute;
@@ -103,88 +145,109 @@ def _write_index_html(path: Path) -> None:
         right: 0;
         top: 0;
         padding: 10px 12px;
-        background: rgba(0, 0, 0, 0.74);
-        color: var(--text);
+        background: rgba(255,255,255,0.92);
+        color: var(--color-ink);
         font-size: 12px;
-        border-bottom: 1px solid rgba(255,255,255,0.18);
+        border-bottom: 1px solid var(--color-rule);
         z-index: 5;
         backdrop-filter: blur(6px);
       }}
       .banner code {{
-        color: var(--text);
+        color: var(--color-ink);
+        font-family: var(--font-mono);
       }}
       .controls {{
-        padding: 12px;
-        border-bottom: 1px solid var(--border);
+        padding: 12px 0 14px 0;
+        border-bottom: 1px solid var(--color-rule);
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 10px;
       }}
       .controls label {{
         display: block;
-        font-size: 12px;
-        color: var(--muted);
+        font-size: 11px;
+        color: var(--color-muted);
+        font-family: var(--font-mono);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
         margin-bottom: 6px;
       }}
       .controls select, .controls input {{
         width: 100%;
         padding: 10px 10px;
-        border-radius: 10px;
-        border: 1px solid var(--border);
-        background: rgba(255,255,255,0.04);
-        color: var(--text);
+        border-radius: 0;
+        border: 1px solid var(--color-rule);
+        background: var(--color-bg-soft);
+        color: var(--color-ink);
         outline: none;
+        font-family: var(--font-ui);
       }}
       .controls option {{
-        background: #0f1117;
-        color: var(--text);
+        background: var(--color-bg);
+        color: var(--color-ink);
       }}
       .list {{
-        padding: 8px 12px 12px 12px;
+        padding: 10px 0 12px 0;
         height: calc(100vh - 140px);
         min-height: 520px;
         overflow: auto;
       }}
       .item {{
         padding: 10px 0;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
+        border-bottom: 1px solid var(--color-rule);
       }}
       .item.active {{
-        background: rgba(77, 163, 255, 0.12);
-        border-bottom-color: rgba(77, 163, 255, 0.35);
+        background: transparent;
+        outline: 2px solid rgba(58, 103, 122, 0.25);
+        outline-offset: 4px;
       }}
       .item.active a {{
-        color: var(--accent);
+        color: var(--color-accent);
       }}
       .item a {{
-        color: var(--text);
+        color: var(--color-ink);
         text-decoration: none;
+        font-family: var(--font-display);
+        font-size: 18px;
+        line-height: 1.25;
       }}
       .item a:hover {{
-        text-decoration: underline;
-        color: var(--accent);
+        color: var(--color-accent-hover);
       }}
       .meta {{
-        color: var(--muted);
+        color: var(--color-muted);
         font-size: 12px;
         margin-top: 4px;
         line-height: 1.35;
+        font-family: var(--font-mono);
+      }}
+      .meta-strong {{
+        color: var(--color-ink);
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.02em;
+        margin-top: 6px;
+        font-weight: 600;
       }}
       .pill {{
         display: inline-block;
         font-size: 11px;
-        border: 1px solid rgba(255,255,255,0.14);
-        border-radius: 999px;
-        padding: 2px 8px;
-        color: var(--muted);
+        border: 1px solid var(--color-rule);
+        border-radius: 0;
+        padding: 2px 6px;
+        color: var(--color-muted);
         margin-right: 6px;
         margin-top: 6px;
+        font-family: var(--font-mono);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
       }}
       .footer-note {{
         padding: 10px 12px;
-        color: var(--muted);
+        color: var(--color-muted);
         font-size: 12px;
-        border-top: 1px solid var(--border);
+        border-top: 1px solid var(--color-rule);
+        font-family: var(--font-mono);
       }}
       @media (max-width: 980px) {{
         .layout {{
@@ -198,9 +261,10 @@ def _write_index_html(path: Path) -> None:
     </style>
   </head>
   <body>
+    <a class="skip-link" href="#items">Skip to list</a>
     <header>
       <h1>Open Mics Zurich</h1>
-      <div class="sub">Filter by weekday and explore locations on the map. Data comes from <code>data/processed/events_flat.csv</code>.</div>
+      <div class="sub">Recurring open mic events in and around Zürich. Filter by weekday and explore locations on the map. <span style="font-family:var(--font-mono); color:var(--color-muted);">Build: {build_stamp}</span></div>
     </header>
 
     <div class="layout">
@@ -239,6 +303,7 @@ def _write_index_html(path: Path) -> None:
       crossorigin=""
     ></script>
     <script>
+      const BUILD_STAMP = "{build_stamp}";
       let gmap = null;
       let gInfoWindow = null;
       let gMarkers = [];
@@ -314,11 +379,15 @@ def _write_index_html(path: Path) -> None:
           a.textContent = e.title || '(untitled)';
           div.appendChild(a);
 
-          const meta = document.createElement('div');
-          meta.className = 'meta';
-          const left = [e.weekday, e.time, e.location].filter(Boolean).join(' · ');
-          meta.textContent = left;
-          div.appendChild(meta);
+          const mt = document.createElement('div');
+          mt.className = 'meta-strong';
+          mt.textContent = [e.weekday, e.time].filter(Boolean).join(' · ');
+          div.appendChild(mt);
+
+          const ml = document.createElement('div');
+          ml.className = 'meta';
+          ml.textContent = (e.location || '');
+          div.appendChild(ml);
 
           const pills = document.createElement('div');
           for (const p of [e.language, e.regularity, e.cost].filter(Boolean)) {{
@@ -358,7 +427,13 @@ def _write_index_html(path: Path) -> None:
                             `${{safe(e.location)}}<br/>` +
                             (e.url ? `<a href="${{e.url}}" target="_blank" rel="noreferrer">Open link</a><br/>` : '') +
                             (e.location ? `<a href="https://www.google.com/maps/search/?api=1&query=${{encodeURIComponent(e.location)}}" target="_blank" rel="noreferrer">Open in Google Maps</a>` : '');
-              const marker = L.marker([e.lat, e.lon]);
+              const marker = L.circleMarker([e.lat, e.lon], {{
+                radius: 7,
+                color: '#3a677a',
+                weight: 2,
+                fillColor: '#3a677a',
+                fillOpacity: 0.45,
+              }});
               marker.bindPopup(popup);
               marker.on('click', () => setActive(eventId));
               marker.addTo(lMarkersLayer);
@@ -389,7 +464,7 @@ def _write_index_html(path: Path) -> None:
       }}
 
       async function boot() {{
-        const resp = await fetch('./data/events.json', {{ cache: 'no-cache' }});
+        const resp = await fetch(`./data/events.json?v=${{encodeURIComponent(BUILD_STAMP)}}`, {{ cache: 'no-cache' }});
         const payload = await resp.json();
         const events = payload.events || [];
 
@@ -516,7 +591,8 @@ def main() -> int:
         encoding="utf-8",
     )
 
-    _write_index_html(DOCS_DIR / "index.html")
+    build_stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    _write_index_html(DOCS_DIR / "index.html", build_stamp=build_stamp)
     (DOCS_DIR / ".nojekyll").write_text("", encoding="utf-8")
 
     print(f"[export-site] Wrote {DOCS_DIR / 'index.html'}")

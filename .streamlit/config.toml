@@ -1,0 +1,8 @@
+[theme]
+# Palette from docs/STYLE_CI_GUIDE.md
+primaryColor = "#3a677a"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f7f8f9"
+textColor = "#171717"
+font = "sans serif"
+

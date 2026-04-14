@@ -1,11 +1,11 @@
 {
   "generated_from": "G:/My Drive/DATENPUNK/Open_Mics/data/processed/events_flat.csv",
-  "events_total": 10,
+  "events_total": 14,
   "events_missing_coords": 0,
   "events": [
     {
       "weekday": "Thursday",
-      "location": "Auer & Co., Zürich, Zürich (CH)",
+      "location": "Auer & Co., Auer & Co 131, 8005 Zürich",
       "time": "19:00",
       "cost": "",
       "language": "English",
@@ -17,10 +17,10 @@
     },
     {
       "weekday": "Tuesday",
-      "location": "Mama Shelter, Zürich (CH)",
+      "location": "Mama Shelter, Mama Shelter 44, 8050 Zürich",
       "time": "20:00",
       "cost": "",
-      "language": "",
+      "language": "English",
       "regularity": "recurring",
       "title": "Color Comedy Open Mic: Zürich’s Funniest Stand-Up in Zürich",
       "url": "https://eventfrog.ch/en/p/groups/color-comedy-open-mic-zuerichs-funniest-stand-up-7405948073317250257.html",
@@ -29,7 +29,7 @@
     },
     {
       "weekday": "Wednesday",
-      "location": "Auer & Co., Zürich, Zürich (CH)",
+      "location": "Auer & Co., Auer & Co 131, 8005 Zürich",
       "time": "19:30",
       "cost": "",
       "language": "English",
@@ -41,10 +41,10 @@
     },
     {
       "weekday": "Tuesday, Friday, Sunday",
-      "location": "VIOR, Zürich (CH)",
+      "location": "VIOR, Zürich",
       "time": "15:00",
       "cost": "",
-      "language": "Swiss German",
+      "language": "German",
       "regularity": "recurring",
       "title": "Dini Muetter Comedy - Open Mic in Zürich",
       "url": "https://eventfrog.ch/en/p/groups/dini-muetter-comedy-open-mic-7402400053803883617.html",
@@ -52,20 +52,32 @@
       "lon": 8.5410422
     },
     {
+      "weekday": "Sunday",
+      "location": "ROBIN's Coffee, Citystudios 33, 8001 Zürich",
+      "time": "19:00",
+      "cost": "CHF 0.0 / CHF 20.0",
+      "language": "English",
+      "regularity": "recurring",
+      "title": "Pulp Non-Fiction Storytelling Open Mic Zurich",
+      "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/pulp-non-fiction-storytelling-open-mic-zurich-7447274059618853866.html",
+      "lat": 47.3757274,
+      "lon": 8.5444631
+    },
+    {
       "weekday": "Tuesday",
-      "location": "Gleis, Zürich (CH)",
+      "location": "Gleis, Zürich 8031, 8031 Zürich",
       "time": "19:30",
       "cost": "",
       "language": "English",
       "regularity": "recurring",
       "title": "Funny Women Zurich - Comedy Open Mic in Zürich",
       "url": "https://eventfrog.ch/en/p/groups/funny-women-zurich-comedy-open-mic-7256690401515381606.html",
-      "lat": 47.381465,
-      "lon": 8.5296408
+      "lat": 47.4494451,
+      "lon": 8.4489724
     },
     {
       "weekday": "Monday",
-      "location": "Regenbogen Bar, Rosengasse 6, 8001, Zürich",
+      "location": "Regenbogen Bar, Rosengasse 6, 8001 Zürich",
       "time": "20:00",
       "cost": "CHF 5.0 / CHF 8.0",
       "language": "English",
@@ -77,19 +89,19 @@
     },
     {
       "weekday": "Thursday",
-      "location": "ROBIN's Coffee, Zürich (CH)",
+      "location": "ROBIN's Coffee, Zürich 8092, 8092 Zürich",
       "time": "19:30",
       "cost": "",
       "language": "English",
       "regularity": "recurring",
       "title": "IN YOUR FACE - English Stand-Up Comedy Open Mic in Zurich in Zürich",
       "url": "https://eventfrog.ch/en/p/groups/in-your-face-english-stand-up-comedy-open-mic-in-zurich-7132091334890862636.html",
-      "lat": 47.3757594,
-      "lon": 8.5444649
+      "lat": 47.3744489,
+      "lon": 8.5410422
     },
     {
       "weekday": "Thursday, Saturday",
-      "location": "Monroe, Zürich (CH)",
+      "location": "Monroe, Monroe 26, 8004 Zürich",
       "time": "20:00",
       "cost": "",
       "language": "Spanish",
@@ -101,7 +113,7 @@
     },
     {
       "weekday": "Tuesday",
-      "location": "ROBIN'S bar & coffee, Zürich (CH)",
+      "location": "ROBIN'S bar & coffee, Zürich",
       "time": "19:30",
       "cost": "",
       "language": "English",
@@ -112,8 +124,20 @@
       "lon": 8.5410422
     },
     {
+      "weekday": "Sunday",
+      "location": "Cooper's Pub, Schaffhauserstrasse 359, 8050 Zürich",
+      "time": "19:30",
+      "cost": "CHF 10.0 / CHF 0.0",
+      "language": "English",
+      "regularity": "recurring",
+      "title": "Sunday Comedy Night at Cooper's",
+      "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/sunday-comedy-night-at-cooper-s-7445944148354413444.html",
+      "lat": 47.410739,
+      "lon": 8.5463648
+    },
+    {
       "weekday": "Tuesday",
-      "location": "KON-TIKI, Niederdorfstrasse 24, 8001, Zürich",
+      "location": "KON-TIKI, Kon-Tiki 24, 8001 Zürich",
       "time": "19:30",
       "cost": "CHF 15.0",
       "language": "English",
@@ -122,6 +146,30 @@
       "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-14th-7441817235675421515.html",
       "lat": 47.3738276,
       "lon": 8.5437708
+    },
+    {
+      "weekday": "Thursday",
+      "location": "Amboss Rampe, Amboss Rampe 80, 8005 Zürich",
+      "time": "21:00",
+      "cost": "",
+      "language": "German",
+      "regularity": "recurring",
+      "title": "AMBOSS JAM in Zürich",
+      "url": "https://eventfrog.ch/de/p/gruppen/amboss-jam-7433173021001578931.html",
+      "lat": 47.3811645,
+      "lon": 8.5318876
+    },
+    {
+      "weekday": "Friday",
+      "location": "GZ Wollishofen Bachstrasse 7 Saal 60, Gemeinschaftszentrum Wollishofen 7, 8038 Zürich",
+      "time": "19:00",
+      "cost": "kostenlos",
+      "language": "German",
+      "regularity": "recurring",
+      "title": "Open Mic - GZ Wollishofen - Zürcher Gemeinschaftszentren",
+      "url": "https://gz-zh.ch/gz-wollishofen/angebote/open-mic/",
+      "lat": 47.345012,
+      "lon": 8.5358319
     }
   ]
 }
