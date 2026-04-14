@@ -1,0 +1,42 @@
+{
+  "Auer & Co., Zürich (CH)": {
+    "lat": 47.38478,
+    "lon": 8.5336683,
+    "display_name": "Auer & Co, 131, Sihlquai, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "Auer & Co., Zürich, Zürich (CH)": {
+    "lat": 47.38478,
+    "lon": 8.5336683,
+    "display_name": "Auer & Co, 131, Sihlquai, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "ComedyHaus, Albisriederstrasse 16, 8003, Zürich": {
+    "lat": 47.3782065,
+    "lon": 8.508589,
+    "display_name": "ComedyHaus, 16, Albisriederstrasse, Sihlfeld, Kreis 3, Zürich, Bezirk Zürich, Zürich, 8003, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "Gleis, Zürich (CH)": {
+    "lat": 47.381465,
+    "lon": 8.5296408,
+    "display_name": "Gleis, Zollstrasse, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8031, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "KON-TIKI, Niederdorfstrasse 24, 8001, Zürich": {
+    "lat": 47.3738276,
+    "lon": 8.5437708,
+    "display_name": "Kon-Tiki, 24, Niederdorfstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "Mama Shelter, Zürich (CH)": {
+    "lat": 47.410819,
+    "lon": 8.5439538,
+    "display_name": "Mama Shelter, 44, Schulstrasse, Oerlikon, Kreis 11, Zürich, Bezirk Zürich, Zürich, 8050, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "Monroe, Zürich (CH)": {
+    "lat": 47.3774661,
+    "lon": 8.5279076,
+    "display_name": "Monroe, 26, Brauerstrasse, Langstrasse, Kreis 4, Zürich, Bezirk Zürich, Zürich, 8004, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "ROBIN's Coffee, Zürich (CH)": {
+    "lat": 47.3757594,
+    "lon": 8.5444649,
+    "display_name": "Robin's coffee, Zähringerstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8092, Schweiz/Suisse/Svizzera/Svizra"
+  }
+}

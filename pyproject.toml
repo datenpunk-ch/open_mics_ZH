@@ -12,6 +12,10 @@ authors = [{ name = "datenpunk-ch", email = "datenpunk.ch@gmail.com" }]
 dependencies = [
     "beautifulsoup4>=4.12.0",
     "playwright>=1.40.0",
+    "pandas>=2.0.0",
+    "streamlit>=1.33.0",
+    "folium>=0.16.0",
+    "streamlit-folium>=0.20.0",
 ]
 
 [project.urls]
@@ -25,9 +29,13 @@ channels = ["conda-forge"]
 platforms = ["win-64", "linux-64", "osx-arm64", "osx-64"]
 
 [tool.pixi.tasks]
-collect = "python collect_data.py"
-listing = "python collect_data.py listing"
-run = "python collect_data.py run"
+collect = "python src/collect_data.py"
+listing = "python src/collect_data.py listing"
+run = "python src/collect_data.py run"
 enrich = "python -m scrapers enrich"
 flatten = "python -m scrapers flatten"
 playwright-browsers = "playwright install chromium"
+app = "streamlit run src/open_mics_app.py"
+start-app = "python src/start_app.py"
+geocode = "python src/geocode_locations.py"
+export-site = "python src/export_site.py"

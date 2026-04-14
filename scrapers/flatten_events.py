@@ -1,11 +1,14 @@
 """
-Aus angereicherter Listing-JSON eine flache Tabelle bauen:
-Wochentag, Location, Uhrzeit, Kosten, Sprache, Regelmäßigkeit, Titel_Event, URL.
+Build a flat table from enriched listing JSON:
+Weekday, Location, Time, Cost, Comedy_language, Regularity, Event_title, URL.
 
-- Quelle pro URL: schema.org Event in ``detail.ld_json``; Gruppenseiten ohne LD aus
-  Listing-Titel / ``og_title`` ergänzen.
-- **Regelmäßigkeit:** Eventfrog-Gruppen, schema.org-Serienhinweise, und dieselbe Serie
-  (normalisierter Event-Name) **mehrfach im gleichen Export** → ``regelmäßig``.
+- Per URL: schema.org Event in ``detail.ld_json``; group pages without LD are filled
+  from listing title, meta titles, optional ``text_preview`` (see ``event_page``), and URL.
+- **Regularity:** Eventfrog groups, schema.org series hints, and the same normalized series
+  name appearing more than once in one export → ``recurring``.
+- **Slot dedup:** rows with the same normalized event title, location, weekday, and time are
+  merged into one row with ``Regularity`` ``recurring`` (multiple ticket URLs for the same
+  recurring slot).
 """
 
 from __future__ import annotations
@@ -15,32 +18,33 @@ import csv
 import json
 import re
 import sys
+from collections import Counter, OrderedDict
 from datetime import datetime
-from collections import Counter
 from pathlib import Path
 from typing import Any, Iterator
 
-_WEEKDAY_DE = {
-    1: "Montag",
-    2: "Dienstag",
-    3: "Mittwoch",
-    4: "Donnerstag",
-    5: "Freitag",
-    6: "Samstag",
-    7: "Sonntag",
+# ISO weekday 1=Monday … 7=Sunday → English name
+_WEEKDAY_EN: dict[int, str] = {
+    1: "Monday",
+    2: "Tuesday",
+    3: "Wednesday",
+    4: "Thursday",
+    5: "Friday",
+    6: "Saturday",
+    7: "Sunday",
 }
 
-_WEEKDAY_EN_TO_DE = {
-    "monday": "Montag",
-    "tuesday": "Dienstag",
-    "wednesday": "Mittwoch",
-    "thursday": "Donnerstag",
-    "friday": "Freitag",
-    "saturday": "Samstag",
-    "sunday": "Sonntag",
+_GERMAN_WEEKDAY_TO_ISO: dict[str, int] = {
+    "montag": 1,
+    "dienstag": 2,
+    "mittwoch": 3,
+    "donnerstag": 4,
+    "freitag": 5,
+    "samstag": 6,
+    "sonntag": 7,
 }
 
-# schema.org-Name: Datums-Suffixe entfernen, damit mehrere Termine dieselbe Serie treffen
+# schema.org: strip date suffixes so multiple dates cluster as one series
 _DATE_SUFFIX_EN = re.compile(
     r"\s*[-–]\s*("
     r"January|February|March|April|May|June|July|August|September|October|November|December"
@@ -51,6 +55,37 @@ _DATE_SUFFIX_DE = re.compile(
     r"\s*[-–]\s*\d{1,2}\.\s*(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\s*$",
     re.I,
 )
+
+# FAQ / copy: performance language (not website locale)
+_RE_LANG_FAQ = re.compile(
+    r"Q:\s*[^\n]{0,80}?\blanguage\b[^\n]{0,40}?\?\s*A:\s*([^\nQ]{1,120})",
+    re.I,
+)
+_RE_SHOW_IN_EN = re.compile(
+    r"\b(?:show|sets?|event|comedy)\b[^.\n]{0,60}?\bin english\b",
+    re.I,
+)
+_RE_PERFORMED_EN = re.compile(r"\bperformed in english\b", re.I)
+
+_SLUG_LANG_HINTS: tuple[tuple[str, str], ...] = (
+    ("dini-muetter", "Swiss German"),
+    ("comedia-en-espanol", "Spanish"),
+    ("comedia-en-espa", "Spanish"),
+)
+
+_LANG_CODE_MAP: dict[str, str] = {
+    "en": "English",
+    "eng": "English",
+    "de": "German",
+    "ger": "German",
+    "deu": "German",
+    "fr": "French",
+    "fra": "French",
+    "es": "Spanish",
+    "spa": "Spanish",
+    "it": "Italian",
+    "ita": "Italian",
+}
 
 
 def _fold_for_clustering(s: str) -> str:
@@ -71,7 +106,7 @@ def _fold_for_clustering(s: str) -> str:
 
 
 def _normalize_series_name(name: str) -> str:
-    """Datum am Namensende entfernen (z. B. Kon-Tiki Comedy - April 14th)."""
+    """Strip trailing date in the event name (e.g. Kon-Tiki Comedy - April 14th)."""
     if not name or not isinstance(name, str):
         return ""
     n = name.strip()
@@ -81,18 +116,80 @@ def _normalize_series_name(name: str) -> str:
     return n
 
 
-def _wochentag_from_en_listing(text: str) -> str:
+def _weekday_indices_from_text(text: str) -> set[int]:
+    """English, German, common abbreviations (Tue, …), and phrases like ``every Thursday``."""
     if not text:
-        return ""
+        return set()
     tl = text.lower()
-    for en, de in _WEEKDAY_EN_TO_DE.items():
-        if re.search(rf"\b{re.escape(en)}\b", tl):
-            return de
-    return ""
+    out: set[int] = set()
+    # "every (second) Thursday", "jeden Dienstag, Freitag und Sonntag"
+    for m in re.finditer(
+        r"\bevery\s+(?:second\s+|third\s+)?(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b",
+        tl,
+    ):
+        name = m.group(1)
+        i = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday").index(
+            name
+        ) + 1
+        out.add(i)
+    for m in re.finditer(r"\bjeden\s+([^.\n]{1,120})", tl):
+        chunk = m.group(1)
+        for word, iso in _GERMAN_WEEKDAY_TO_ISO.items():
+            if re.search(rf"\b{re.escape(word)}\b", chunk):
+                out.add(iso)
+    # Long English names first (word boundaries)
+    for i, name in enumerate(
+        ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"),
+        start=1,
+    ):
+        if re.search(rf"\b{re.escape(name)}\b", tl):
+            out.add(i)
+    # German weekday words
+    for word, i in _GERMAN_WEEKDAY_TO_ISO.items():
+        if re.search(rf"\b{re.escape(word)}\b", tl):
+            out.add(i)
+    # Abbreviations as separate tokens (Tue, Thu, …)
+    abbrevs = (
+        ("sun", 7),
+        ("mon", 1),
+        ("tue", 2),
+        ("wed", 3),
+        ("thu", 4),
+        ("fri", 5),
+        ("sat", 6),
+    )
+    for abbr, i in abbrevs:
+        if re.search(rf"\b{re.escape(abbr)}\b", tl):
+            out.add(i)
+    return out
+
+
+def _weekday_indices_from_url(url: str, path: str) -> set[int]:
+    blob = f"{url} {path}".lower().replace("-", " ")
+    return _weekday_indices_from_text(blob)
+
+
+def _format_weekday_list(indices: set[int]) -> str:
+    if not indices:
+        return ""
+    ordered = sorted(indices)  # ISO 1=Monday … 7=Sunday
+    return ", ".join(_WEEKDAY_EN[d] for d in ordered)
+
+
+def _detail_meta_blob(detail: dict | None) -> str:
+    if not detail:
+        return ""
+    parts = [
+        str(detail.get("og_title") or ""),
+        str(detail.get("title_tag") or ""),
+        str(detail.get("h1") or ""),
+        str(detail.get("text_preview") or "")[:12000],
+    ]
+    return " ".join(p for p in parts if p).strip()
 
 
 def _location_after_events_count(title: str) -> str:
-    """``16 Events Auer & Co., …`` → Ortsteil nach der Event-Anzahl (Eventfrog-Gruppen)."""
+    """``16 Events Auer & Co., …`` → location segment after the event count (Eventfrog groups)."""
     if not title:
         return ""
     m = re.search(r"\b\d+\s+Events\s+(.+)$", title, re.I)
@@ -102,6 +199,7 @@ def _location_after_events_count(title: str) -> str:
 
 
 def _detail_text_blob(detail: dict | None) -> str:
+    """Shorter meta blob (titles only) for series identity."""
     if not detail:
         return ""
     parts = [
@@ -118,8 +216,8 @@ def _series_identity_key(
     node: dict | None,
 ) -> str:
     """
-    Schlüssel für „gleicher Name / gleiche Serie, mehrere Termine“.
-    Leerer String = nicht für Mehrfach-Zählung verwenden.
+    Key for “same series, multiple dates”.
+    Empty string = do not use for duplicate counting.
     """
     if node:
         raw = (node.get("name") or "").strip()
@@ -127,7 +225,6 @@ def _series_identity_key(
             return _fold_for_clustering(_normalize_series_name(raw))
     blob = _detail_text_blob(detail)
     if blob:
-        # „Open Mic Comedy, Zurich in Zürich | …“
         if " in " in blob:
             base = blob.split(" in ", 1)[0].strip()
             if "|" in base:
@@ -154,23 +251,22 @@ def _series_identity_key(
 
 def _fill_group_row_gaps(
     *,
-    wochentag: str,
+    weekday: str,
     location: str,
-    uhrzeit: str,
+    time_s: str,
     title: str,
     detail: dict | None,
+    url: str,
+    path: str,
 ) -> tuple[str, str, str]:
-    """Ohne LD-JSON: aus Listing-Titel und Meta-Titel ergänzen (pro URL eine vollständigere Zeile)."""
-    blob = _detail_text_blob(detail)
+    """Without full LD-JSON: fill weekday, location, time from listing and page preview."""
+    blob = _detail_meta_blob(detail)
     combined = f"{title} {blob}".strip()
-    if not wochentag:
-        w = _wochentag_from_en_listing(combined)
-        if not w:
-            for day in _WEEKDAY_DE.values():
-                if day.lower() in combined.lower():
-                    w = day
-                    break
-        wochentag = w
+
+    if not weekday:
+        idx = _weekday_indices_from_text(combined) | _weekday_indices_from_url(url, path)
+        weekday = _format_weekday_list(idx)
+
     if not location:
         loc = _location_after_events_count(title)
         if not loc and blob and " in " in blob:
@@ -179,11 +275,13 @@ def _fill_group_row_gaps(
             if tail:
                 loc = tail
         location = loc
-    if not uhrzeit:
+
+    if not time_s:
         m = re.search(r"(\d{1,2}:\d{2})", combined)
         if m:
-            uhrzeit = m.group(1)
-    return wochentag, location, uhrzeit
+            time_s = m.group(1)
+
+    return weekday, location, time_s
 
 
 def _project_root() -> Path:
@@ -202,7 +300,7 @@ def find_latest_enriched(processed_dir: Path) -> Path | None:
 
 
 def _iter_ld_dicts(block: Any) -> Iterator[dict]:
-    """Ein Wert aus ``ld_json`` kann dict, @graph-Objekt oder verschachtelte Liste sein (Eventfrog)."""
+    """A value from ``ld_json`` may be dict, @graph object, or nested list (Eventfrog)."""
     if isinstance(block, list):
         for item in block:
             yield from _iter_ld_dicts(item)
@@ -239,38 +337,36 @@ def _iter_all_ld_dicts(ld_blocks: list[Any]) -> Iterator[dict]:
 
 
 def _recurrence_from_ld(ld_blocks: list[Any] | None) -> str | None:
-    """``regelmäßig`` wenn Serie/Terminplan in schema.org erkennbar, sonst None."""
     if not isinstance(ld_blocks, list):
         return None
     for node in _iter_all_ld_dicts(ld_blocks):
         types_l = [t.lower() for t in _types(node)]
         if any("eventseries" in t for t in types_l):
-            return "regelmäßig"
+            return "recurring"
         if node.get("eventSchedule"):
-            return "regelmäßig"
+            return "recurring"
         if node.get("repeatFrequency") or node.get("repeatCount"):
-            return "regelmäßig"
+            return "recurring"
         se = node.get("subEvent")
         if isinstance(se, list) and len(se) > 1:
-            return "regelmäßig"
+            return "recurring"
         sup = node.get("superEvent")
         if isinstance(sup, dict):
             st = [str(x).lower() for x in _types(sup)]
             if any("eventseries" in t for t in st):
-                return "regelmäßig"
+                return "recurring"
     return None
 
 
 def _recurrence_from_listing(path: str, title: str, url: str) -> str | None:
-    """Eventfrog-Gruppenseiten und Titel-Muster ohne LD-JSON."""
     combined = f"{path} {url}".lower()
     if "/p/groups/" in combined:
-        return "regelmäßig"
+        return "recurring"
     tl = title.lower()
     if "event group" in tl or "veranstaltungsgruppe" in tl or "eventgruppe" in tl:
-        return "regelmäßig"
+        return "recurring"
     if re.search(r"\b\d+\s+events\b", title, re.I):
-        return "regelmäßig"
+        return "recurring"
     return None
 
 
@@ -283,13 +379,13 @@ def _recurrence_label(
     has_event_node: bool,
 ) -> str:
     r = _recurrence_from_listing(path, title, url) or _recurrence_from_ld(ld_blocks)
-    if r == "regelmäßig":
-        return "regelmäßig"
+    if r == "recurring":
+        return "recurring"
     if has_event_node:
-        return "einmalig"
+        return "one-off"
     if url and "eventfrog.ch" in url.lower() and "/p/groups/" not in url.lower():
-        return "einmalig"
-    return "unbekannt"
+        return "one-off"
+    return "unknown"
 
 
 def _parse_iso(dt: str | None) -> datetime | None:
@@ -359,25 +455,138 @@ def _format_offers(offers: Any) -> str:
     return " / ".join(bits) if bits else ""
 
 
-def _guess_language_from_url(url: str) -> str:
-    u = url.lower()
-    if "/de/" in u:
-        return "Deutsch"
-    if "/fr/" in u:
-        return "Französisch"
-    if "/en/" in u:
-        return "Englisch"
+def _normalize_in_language_token(raw: str) -> str:
+    s = raw.strip()
+    if not s:
+        return ""
+    low = s.lower().replace("_", "-")
+    known = {
+        "english": "English",
+        "german": "German",
+        "french": "French",
+        "spanish": "Spanish",
+        "italian": "Italian",
+        "swiss german": "Swiss German",
+    }
+    if low in known:
+        return known[low]
+    base = low.split("-")[0]
+    return _LANG_CODE_MAP.get(base, s)
+
+
+def _language_from_description(desc: str) -> str:
+    if not desc:
+        return ""
+    dl = desc.lower()
+    # English Eventfrog copy (do not use "bringt" — German marketing is common for English shows)
+    if "comedy connection brings" in dl:
+        return "English"
+    if re.search(r"is the show in English\?\s*→\s*Yes", desc, re.I):
+        return "English"
+    if re.search(
+        r"is the show really in English\?\s*Absolutely\.",
+        desc,
+        re.I,
+    ):
+        return "English"
+    if re.search(r"\ball performances are in English\b", desc, re.I):
+        return "English"
+    for m in _RE_LANG_FAQ.finditer(desc):
+        frag = (m.group(1) or "").strip()
+        low = frag.lower()
+        if "spanish" in low or "español" in low or "espanol" in low:
+            return "Spanish"
+        if "french" in low or "français" in low or "francais" in low:
+            return "French"
+        if "german" in low and "swiss" in low:
+            return "Swiss German"
+        if "german" in low or "deutsch" in low:
+            return "German"
+        if "english" in low or low.strip() in ("yes.", "yes", "y"):
+            return "English"
+    if _RE_SHOW_IN_EN.search(desc) or _RE_PERFORMED_EN.search(desc):
+        return "English"
     return ""
 
 
-def _guess_language_from_text(text: str) -> str:
-    t = text.lower()
-    if "english" in t or " eng " in t or "stand-up" in t and "english" in t:
-        return "Englisch"
-    if "français" in t or "französisch" in t or " en français" in t:
-        return "Französisch"
-    if "deutsch" in t or " auf deutsch" in t:
-        return "Deutsch"
+def _language_from_slug_path(path: str, url: str) -> str:
+    blob = f"{path} {url}".lower()
+    for needle, label in _SLUG_LANG_HINTS:
+        if needle in blob:
+            return label
+    return ""
+
+
+def _infer_comedy_language(
+    *,
+    node: dict | None,
+    detail: dict | None,
+    title: str,
+    url: str,
+    path: str,
+) -> str:
+    """
+    On-stage / performance language. Does **not** treat ``/en/`` (or other locale paths)
+    as proof of English — that is only the site language on Eventfrog.
+    """
+    parts_out: list[str] = []
+
+    if node:
+        lang = node.get("inLanguage") or node.get("availableLanguage")
+        if isinstance(lang, list):
+            for x in lang:
+                if x:
+                    n = _normalize_in_language_token(str(x))
+                    if n:
+                        parts_out.append(n)
+        elif isinstance(lang, str) and lang.strip():
+            parts_out.append(_normalize_in_language_token(lang))
+
+    desc = ""
+    if node and isinstance(node.get("description"), str):
+        desc = node["description"]
+    from_desc = _language_from_description(desc)
+    if from_desc and from_desc not in parts_out:
+        parts_out.insert(0, from_desc)
+
+    blob = " ".join(
+        filter(
+            None,
+            [
+                title,
+                _detail_meta_blob(detail) if detail else "",
+            ],
+        )
+    ).lower()
+
+    def add(label: str) -> None:
+        if label and label not in parts_out:
+            parts_out.append(label)
+
+    # Strong phrase cues (title + visible copy)
+    if re.search(r"\bcomedia\b.*\bespañol\b|\ben español\b|\bcomedia en español\b", blob):
+        add("Spanish")
+    if "open mic in english" in blob or "in english, of course" in blob:
+        add("English")
+    if "english stand-up" in blob or "english stand up" in blob or "english comedy" in blob:
+        add("English")
+    if "schwugo" in f"{path} {url} {title}".lower():
+        add("Swiss German")
+    if "swiss german" in blob or "schwiizertüütsch" in blob or "schweizerdeutsch" in blob:
+        add("Swiss German")
+    if "auf deutsch" in blob or re.search(r"\bin german\b", blob):
+        add("German")
+    if "français" in blob or " en français" in blob or "in french" in blob:
+        add("French")
+
+    slug_lang = _language_from_slug_path(path, url)
+    if slug_lang:
+        add(slug_lang)
+
+    if parts_out:
+        return "; ".join(dict.fromkeys(parts_out))
+
+    # Unknown — do not infer from ``/en/`` URL locale alone.
     return ""
 
 
@@ -393,7 +602,6 @@ def _event_node_from_detail(detail: dict | None) -> dict | None:
 
 
 def _titel_event(node: dict | None, detail: dict | None, listing_title: str) -> str:
-    """Kurzer Anzeige-Titel pro URL (schema.org-Name oder Seitentitel)."""
     if node:
         n = (node.get("name") or "").strip()
         if n:
@@ -407,7 +615,6 @@ def _titel_event(node: dict | None, detail: dict | None, listing_title: str) -> 
 
 
 def _flatten_row_and_key(event: dict) -> tuple[dict[str, str], str]:
-    """Eine Tabellenzeile + Serien-Schlüssel für Mehrfach-Termine."""
     url = (event.get("url") or "").strip()
     title = (event.get("title") or "").strip()
     path = (event.get("path") or "").strip()
@@ -416,71 +623,53 @@ def _flatten_row_and_key(event: dict) -> tuple[dict[str, str], str]:
         detail = None
 
     node = _event_node_from_detail(detail)
-    wochentag = ""
-    uhrzeit = ""
+    weekday = ""
+    time_s = ""
     location = ""
-    kosten = ""
-    sprache = ""
+    cost = ""
 
     if node:
         start = _parse_iso(node.get("startDate"))
         if start:
-            wochentag = _WEEKDAY_DE.get(start.isoweekday(), "")
-            uhrzeit = start.strftime("%H:%M")
+            weekday = _WEEKDAY_EN.get(start.isoweekday(), "")
+            time_s = start.strftime("%H:%M")
         location = _format_location(node.get("location"))
-        kosten = _format_offers(node.get("offers"))
-        lang = node.get("inLanguage") or node.get("availableLanguage")
-        if isinstance(lang, list):
-            sprache = ", ".join(str(x) for x in lang if x)
-        elif isinstance(lang, str):
-            sprache = lang.strip()
+        cost = _format_offers(node.get("offers"))
 
-    if not sprache:
-        sprache = _guess_language_from_url(url)
-    if not sprache and title:
-        sprache = _guess_language_from_text(title)
-    if not sprache and detail:
-        blob = " ".join(
-            filter(
-                None,
-                [
-                    str(detail.get("og_title") or ""),
-                    str(detail.get("h1") or ""),
-                    str(detail.get("title_tag") or ""),
-                ],
-            )
-        )
-        sprache = _guess_language_from_text(blob)
+    comedy_lang = _infer_comedy_language(
+        node=node, detail=detail, title=title, url=url, path=path
+    )
 
     if not location and title:
-        # z. B. "... 20:00 Regenbogen Bar, Zürich (CH)"
         m = re.search(r"\d{1,2}:\d{2}\s+(.+)$", title)
         if m:
             location = m.group(1).strip()
 
-    if not uhrzeit and title:
+    if not time_s and title:
         m = re.search(r"(\d{1,2}:\d{2})", title)
         if m:
-            uhrzeit = m.group(1)
+            time_s = m.group(1)
 
-    if not wochentag and title:
-        for day in _WEEKDAY_DE.values():
-            if day.lower() in title.lower():
-                wochentag = day
-                break
+    # Single-date events: keep schema weekday only. Multi-day / groups: infer when empty.
+    if not weekday:
+        idx = _weekday_indices_from_text(title)
+        idx |= _weekday_indices_from_url(url, path)
+        weekday = _format_weekday_list(idx)
 
-    wochentag, location, uhrzeit = _fill_group_row_gaps(
-        wochentag=wochentag,
+    weekday, location, time_s = _fill_group_row_gaps(
+        weekday=weekday,
         location=location,
-        uhrzeit=uhrzeit,
+        time_s=time_s,
         title=title,
         detail=detail,
+        url=url,
+        path=path,
     )
 
     ld_list = detail.get("ld_json") if detail else None
     if not isinstance(ld_list, list):
         ld_list = None
-    regelmäßigkeit = _recurrence_label(
+    regularity = _recurrence_label(
         ld_blocks=ld_list,
         path=path,
         title=title,
@@ -492,21 +681,86 @@ def _flatten_row_and_key(event: dict) -> tuple[dict[str, str], str]:
     series_key = _series_identity_key(title=title, detail=detail, node=node)
 
     row = {
-        "Wochentag": wochentag,
+        "Weekday": weekday,
         "Location": location,
-        "Uhrzeit": uhrzeit,
-        "Kosten": kosten,
-        "Sprache": sprache,
-        "Regelmäßigkeit": regelmäßigkeit,
-        "Titel_Event": titel_event,
+        "Time": time_s,
+        "Cost": cost,
+        "Comedy_language": comedy_lang,
+        "Regularity": regularity,
+        "Event_title": titel_event,
         "URL": url,
-        "Titel_Listing": title[:200],
+        "Listing_title": title[:200],
     }
     return row, series_key
 
 
+def _norm_slot_field(s: str) -> str:
+    return re.sub(r"\s+", " ", (s or "").strip().lower())
+
+
+def _slot_dedup_title(row: dict[str, str]) -> str:
+    raw = (row.get("Event_title") or row.get("Listing_title") or "").strip()
+    return _fold_for_clustering(_normalize_series_name(raw))
+
+
+def _slot_dedup_key(row: dict[str, str]) -> tuple[str, str, str, str]:
+    return (
+        _slot_dedup_title(row),
+        _norm_slot_field(row.get("Location", "")),
+        _norm_slot_field(row.get("Weekday", "")),
+        _norm_slot_field(row.get("Time", "")),
+    )
+
+
+def _dedupe_recurring_slots(rows: list[dict[str, str]]) -> list[dict[str, str]]:
+    """
+    One row per recurring slot: same normalized title, location, weekday, and time.
+    Merged rows are marked ``recurring``; ``Event_title`` is the date-stripped series name.
+    """
+    groups: OrderedDict[tuple[str, str, str, str], list[dict[str, str]]] = OrderedDict()
+    for row in rows:
+        k = _slot_dedup_key(row)
+        if k not in groups:
+            groups[k] = []
+        groups[k].append(row)
+
+    out: list[dict[str, str]] = []
+    for grp in groups.values():
+        if len(grp) == 1:
+            out.append(dict(grp[0]))
+            continue
+
+        base = dict(grp[0])
+        base["Regularity"] = "recurring"
+
+        urls = [r.get("URL", "").strip() for r in grp if r.get("URL", "").strip()]
+        if urls:
+            pref = [u for u in urls if "/p/groups/" in u.lower()]
+            if pref:
+                base["URL"] = pref[0]
+            # else: keep first row's URL so it stays aligned with Listing_title
+
+        langs = [r.get("Comedy_language", "").strip() for r in grp if r.get("Comedy_language", "").strip()]
+        if langs:
+            base["Comedy_language"] = "; ".join(dict.fromkeys(langs))
+
+        costs = [r.get("Cost", "").strip() for r in grp if r.get("Cost", "").strip()]
+        if costs:
+            base["Cost"] = costs[0]
+
+        titles = [r.get("Event_title", "").strip() for r in grp if r.get("Event_title", "").strip()]
+        if titles:
+            merged_title = _normalize_series_name(titles[0])
+            if len(merged_title) < 3:
+                merged_title = _normalize_series_name(max(titles, key=len))
+            base["Event_title"] = re.sub(r"\s+", " ", merged_title).strip()[:200]
+
+        out.append(base)
+
+    return out
+
+
 def flatten_events_rows(events: list[Any]) -> list[dict[str, str]]:
-    """Alle Events flach machen; gleiche Serie (mehrere Termine) → Regelmäßigkeit ``regelmäßig``."""
     pairs: list[tuple[dict[str, str], str]] = []
     for ev in events:
         if not isinstance(ev, dict):
@@ -517,12 +771,12 @@ def flatten_events_rows(events: list[Any]) -> list[dict[str, str]]:
     multi = {k for k, v in counts.items() if v >= 2}
     for row, key in pairs:
         if key and key in multi:
-            row["Regelmäßigkeit"] = "regelmäßig"
-    return [r for r, _ in pairs]
+            row["Regularity"] = "recurring"
+    rows = [r for r, _ in pairs]
+    return _dedupe_recurring_slots(rows)
 
 
 def flatten_row(event: dict) -> dict[str, str]:
-    """Eine Zeile (ohne globale Serien-Zählung). Für Einzeltests; bevorzugt ``flatten_events_rows``."""
     row, _ = _flatten_row_and_key(event)
     return row
 
@@ -539,33 +793,33 @@ def cmd_flatten(args: argparse.Namespace) -> int:
         in_path = find_latest_enriched(proc)
         if in_path is None:
             print(
-                "Keine events_enriched*.json unter data/processed gefunden.\n"
-                "Zuerst: python -m scrapers enrich  (oder collect_data.py enrich)",
+                "No events_enriched*.json under data/processed.\n"
+                "Run: python -m scrapers enrich  (or collect_data.py enrich)",
                 file=sys.stderr,
             )
             return 2
 
     if not in_path.is_file():
-        print(f"Datei fehlt: {in_path}", file=sys.stderr)
+        print(f"Missing file: {in_path}", file=sys.stderr)
         return 2
 
     data = json.loads(in_path.read_text(encoding="utf-8"))
     events = data.get("events")
     if not isinstance(events, list):
-        print("JSON enthält keine 'events'-Liste.", file=sys.stderr)
+        print("JSON has no 'events' list.", file=sys.stderr)
         return 2
 
     rows = flatten_events_rows(events)
     fieldnames = [
-        "Wochentag",
+        "Weekday",
         "Location",
-        "Uhrzeit",
-        "Kosten",
-        "Sprache",
-        "Regelmäßigkeit",
-        "Titel_Event",
+        "Time",
+        "Cost",
+        "Comedy_language",
+        "Regularity",
+        "Event_title",
         "URL",
-        "Titel_Listing",
+        "Listing_title",
     ]
 
     if args.output:
@@ -582,25 +836,25 @@ def cmd_flatten(args: argparse.Namespace) -> int:
         w.writeheader()
         w.writerows(rows)
 
-    print(f"[flatten] {len(rows)} Zeilen → {out_path}")
+    print(f"[flatten] {len(rows)} rows → {out_path}")
     return 0
 
 
 def build_flatten_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
-        description="Flache CSV aus events_enriched*.json (Wochentag, Regelmäßigkeit, …)."
+        description="Flat CSV from events_enriched*.json (weekday, regularity, comedy language, …)."
     )
     p.add_argument(
         "-i",
         "--input",
         default="",
-        help="Pfad zu events_enriched*.json (Standard: neueste unter data/processed/)",
+        help="Path to events_enriched*.json (default: newest under data/processed/)",
     )
     p.add_argument(
         "-o",
         "--output",
         default="",
-        help="CSV-Ausgabe (Standard: data/processed/events_flat.csv)",
+        help="CSV output (default: data/processed/events_flat.csv)",
     )
     p.set_defaults(func=cmd_flatten)
     return p

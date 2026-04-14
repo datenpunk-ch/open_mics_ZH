@@ -222,7 +222,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_fl = sub.add_parser(
         "flatten",
-        help="CSV (Wochentag, Ort, Zeit, Kosten, Sprache, Regelmäßigkeit, Titel_Event, URL, …) aus events_enriched*.json",
+        help="CSV (Weekday, Location, Time, Cost, Comedy_language, Regularity, Event_title, URL, …) from events_enriched*.json",
     )
     p_fl.add_argument(
         "-i",

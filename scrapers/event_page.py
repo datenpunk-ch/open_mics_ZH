@@ -34,6 +34,23 @@ def _parse_ld_json_scripts(html: str) -> list[object]:
     return out
 
 
+def _visible_text_preview(soup: BeautifulSoup, *, max_chars: int = 16000) -> str:
+    """Stripped main content for weekday / language hints (esp. Eventfrog group pages)."""
+    for tag in soup(["script", "style", "noscript", "template"]):
+        tag.decompose()
+    root = (
+        soup.select_one("main")
+        or soup.select_one('[role="main"]')
+        or soup.select_one("article")
+        or soup.body
+    )
+    if not root:
+        return ""
+    t = root.get_text(" ", strip=True)
+    t = re.sub(r"\s+", " ", t)
+    return t[:max_chars]
+
+
 def payload_from_event_html(url: str, html: str, meta_warnings: list[str]) -> dict:
     """Build the event-page dict from raw HTML (no browser)."""
     parsed_host = (urlparse(url).hostname or "").lower()
@@ -41,6 +58,7 @@ def payload_from_event_html(url: str, html: str, meta_warnings: list[str]) -> di
     og_title = soup.select_one('meta[property="og:title"]')
     title_tag = soup.find("title")
     h1 = soup.find("h1")
+    text_preview = _visible_text_preview(soup)
 
     return {
         "scraped_at": datetime.now(timezone.utc).isoformat(),
@@ -50,6 +68,7 @@ def payload_from_event_html(url: str, html: str, meta_warnings: list[str]) -> di
         "title_tag": (title_tag.get_text(strip=True) if title_tag else "") or "",
         "og_title": (og_title.get("content") or "").strip() if og_title else "",
         "h1": (h1.get_text(" ", strip=True) if h1 else "") or "",
+        "text_preview": text_preview,
         "ld_json": _parse_ld_json_scripts(html),
         "meta": {"url": url, "warnings": list(meta_warnings)},
     }
