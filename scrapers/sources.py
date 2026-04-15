@@ -40,11 +40,22 @@ LISTING_SOURCES: dict[str, ListingSource] = {
         extractor="eventfrog",
         listing_behavior="eventfrog",
     ),
-    "gz_wollishofen_open_mic": ListingSource(
-        id="gz_wollishofen_open_mic",
-        label="GZ Wollishofen – Open Mic (offer page)",
-        default_listing_url="https://gz-zh.ch/gz-wollishofen/angebote/open-mic/",
-        extractor="gz_zh_single",
+    "zuerich_com_event_finder": ListingSource(
+        id="zuerich_com_event_finder",
+        label="Zürich Tourismus Event Finder (Guidle microsite; open mic/standup/comedy)",
+        default_listing_url=(
+            "https://microsite.guidle.com/api/rest/2.0/portals/search-offers/658578869"
+            "?portalName=microsite&pageOfferId=1172134252&sectionId=1096&currentPageNumber=1"
+            "&micrositeCrId=e8X87y&language=de&search=open+mic+standup+comedy"
+        ),
+        extractor="guidle_microsite",
+        listing_behavior="none",
+    ),
+    "stubae_comedy": ListingSource(
+        id="stubae_comedy",
+        label="Stubä Comedy (Milanski Comedy; recurring open mic page)",
+        default_listing_url="https://www.milanski-comedy.ch/stubae-comedy",
+        extractor="single_page",
         listing_behavior="none",
     ),
 }

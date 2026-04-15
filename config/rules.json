@@ -1,0 +1,51 @@
+{
+  "geocoding": {
+    "countrycodes": "ch",
+    "prefer_city_tokens": ["zürich", "zurich"],
+    "reverse_zoom": 18,
+    "forward_limit": 5,
+    "zurich_viewbox": {
+      "left": 8.45,
+      "top": 47.45,
+      "right": 8.65,
+      "bottom": 47.32
+    },
+    "zurich_center": {
+      "lat": 47.3769,
+      "lon": 8.5417
+    }
+  },
+  "address_formatting": {
+    "street_suffix_tokens": [
+      "strasse",
+      "straße",
+      "gasse",
+      "platz",
+      "weg",
+      "allee",
+      "quai",
+      "promenade",
+      "ring",
+      "ufer",
+      "hof",
+      "berg",
+      "steig",
+      "bühl",
+      "rain",
+      "brücke",
+      "bruecke"
+    ]
+  },
+  "content_filters": {
+    "open_mic_regex": "\\bopen[\\s-]*mic\\b",
+    "exclude_open_mic_when": {
+      "all_of_any_order": [
+        {
+          "a": ["jam session", "jam"],
+          "b": ["musik", "music", "band", "konzert", "concert", "musizieren", "house-band", "house band"]
+        }
+      ]
+    }
+  }
+}
+

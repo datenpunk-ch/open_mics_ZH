@@ -22,6 +22,7 @@ from collections import Counter, OrderedDict
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Iterator
+from urllib.parse import unquote, urlparse
 
 # ISO weekday 1=Monday … 7=Sunday → English name
 _WEEKDAY_EN: dict[int, str] = {
@@ -361,6 +362,9 @@ def _normalize_series_name(name: str) -> str:
     if not name or not isinstance(name, str):
         return ""
     n = name.strip()
+    # Strip common category prefixes some sources prepend (e.g. Guidle "StandUp: ...").
+    n = re.sub(r"^(?:stand\s*up|standup|stand-?up)\s*[:\-–—]\s*", "", n, flags=re.I)
+    n = re.sub(r"^(?:comedy)\s*[:\-–—]\s*", "", n, flags=re.I)
     n = _DATE_SUFFIX_EN.sub("", n)
     n = _DATE_SUFFIX_DE.sub("", n)
     n = re.sub(r"\s+", " ", n).strip()
@@ -546,14 +550,30 @@ def _fill_group_row_gaps(
         if not loc and blob and " in " in blob:
             tail = blob.split(" in ", 1)[1]
             tail = tail.split("|", 1)[0].strip()
+            # Avoid pulling in long descriptive paragraphs as "location".
+            tail = re.split(r"[.!?]\s+|\s+[-–—]\s+|\s+·\s+", tail, maxsplit=1)[0].strip()
+            if len(tail) > 140:
+                tail = tail[:140].rsplit(" ", 1)[0].strip()
             if tail:
                 loc = tail
         location = loc
 
     if not time_s:
-        m = re.search(r"(\d{1,2}:\d{2})", combined)
+        # Prefer show start / begin times over doors/location-open times.
+        # This avoids picking up "Location offen 15:00" instead of "Showstart 19:00".
+        m = re.search(
+            r"\b(?:show\s*starts?|show\s*start|showstart|beginn)\b[^0-9]{0,25}(\d{1,2}:\d{2})",
+            combined,
+            flags=re.I,
+        )
+        if not m:
+            m = re.search(r"(\d{1,2}:\d{2})\s*(?:uhr)?\s*[–-]\s*(?:show\s*start|showstart)", combined, flags=re.I)
         if m:
             time_s = m.group(1)
+        else:
+            m2 = re.search(r"(\d{1,2}:\d{2})", combined)
+            if m2:
+                time_s = m2.group(1)
 
     return weekday, location, time_s
 
@@ -706,6 +726,51 @@ def _format_location(loc: Any) -> str:
     return name or tail
 
 
+def _resolve_location_from_ld(ld_blocks: list[Any] | None, loc: Any) -> Any:
+    """
+    Event pages often store the Place as a separate node in an @graph and the Event.location
+    is just a reference ({"@id": "..."}). Resolve such references so we can extract address
+    fields (streetAddress, postalCode, ...).
+    """
+    if not isinstance(ld_blocks, list) or not ld_blocks:
+        return loc
+
+    # Reference-only object: {"@id": "..."}
+    if isinstance(loc, dict) and isinstance(loc.get("@id"), str) and len(loc.keys()) <= 3:
+        target_id = loc.get("@id")
+        if target_id:
+            for node in _iter_all_ld_dicts(ld_blocks):
+                if isinstance(node, dict) and node.get("@id") == target_id:
+                    return node
+        return loc
+
+    # If location is a string, try to find a Place node with matching name and a richer address.
+    if isinstance(loc, str):
+        needle = loc.strip()
+        if not needle:
+            return loc
+        needle_fold = needle.casefold()
+        best: dict | None = None
+        for node in _iter_all_ld_dicts(ld_blocks):
+            if not isinstance(node, dict):
+                continue
+            if "Place" not in _types(node):
+                continue
+            name = str(node.get("name") or "").strip()
+            if not name:
+                continue
+            if name.casefold() != needle_fold:
+                continue
+            # Prefer nodes that actually have a structured address.
+            addr = node.get("address")
+            if isinstance(addr, dict) and any(addr.get(k) for k in ("streetAddress", "postalCode", "addressLocality")):
+                return node
+            best = node
+        return best if best is not None else loc
+
+    return loc
+
+
 def _format_offers(offers: Any) -> str:
     if offers is None:
         return ""
@@ -727,6 +792,35 @@ def _format_offers(offers: Any) -> str:
         if name and not bits:
             bits.append(name)
     return " / ".join(bits) if bits else ""
+
+
+def _location_from_google_maps_links(detail: dict | None) -> str:
+    """
+    Some venue pages include a Google Maps "place" link but no structured address.
+    Use the place name as a better geocoding query than a vague description string.
+    """
+    if not detail:
+        return ""
+    links = detail.get("links")
+    if not isinstance(links, list):
+        return ""
+    for h in links:
+        if not isinstance(h, str) or "google.com/maps" not in h:
+            continue
+        try:
+            p = urlparse(h)
+        except Exception:
+            continue
+        if "google.com" not in (p.hostname or ""):
+            continue
+        m = re.search(r"/maps/place/([^/?#]+)", p.path)
+        if not m:
+            continue
+        name = unquote(m.group(1)).replace("+", " ").strip()
+        name = re.sub(r"\s+", " ", name).strip()
+        if name:
+            return f"{name}, Zürich"
+    return ""
 
 
 def _normalize_in_language_token(raw: str) -> str:
@@ -944,7 +1038,11 @@ def _flatten_row_and_key(event: dict) -> tuple[dict[str, str], str]:
         if start:
             weekday = _WEEKDAY_EN.get(start.isoweekday(), "")
             time_s = start.strftime("%H:%M")
-        location = _format_location(node.get("location"))
+        ld_list = detail.get("ld_json") if detail else None
+        if not isinstance(ld_list, list):
+            ld_list = None
+        location_obj = _resolve_location_from_ld(ld_list, node.get("location"))
+        location = _format_location(location_obj)
         cost = _format_offers(node.get("offers"))
 
     comedy_lang = _infer_comedy_language(
@@ -955,6 +1053,9 @@ def _flatten_row_and_key(event: dict) -> tuple[dict[str, str], str]:
         m = re.search(r"\d{1,2}:\d{2}\s+(.+)$", title)
         if m:
             location = m.group(1).strip()
+
+    if not location and detail:
+        location = _location_from_google_maps_links(detail) or location
 
     if not time_s and title:
         m = re.search(r"(\d{1,2}:\d{2})", title)
@@ -995,6 +1096,11 @@ def _flatten_row_and_key(event: dict) -> tuple[dict[str, str], str]:
         url=url,
         has_event_node=node is not None,
     )
+    if regularity == "unknown" and detail and isinstance(detail.get("text_preview"), str):
+        # Generic fallback: recurring wording in visible copy, even when no EventSeries schema exists.
+        blob = detail["text_preview"].lower()
+        if ("jeden" in blob or "every" in blob) and _weekday_indices_from_text(blob):
+            regularity = "recurring"
     if (
         detail
         and str(detail.get("host") or "").lower() == "gz-zh.ch"
@@ -1031,6 +1137,11 @@ def _norm_slot_field(s: str) -> str:
 
 
 _RE_OPEN_MIC = re.compile(r"\bopen[\s-]*mic\b", re.I)
+_RE_MUSIC_JAM = re.compile(
+    r"(?:\bjam\s*session\b|\bjam\b).*?(?:\bmusik\b|\bmusic\b|\bband\b|\bkonzert\b|\bconcert\b|\bmusizieren\b|\bhouse-?band\b)"
+    r"|(?:\bmusik\b|\bmusic\b|\bband\b|\bkonzert\b|\bconcert\b|\bmusizieren\b|\bhouse-?band\b).*?(?:\bjam\s*session\b|\bjam\b)",
+    re.I,
+)
 _RE_SOLO_COMEDIAN_EXCLUDE = re.compile(
     r"\b(?:ck\s+presents|comedy\s+kiss\s+presents|presents:)\b", re.I
 )
@@ -1038,7 +1149,12 @@ _RE_SOLO_COMEDIAN_EXCLUDE = re.compile(
 
 def _is_open_mic_confirmed(*texts: str) -> bool:
     blob = " ".join(t for t in texts if t)
-    return bool(_RE_OPEN_MIC.search(blob))
+    if not _RE_OPEN_MIC.search(blob):
+        return False
+    # Exclude music jam sessions that use "open mic" literally.
+    if _RE_MUSIC_JAM.search(blob):
+        return False
+    return True
 
 
 def _looks_like_single_comedian_show(*texts: str) -> bool:
@@ -1209,6 +1325,78 @@ def _dedupe_loose_same_slot(rows: list[dict[str, str]]) -> list[dict[str, str]]:
     return out
 
 
+def _venue_key(loc: str) -> str:
+    """
+    Best-effort venue key: first comma-separated token.
+    This lets us dedupe the same recurring series across different sources/hosts
+    even when address formatting differs (e.g. "VIOR, Zürich" vs "Vior, Löwenstrasse 2, 8001 Zürich").
+    """
+    s = (loc or "").strip()
+    if not s:
+        return ""
+    head = s.split(",", 1)[0].strip()
+    return _norm_slot_field(head)
+
+
+def _dedupe_series_across_sources(rows: list[dict[str, str]]) -> list[dict[str, str]]:
+    """
+    Cross-source dedupe for the same recurring series at the same venue.
+
+    This is intentionally conservative and designed to collapse obvious duplicates
+    coming from different listing sources (Eventfrog EN/DE, Guidle, single-page seeds, ...).
+
+    Heuristic:
+    - group by (venue_key, normalized series title)
+    - keep the single "best" row (prefer Eventfrog group URLs and broader weekday coverage)
+    """
+    groups: OrderedDict[str, list[dict[str, str]]] = OrderedDict()
+    for r in rows:
+        k = _venue_key(r.get("Location", ""))
+        groups.setdefault(k, []).append(r)
+
+    def score(r: dict[str, str]) -> tuple[int, int, int, int]:
+        url = (r.get("URL") or "").lower()
+        title = (r.get("Event_title") or "").strip()
+        weekday = (r.get("Weekday") or "").strip()
+        time_s = (r.get("Time") or "").strip()
+        # Prefer Eventfrog group pages (stable recurring series URL)
+        s0 = 3 if (".eventfrog.ch" in url or "eventfrog.ch" in url) and "/p/groups/" in url else (2 if "eventfrog.ch" in url else 0)
+        # Prefer entries that cover more weekdays (e.g. "Tue, Fri, Sun")
+        wd_n = len([x for x in weekday.split(",") if x.strip()]) if weekday else 0
+        s1 = wd_n
+        # Prefer non-empty time
+        s2 = 1 if time_s else 0
+        # Prefer longer, more descriptive title (minor tie-break)
+        s3 = min(200, len(title))
+        return (s0, s1, s2, s3)
+
+    out: list[dict[str, str]] = []
+    for grp in groups.values():
+        if len(grp) == 1:
+            out.append(dict(grp[0]))
+            continue
+
+        # Partition by "equivalent title" clusters within the same venue.
+        clusters: list[list[dict[str, str]]] = []
+        for r in grp:
+            placed = False
+            for c in clusters:
+                if _titles_look_equivalent(r.get("Event_title", ""), c[0].get("Event_title", "")):
+                    c.append(r)
+                    placed = True
+                    break
+            if not placed:
+                clusters.append([r])
+
+        for c in clusters:
+            if len(c) == 1:
+                out.append(dict(c[0]))
+                continue
+            best = max(c, key=score)
+            out.append(dict(best))
+    return out
+
+
 def flatten_events_rows(events: list[Any]) -> list[dict[str, str]]:
     pairs: list[tuple[dict[str, str], str]] = []
     for ev in events:
@@ -1231,6 +1419,7 @@ def flatten_events_rows(events: list[Any]) -> list[dict[str, str]]:
     rows = [r for r, _ in pairs]
     rows = _dedupe_recurring_slots(rows)
     rows = _dedupe_loose_same_slot(rows)
+    rows = _dedupe_series_across_sources(rows)
     # Project output is focused on recurring open mics; drop one-off/single-performer shows.
     rows = [r for r in rows if (r.get("Regularity") or "").strip().lower() == "recurring"]
     return rows

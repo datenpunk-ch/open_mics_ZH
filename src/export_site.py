@@ -10,6 +10,7 @@ import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parent.parent
+RULES_PATH = ROOT / "config" / "rules.json"
 CSV_PATH = ROOT / "data" / "processed" / "events_flat.csv"
 GEOCACHE_PATH = ROOT / "data" / "processed" / "location_geocache.json"
 
@@ -19,7 +20,88 @@ DOCS_EVENTS_JSON = DOCS_DATA_DIR / "events.json"
 
 
 WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-_RE_OPEN_MIC = re.compile(r"\bopen[\s-]*mic\b", re.I)
+_DEFAULT_RULES = {
+    "content_filters": {
+        "open_mic_regex": r"\bopen[\s-]*mic\b",
+        "exclude_open_mic_when": {
+            "all_of_any_order": [
+                {
+                    "a": ["jam session", "jam"],
+                    "b": [
+                        "musik",
+                        "music",
+                        "band",
+                        "konzert",
+                        "concert",
+                        "musizieren",
+                        "house-band",
+                        "house band",
+                    ],
+                }
+            ]
+        },
+    },
+    "address_formatting": {
+        "street_suffix_tokens": [
+            "strasse",
+            "straße",
+            "gasse",
+            "platz",
+            "weg",
+            "allee",
+            "quai",
+            "promenade",
+            "ring",
+            "ufer",
+            "hof",
+            "berg",
+            "steig",
+            "bühl",
+            "rain",
+            "brücke",
+            "bruecke",
+        ]
+    },
+}
+
+
+def _load_rules() -> dict:
+    try:
+        return json.loads(RULES_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return _DEFAULT_RULES
+
+
+_RULES = _load_rules()
+_OPEN_MIC_REGEX = str(_RULES.get("content_filters", {}).get("open_mic_regex") or _DEFAULT_RULES["content_filters"]["open_mic_regex"])
+_RE_OPEN_MIC = re.compile(_OPEN_MIC_REGEX, re.I)
+
+
+def _build_exclude_music_jam_regex(rules: dict) -> re.Pattern:
+    blocks = rules.get("content_filters", {}).get("exclude_open_mic_when", {}).get("all_of_any_order", [])
+    if not isinstance(blocks, list) or not blocks:
+        return re.compile(r"a^")  # never matches
+    disj: list[str] = []
+    for b in blocks:
+        if not isinstance(b, dict):
+            continue
+        a = b.get("a") or []
+        c = b.get("b") or []
+        if not isinstance(a, list) or not isinstance(c, list) or not a or not c:
+            continue
+        a_alt = "|".join(re.escape(str(x)) for x in a if str(x))
+        c_alt = "|".join(re.escape(str(x)) for x in c if str(x))
+        if not a_alt or not c_alt:
+            continue
+        # a then b OR b then a (any order).
+        disj.append(rf"(?:\b(?:{a_alt})\b).*?(?:\b(?:{c_alt})\b)")
+        disj.append(rf"(?:\b(?:{c_alt})\b).*?(?:\b(?:{a_alt})\b)")
+    if not disj:
+        return re.compile(r"a^")
+    return re.compile("|".join(disj), re.I)
+
+
+_RE_MUSIC_JAM = _build_exclude_music_jam_regex(_RULES)
 _COUNTRY_TOKENS = {"schweiz", "suisse", "svizzera", "svizra", "switzerland"}
 
 
@@ -92,13 +174,13 @@ def _format_address_from_display_name(*, venue_hint: str, display_name: str) -> 
         t = (s or "").strip().casefold()
         if not t:
             return False
-        return bool(
-            re.search(
-                r"(strasse|straße|gasse|platz|weg|allee|quai|promenade|ring|ufer|hof|berg|steig|bühl|rain|brücke|bruecke)\b",
-                t,
-                flags=re.I,
-            )
-        )
+        toks = _RULES.get("address_formatting", {}).get("street_suffix_tokens")
+        if not isinstance(toks, list) or not toks:
+            toks = _DEFAULT_RULES["address_formatting"]["street_suffix_tokens"]
+        alt = "|".join(re.escape(str(x)) for x in toks if str(x))
+        if not alt:
+            return False
+        return bool(re.search(rf"(?:{alt})\b", t, flags=re.I))
 
     street = ""
     number = ""
@@ -266,6 +348,10 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
         min-height: 520px;
         border: 1px solid var(--color-rule);
       }}
+      /* Leaflet/SVG "focus" styling can leave clicked markers looking selected. */
+      .leaflet-container .leaflet-interactive:focus {{
+        outline: none;
+      }}
       .banner {{
         position: absolute;
         left: 0;
@@ -347,6 +433,19 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
         margin-top: 4px;
         line-height: 1.35;
         font-family: var(--font-mono);
+      }}
+      .meta.venue a {{
+        color: var(--color-ink);
+        font-family: var(--font-display);
+        font-size: 15px;
+        line-height: 1.25;
+        text-decoration: underline;
+        text-decoration-color: rgba(58, 103, 122, 0.55);
+        text-underline-offset: 3px;
+      }}
+      .meta.venue a:hover {{
+        color: var(--color-accent-hover);
+        text-decoration-color: rgba(47, 90, 107, 0.7);
       }}
       .meta-strong {{
         color: var(--color-ink);
@@ -482,7 +581,13 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
         const el = document.getElementById(eventId);
         if (el) {{
           el.classList.add('active');
-          el.scrollIntoView({{ behavior: 'smooth', block: 'nearest' }});
+          const scroller = document.querySelector('.list');
+          if (scroller && typeof scroller.scrollTo === 'function') {{
+            const top = el.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
+            scroller.scrollTo({{ top: Math.max(0, top - 40), behavior: 'smooth' }});
+          }} else {{
+            el.scrollIntoView({{ behavior: 'smooth', block: 'nearest' }});
+          }}
         }}
       }}
 
@@ -535,8 +640,15 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
           div.appendChild(mt);
 
           const ml = document.createElement('div');
-          ml.className = 'meta';
-          ml.textContent = formatLocation(e.location_display || e.location || '');
+          ml.className = 'meta venue';
+          const venueText = (e.venue || (e.location_display || e.location || '').split(',')[0] || '').toString().trim();
+          const locQuery = formatLocation(e.location_display || e.location || venueText);
+          const mapsA = document.createElement('a');
+          mapsA.href = locQuery ? `https://www.google.com/maps/search/?api=1&query=${{encodeURIComponent(locQuery)}}` : '#';
+          mapsA.target = '_blank';
+          mapsA.rel = 'noreferrer';
+          mapsA.textContent = venueText || '(venue)';
+          ml.appendChild(mapsA);
           div.appendChild(ml);
 
           const pills = document.createElement('div');
@@ -559,26 +671,43 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
               }});
               const safe = (s) => (s || '').toString().replaceAll('<','&lt;');
               const locText = formatLocation(e.location_display || e.location || '');
+              const venueText = (e.venue || (e.location_display || e.location || '').split(',')[0] || '').toString().trim();
+              const locQuery = locText || venueText;
+              const mapsLine = locQuery
+                ? `<a href="https://www.google.com/maps/search/?api=1&query=${{encodeURIComponent(locQuery)}}" target="_blank" rel="noreferrer">${{safe(venueText || locQuery)}}</a><br/>`
+                : '';
               const popup = `<strong>${{safe(e.title)}}</strong><br/>` +
                             `${{safe(e.weekday)}} ${{safe(e.time)}}<br/>` +
-                            `${{safe(locText)}}<br/>` +
-                            (e.url ? `<a href="${{e.url}}" target="_blank" rel="noreferrer">Open link</a><br/>` : '') +
-                            (locText ? `<a href="https://www.google.com/maps/search/?api=1&query=${{encodeURIComponent(locText)}}" target="_blank" rel="noreferrer">Open in Google Maps</a>` : '');
+                            mapsLine +
+                            (e.url ? `<a href="${{e.url}}" target="_blank" rel="noreferrer">Open link</a>` : '');
               m.addListener('click', () => {{
                 setActive(eventId);
                 if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow();
                 gInfoWindow.setContent(popup);
                 gInfoWindow.open({{ anchor: m, map: gmap }});
               }});
+              // Hover list item -> preview popup on the map (until mouse leaves).
+              div.addEventListener('mouseenter', () => {{
+                if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow();
+                gInfoWindow.setContent(popup);
+                gInfoWindow.open({{ anchor: m, map: gmap }});
+              }});
+              div.addEventListener('mouseleave', () => {{
+                if (gInfoWindow) gInfoWindow.close();
+              }});
               gMarkers.push(m);
             }} else if (lmap && lMarkersLayer) {{
               const safe = (s) => (s || '').toString().replaceAll('<','&lt;');
               const locText = formatLocation(e.location_display || e.location || '');
+              const venueText = (e.venue || (e.location_display || e.location || '').split(',')[0] || '').toString().trim();
+              const locQuery = locText || venueText;
+              const mapsLine = locQuery
+                ? `<a href="https://www.google.com/maps/search/?api=1&query=${{encodeURIComponent(locQuery)}}" target="_blank" rel="noreferrer">${{safe(venueText || locQuery)}}</a><br/>`
+                : '';
               const popup = `<strong>${{safe(e.title)}}</strong><br/>` +
                             `${{safe(e.weekday)}} ${{safe(e.time)}}<br/>` +
-                            `${{safe(locText)}}<br/>` +
-                            (e.url ? `<a href="${{e.url}}" target="_blank" rel="noreferrer">Open link</a><br/>` : '') +
-                            (locText ? `<a href="https://www.google.com/maps/search/?api=1&query=${{encodeURIComponent(locText)}}" target="_blank" rel="noreferrer">Open in Google Maps</a>` : '');
+                            mapsLine +
+                            (e.url ? `<a href="${{e.url}}" target="_blank" rel="noreferrer">Open link</a>` : '');
               const marker = L.circleMarker([e.lat, e.lon], {{
                 radius: 7,
                 color: '#3a677a',
@@ -588,6 +717,13 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
               }});
               marker.bindPopup(popup);
               marker.on('click', () => setActive(eventId));
+              // Hover list item -> preview popup on the map (until mouse leaves).
+              div.addEventListener('mouseenter', () => {{
+                try {{ marker.openPopup(); }} catch (e) {{}}
+              }});
+              div.addEventListener('mouseleave', () => {{
+                try {{ marker.closePopup(); }} catch (e) {{}}
+              }});
               marker.addTo(lMarkersLayer);
             }}
           }}
@@ -595,7 +731,7 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
 
         const pinned = filtered.filter(e => typeof e.lat === 'number' && typeof e.lon === 'number').length;
         document.getElementById('mapNote').textContent =
-          `Pins: ${{pinned}} / ${{filtered.length}} (run build-time geocoding to increase coverage).`;
+          `Pins: ${{pinned}} / ${{filtered.length}}`;
       }}
 
       function getGoogleMapsKey() {{
@@ -623,11 +759,23 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
         const key = getGoogleMapsKey();
         if (!key) {{
           // OSM fallback map
-          lmap = L.map('map', {{ zoomControl: true }}).setView([47.3769, 8.5417], 12);
+          const ZURICH_BOUNDS = L.latLngBounds(
+            L.latLng(47.30, 8.45),   // SW
+            L.latLng(47.45, 8.65)    // NE
+          );
+          const ZURICH_MIN_ZOOM = 12;
+
+          lmap = L.map('map', {{
+            zoomControl: true,
+            minZoom: ZURICH_MIN_ZOOM,
+            maxBounds: ZURICH_BOUNDS,
+            maxBoundsViscosity: 1.0,
+          }}).setView([47.3769, 8.5417], ZURICH_MIN_ZOOM);
           L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{
             maxZoom: 19,
             attribution: '&copy; OpenStreetMap contributors'
           }}).addTo(lmap);
+          lmap.setMaxBounds(ZURICH_BOUNDS);
           lMarkersLayer = L.layerGroup().addTo(lmap);
 
           showBanner(
@@ -653,6 +801,17 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
         gmap = new google.maps.Map(document.getElementById('map'), {{
           center: {{ lat: 47.3769, lng: 8.5417 }},
           zoom: 12,
+          minZoom: 12,
+          maxZoom: 19,
+          restriction: {{
+            latLngBounds: {{
+              south: 47.30,
+              west: 8.45,
+              north: 47.45,
+              east: 8.65,
+            }},
+            strictBounds: true,
+          }},
           mapTypeControl: false,
           streetViewControl: false,
           fullscreenControl: true,
@@ -664,7 +823,7 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
       }}
 
       boot().catch(err => {{
-        document.getElementById('mapNote').textContent = 'Failed to load data/events.json';
+        document.getElementById('mapNote').textContent = 'Failed to load event data';
         console.error(err);
       }});
     </script>
@@ -683,6 +842,14 @@ def main() -> int:
     df = pd.read_csv(CSV_PATH, sep=";", dtype=str).fillna("")
     if "Regularity" in df.columns:
         df = df[df["Regularity"].astype(str).str.strip().str.lower() == "recurring"].copy()
+    # Explode multi-weekday rows into one row per weekday for clearer browsing.
+    if "Weekday" in df.columns:
+        df["Weekday"] = df["Weekday"].astype(str).fillna("")
+        df["Weekday"] = df["Weekday"].apply(lambda s: ", ".join([p.strip() for p in s.split(",") if p.strip()]))
+        df["_weekday_list"] = df["Weekday"].apply(lambda s: [p.strip() for p in str(s).split(",") if p.strip()] or [""])
+        df = df.explode("_weekday_list").copy()
+        df["Weekday"] = df["_weekday_list"].astype(str)
+        df.drop(columns=["_weekday_list"], inplace=True)
     # Confirmed open mic: title or description must mention it
     for col in ["Event_title", "Listing_title", "Description_preview"]:
         if col not in df.columns:
@@ -693,6 +860,14 @@ def main() -> int:
         .agg(" ".join, axis=1)
         .str.contains(_RE_OPEN_MIC, regex=True, na=False)
     )
+    # Filter out music jam sessions (e.g. "Jam Session ... Open Mic" at venues).
+    exclude_mask = (
+        df[["Event_title", "Listing_title", "Description_preview"]]
+        .astype(str)
+        .agg(" ".join, axis=1)
+        .str.contains(_RE_MUSIC_JAM, regex=True, na=False)
+    )
+    confirmed_mask = confirmed_mask & (~exclude_mask)
     df = df[confirmed_mask].copy()
 
     def coord_for(loc: str) -> tuple[float | None, float | None]:

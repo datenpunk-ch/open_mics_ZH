@@ -100,6 +100,10 @@
         min-height: 520px;
         border: 1px solid var(--color-rule);
       }
+      /* Leaflet/SVG "focus" styling can leave clicked markers looking selected. */
+      .leaflet-container .leaflet-interactive:focus {
+        outline: none;
+      }
       .banner {
         position: absolute;
         left: 0;
@@ -182,6 +186,19 @@
         line-height: 1.35;
         font-family: var(--font-mono);
       }
+      .meta.venue a {
+        color: var(--color-ink);
+        font-family: var(--font-display);
+        font-size: 15px;
+        line-height: 1.25;
+        text-decoration: underline;
+        text-decoration-color: rgba(58, 103, 122, 0.55);
+        text-underline-offset: 3px;
+      }
+      .meta.venue a:hover {
+        color: var(--color-accent-hover);
+        text-decoration-color: rgba(47, 90, 107, 0.7);
+      }
       .meta-strong {
         color: var(--color-ink);
         font-family: var(--font-mono);
@@ -225,7 +242,7 @@
     <a class="skip-link" href="#items">Skip to list</a>
     <header>
       <h1>Open Mics Zurich</h1>
-      <div class="sub">Recurring open mic events in and around Zürich. Filter by weekday and explore locations on the map. <span style="font-family:var(--font-mono); color:var(--color-muted);">Build: 2026-04-15T11:55:15Z</span></div>
+      <div class="sub">Recurring open mic events in and around Zürich. Filter by weekday and explore locations on the map. <span style="font-family:var(--font-mono); color:var(--color-muted);">Build: 2026-04-15T14:02:15Z</span></div>
     </header>
 
     <div class="layout">
@@ -264,7 +281,7 @@
       crossorigin=""
     ></script>
     <script>
-      const BUILD_STAMP = "2026-04-15T11:55:15Z";
+      const BUILD_STAMP = "2026-04-15T14:02:15Z";
       let gmap = null;
       let gInfoWindow = null;
       let gMarkers = [];
@@ -316,7 +333,13 @@
         const el = document.getElementById(eventId);
         if (el) {
           el.classList.add('active');
-          el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          const scroller = document.querySelector('.list');
+          if (scroller && typeof scroller.scrollTo === 'function') {
+            const top = el.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
+            scroller.scrollTo({ top: Math.max(0, top - 40), behavior: 'smooth' });
+          } else {
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
         }
       }
 
@@ -369,8 +392,15 @@
           div.appendChild(mt);
 
           const ml = document.createElement('div');
-          ml.className = 'meta';
-          ml.textContent = formatLocation(e.location_display || e.location || '');
+          ml.className = 'meta venue';
+          const venueText = (e.venue || (e.location_display || e.location || '').split(',')[0] || '').toString().trim();
+          const locQuery = formatLocation(e.location_display || e.location || venueText);
+          const mapsA = document.createElement('a');
+          mapsA.href = locQuery ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locQuery)}` : '#';
+          mapsA.target = '_blank';
+          mapsA.rel = 'noreferrer';
+          mapsA.textContent = venueText || '(venue)';
+          ml.appendChild(mapsA);
           div.appendChild(ml);
 
           const pills = document.createElement('div');
@@ -393,26 +423,43 @@
               });
               const safe = (s) => (s || '').toString().replaceAll('<','&lt;');
               const locText = formatLocation(e.location_display || e.location || '');
+              const venueText = (e.venue || (e.location_display || e.location || '').split(',')[0] || '').toString().trim();
+              const locQuery = locText || venueText;
+              const mapsLine = locQuery
+                ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locQuery)}" target="_blank" rel="noreferrer">${safe(venueText || locQuery)}</a><br/>`
+                : '';
               const popup = `<strong>${safe(e.title)}</strong><br/>` +
                             `${safe(e.weekday)} ${safe(e.time)}<br/>` +
-                            `${safe(locText)}<br/>` +
-                            (e.url ? `<a href="${e.url}" target="_blank" rel="noreferrer">Open link</a><br/>` : '') +
-                            (locText ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locText)}" target="_blank" rel="noreferrer">Open in Google Maps</a>` : '');
+                            mapsLine +
+                            (e.url ? `<a href="${e.url}" target="_blank" rel="noreferrer">Open link</a>` : '');
               m.addListener('click', () => {
                 setActive(eventId);
                 if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow();
                 gInfoWindow.setContent(popup);
                 gInfoWindow.open({ anchor: m, map: gmap });
               });
+              // Hover list item -> preview popup on the map (until mouse leaves).
+              div.addEventListener('mouseenter', () => {
+                if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow();
+                gInfoWindow.setContent(popup);
+                gInfoWindow.open({ anchor: m, map: gmap });
+              });
+              div.addEventListener('mouseleave', () => {
+                if (gInfoWindow) gInfoWindow.close();
+              });
               gMarkers.push(m);
             } else if (lmap && lMarkersLayer) {
               const safe = (s) => (s || '').toString().replaceAll('<','&lt;');
               const locText = formatLocation(e.location_display || e.location || '');
+              const venueText = (e.venue || (e.location_display || e.location || '').split(',')[0] || '').toString().trim();
+              const locQuery = locText || venueText;
+              const mapsLine = locQuery
+                ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locQuery)}" target="_blank" rel="noreferrer">${safe(venueText || locQuery)}</a><br/>`
+                : '';
               const popup = `<strong>${safe(e.title)}</strong><br/>` +
                             `${safe(e.weekday)} ${safe(e.time)}<br/>` +
-                            `${safe(locText)}<br/>` +
-                            (e.url ? `<a href="${e.url}" target="_blank" rel="noreferrer">Open link</a><br/>` : '') +
-                            (locText ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locText)}" target="_blank" rel="noreferrer">Open in Google Maps</a>` : '');
+                            mapsLine +
+                            (e.url ? `<a href="${e.url}" target="_blank" rel="noreferrer">Open link</a>` : '');
               const marker = L.circleMarker([e.lat, e.lon], {
                 radius: 7,
                 color: '#3a677a',
@@ -422,6 +469,13 @@
               });
               marker.bindPopup(popup);
               marker.on('click', () => setActive(eventId));
+              // Hover list item -> preview popup on the map (until mouse leaves).
+              div.addEventListener('mouseenter', () => {
+                try { marker.openPopup(); } catch (e) {}
+              });
+              div.addEventListener('mouseleave', () => {
+                try { marker.closePopup(); } catch (e) {}
+              });
               marker.addTo(lMarkersLayer);
             }
           }
@@ -429,7 +483,7 @@
 
         const pinned = filtered.filter(e => typeof e.lat === 'number' && typeof e.lon === 'number').length;
         document.getElementById('mapNote').textContent =
-          `Pins: ${pinned} / ${filtered.length} (run build-time geocoding to increase coverage).`;
+          `Pins: ${pinned} / ${filtered.length}`;
       }
 
       function getGoogleMapsKey() {
@@ -457,11 +511,23 @@
         const key = getGoogleMapsKey();
         if (!key) {
           // OSM fallback map
-          lmap = L.map('map', { zoomControl: true }).setView([47.3769, 8.5417], 12);
+          const ZURICH_BOUNDS = L.latLngBounds(
+            L.latLng(47.30, 8.45),   // SW
+            L.latLng(47.45, 8.65)    // NE
+          );
+          const ZURICH_MIN_ZOOM = 12;
+
+          lmap = L.map('map', {
+            zoomControl: true,
+            minZoom: ZURICH_MIN_ZOOM,
+            maxBounds: ZURICH_BOUNDS,
+            maxBoundsViscosity: 1.0,
+          }).setView([47.3769, 8.5417], ZURICH_MIN_ZOOM);
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; OpenStreetMap contributors'
           }).addTo(lmap);
+          lmap.setMaxBounds(ZURICH_BOUNDS);
           lMarkersLayer = L.layerGroup().addTo(lmap);
 
           showBanner(
@@ -487,6 +553,17 @@
         gmap = new google.maps.Map(document.getElementById('map'), {
           center: { lat: 47.3769, lng: 8.5417 },
           zoom: 12,
+          minZoom: 12,
+          maxZoom: 19,
+          restriction: {
+            latLngBounds: {
+              south: 47.30,
+              west: 8.45,
+              north: 47.45,
+              east: 8.65,
+            },
+            strictBounds: true,
+          },
           mapTypeControl: false,
           streetViewControl: false,
           fullscreenControl: true,
@@ -498,7 +575,7 @@
       }
 
       boot().catch(err => {
-        document.getElementById('mapNote').textContent = 'Failed to load data/events.json';
+        document.getElementById('mapNote').textContent = 'Failed to load event data';
         console.error(err);
       });
     </script>

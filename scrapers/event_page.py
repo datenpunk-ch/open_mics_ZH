@@ -51,6 +51,34 @@ def _visible_text_preview(soup: BeautifulSoup, *, max_chars: int = 16000) -> str
     return t[:max_chars]
 
 
+def _extract_links(soup: BeautifulSoup, *, max_links: int = 200) -> list[str]:
+    """
+    Extract absolute-ish hrefs from main content so downstream steps can pick up
+    canonical links (e.g. Google Maps place links on venue pages).
+    """
+    root = (
+        soup.select_one("main")
+        or soup.select_one('[role="main"]')
+        or soup.select_one("article")
+        or soup.body
+    )
+    if not root:
+        return []
+    hrefs: list[str] = []
+    seen: set[str] = set()
+    for a in root.select("a[href]"):
+        h = (a.get("href") or "").strip()
+        if not h or h.startswith("#"):
+            continue
+        if h in seen:
+            continue
+        seen.add(h)
+        hrefs.append(h)
+        if len(hrefs) >= max_links:
+            break
+    return hrefs
+
+
 def payload_from_event_html(url: str, html: str, meta_warnings: list[str]) -> dict:
     """Build the event-page dict from raw HTML (no browser)."""
     parsed_host = (urlparse(url).hostname or "").lower()
@@ -60,6 +88,7 @@ def payload_from_event_html(url: str, html: str, meta_warnings: list[str]) -> di
     title_tag = soup.find("title")
     h1 = soup.find("h1")
     text_preview = _visible_text_preview(soup)
+    links = _extract_links(soup)
 
     return {
         "scraped_at": datetime.now(timezone.utc).isoformat(),
@@ -71,6 +100,7 @@ def payload_from_event_html(url: str, html: str, meta_warnings: list[str]) -> di
         "og_image": (og_image.get("content") or "").strip() if og_image else "",
         "h1": (h1.get_text(" ", strip=True) if h1 else "") or "",
         "text_preview": text_preview,
+        "links": links,
         "ld_json": _parse_ld_json_scripts(html),
         "meta": {"url": url, "warnings": list(meta_warnings)},
     }

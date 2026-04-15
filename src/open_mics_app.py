@@ -28,11 +28,20 @@ WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", 
 _WEEKDAY_INDEX = {d: i for i, d in enumerate(WEEKDAYS)}
 
 _RE_OPEN_MIC = re.compile(r"\bopen[\s-]*mic\b", re.I)
+_RE_MUSIC_JAM = re.compile(
+    r"(?:\bjam\s*session\b|\bjam\b).*?(?:\bmusik\b|\bmusic\b|\bband\b|\bkonzert\b|\bconcert\b|\bmusizieren\b|\bhouse-?band\b)"
+    r"|(?:\bmusik\b|\bmusic\b|\bband\b|\bkonzert\b|\bconcert\b|\bmusizieren\b|\bhouse-?band\b).*?(?:\bjam\s*session\b|\bjam\b)",
+    re.I,
+)
 
 
 def _is_confirmed_open_mic(*texts: str) -> bool:
     blob = " ".join(t for t in texts if t)
-    return bool(_RE_OPEN_MIC.search(blob))
+    if not _RE_OPEN_MIC.search(blob):
+        return False
+    if _RE_MUSIC_JAM.search(blob):
+        return False
+    return True
 
 
 def _google_maps_url(location: str) -> str:
@@ -196,12 +205,12 @@ def _load_events(csv_path: Path) -> pd.DataFrame:
     if "Image_url" not in df.columns:
         df["Image_url"] = ""
 
-    df["Weekday_norm"] = (
-        df["Weekday"]
-        .astype(str)
-        .str.replace(r"\s+", " ", regex=True)
-        .str.strip()
-    )
+    # Explode multi-weekday rows into one row per weekday for clearer browsing.
+    df["Weekday_norm"] = df["Weekday"].astype(str).str.replace(r"\s+", " ", regex=True).str.strip()
+    df["_weekday_list"] = df["Weekday_norm"].apply(lambda s: [p.strip() for p in str(s).split(",") if p.strip()] or [""])
+    df = df.explode("_weekday_list").copy()
+    df["Weekday_norm"] = df["_weekday_list"].astype(str)
+    df.drop(columns=["_weekday_list"], inplace=True)
     df["Location_norm"] = df["Location"].astype(str).str.replace(r"\s+", " ", regex=True).str.strip()
     df["Comedy_language_norm"] = df["Comedy_language"].astype(str).str.strip()
     df["Regularity_norm"] = df["Regularity"].astype(str).str.strip()
@@ -215,7 +224,7 @@ def _load_events(csv_path: Path) -> pd.DataFrame:
         df[["Event_title", "Listing_title", "Description_preview"]]
         .astype(str)
         .agg(" ".join, axis=1)
-        .apply(lambda x: bool(_RE_OPEN_MIC.search(x)))
+        .apply(lambda x: _is_confirmed_open_mic(x))
     )
     df = df[confirmed_mask].copy()
     df["Weekday_sort"] = df["Weekday_norm"].apply(_weekday_sort_index)
@@ -321,11 +330,11 @@ def main() -> None:
 
     with st.sidebar:
         st.header("Filters")
-        csv_path_str = st.text_input("Data file", value=str(DEFAULT_CSV))
-        csv_path = Path(csv_path_str)
+        # Always use the default processed CSV (no visible file/path control).
+        csv_path = Path(DEFAULT_CSV)
 
         if not csv_path.is_file():
-            st.error(f"CSV not found: {csv_path}")
+            st.error("Event data CSV not found. Run the rebuild pipeline first.")
             st.stop()
 
         df = _load_events(csv_path)
@@ -341,10 +350,10 @@ def main() -> None:
 
         st.divider()
         st.header("Map")
-        auto_geocode = st.toggle("Auto-geocode missing locations", value=True)
-        geocode_missing = st.button("Geocode missing locations now (uses OpenStreetMap)")
-        st.caption("Geocoding is cached in `data/processed/location_geocache.json`.")
-        show_images = st.toggle("Show venue images in list", value=True)
+        # Always on (no visible switches).
+        auto_geocode = True
+        geocode_missing = False
+        show_images = True
 
     mask = df["Weekday_norm"].apply(lambda x: _weekday_matches(x, weekday_set))
     if language_set:
@@ -589,22 +598,24 @@ def main() -> None:
                             st.markdown(top)
                             if meta_time:
                                 st.markdown(f"**{meta_time}**")
-                            if loc_display:
-                                st.caption(loc_display)
+                            venue = (loc.split(",", 1)[0].strip() if loc else "")
+                            if venue and gmaps:
+                                st.markdown(f"**[{venue}]({gmaps})**")
+                            elif venue:
+                                st.markdown(f"**{venue}**")
                             if details:
                                 st.caption(details)
-                            if gmaps:
-                                st.markdown(f"[Open in Google Maps]({gmaps})")
                     else:
                         st.markdown(top)
                         if meta_time:
                             st.markdown(f"**{meta_time}**")
-                        if loc_display:
-                            st.caption(loc_display)
+                        venue = (loc.split(",", 1)[0].strip() if loc else "")
+                        if venue and gmaps:
+                            st.markdown(f"**[{venue}]({gmaps})**")
+                        elif venue:
+                            st.markdown(f"**{venue}**")
                         if details:
                             st.caption(details)
-                        if gmaps:
-                            st.markdown(f"[Open in Google Maps]({gmaps})")
                     if is_selected:
                         st.markdown("</div>", unsafe_allow_html=True)
                     st.divider()
