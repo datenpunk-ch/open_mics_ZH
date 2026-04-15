@@ -40,6 +40,13 @@ LISTING_SOURCES: dict[str, ListingSource] = {
         extractor="eventfrog",
         listing_behavior="eventfrog",
     ),
+    "gz_wollishofen_open_mic": ListingSource(
+        id="gz_wollishofen_open_mic",
+        label="GZ Wollishofen – Open Mic (offer page)",
+        default_listing_url="https://gz-zh.ch/gz-wollishofen/angebote/open-mic/",
+        extractor="gz_zh_single",
+        listing_behavior="none",
+    ),
 }
 
 

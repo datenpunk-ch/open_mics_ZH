@@ -11,6 +11,8 @@ from bs4 import BeautifulSoup
 def run_extractor(extractor_id: str, listing_url: str, html: str) -> list[dict]:
     if extractor_id == "eventfrog":
         return extract_eventfrog_listing(listing_url, html)
+    if extractor_id == "gz_zh_single":
+        return extract_gz_zh_single_page(listing_url, html)
     raise ValueError(f"Unknown extractor: {extractor_id}")
 
 
@@ -108,3 +110,18 @@ def extract_eventfrog_listing(listing_url: str, html: str) -> list[dict]:
         _ef_add_event(out, seen, m, "")
 
     return out
+
+
+# --- GZ Zürich (single offer/event page) ---------------------------------------
+
+
+def extract_gz_zh_single_page(listing_url: str, html: str) -> list[dict]:
+    """
+    Treat the page itself as an "event seed".
+    We let the enrich + flatten steps extract details (weekday/time/location) from the page.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    h1 = soup.find("h1")
+    title = h1.get_text(" ", strip=True) if h1 else ""
+    title = re.sub(r"\s+", " ", title).strip()
+    return [{"url": listing_url, "title": title or listing_url, "path": urlparse(listing_url).path or ""}]

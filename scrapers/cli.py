@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -28,6 +29,8 @@ def cmd_list_sources(_args: argparse.Namespace) -> int:
 
 def cmd_run(args: argparse.Namespace) -> int:
     """Listing → neuestes Listing anreichern → flache CSV aus neuem enriched."""
+    root = _project_root()
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     listing_ns = argparse.Namespace(
         source=list(args.source),
         url=args.url or "",
@@ -36,14 +39,43 @@ def cmd_run(args: argparse.Namespace) -> int:
         timeout_ms=args.timeout_ms,
         max_show_more=args.max_show_more,
         show_more_delay_ms=args.show_more_delay_ms,
+        utc_stamp=stamp,
     )
     rc = cmd_listing(listing_ns)
     if rc != 0:
         return rc
 
+    # Merge all listing payloads from this run into one listing JSON for enrich.
+    merged_listing_path = root / "data" / "raw" / f"merged_listing_{stamp}.json"
+    merged_events: list[dict] = []
+    seen: set[str] = set()
+    for sid in listing_ns.source:
+        p = root / "data" / "raw" / f"{sid}_listing_{stamp}.json"
+        if not p.is_file():
+            continue
+        payload = json.loads(p.read_text(encoding="utf-8"))
+        for ev in payload.get("events") or []:
+            u = (ev.get("url") or "").strip()
+            if not u or u in seen:
+                continue
+            seen.add(u)
+            merged_events.append(ev)
+    merged_listing = {
+        "scraped_at": datetime.now(timezone.utc).isoformat(),
+        "source": "merged",
+        "source_label": "Merged listing sources",
+        "extractor": "merged",
+        "source_url": "",
+        "event_count": len(merged_events),
+        "events": merged_events,
+        "meta": {"stamp": stamp, "sources": list(listing_ns.source)},
+    }
+    merged_listing_path.parent.mkdir(parents=True, exist_ok=True)
+    merged_listing_path.write_text(json.dumps(merged_listing, ensure_ascii=False, indent=2), encoding="utf-8")
+
     print("\n[run] ——— Detailseiten laden (enrich) ———\n", flush=True)
     enrich_ns = argparse.Namespace(
-        from_file="",
+        from_file=str(merged_listing_path),
         output=args.enrich_output or "",
         headed=args.headed,
         timeout_ms=args.timeout_ms,
@@ -65,7 +97,7 @@ def cmd_run(args: argparse.Namespace) -> int:
 def cmd_listing(args: argparse.Namespace) -> int:
     root = _project_root()
     sources: list[str] = list(args.source)
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    stamp = getattr(args, "utc_stamp", "") or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 
     if args.url and len(sources) > 1:
         print(

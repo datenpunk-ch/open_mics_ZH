@@ -1,52 +1,51 @@
 # Open Mics Zurich
 
-Ein Projekt zur Frage:
-Wo kann man wann in Zürich lachen (oder selbst auf der Bühne stehen)?
+Where (and when) can you laugh in Zürich — or get on stage yourself?
 
-## Ziel
-- Open Mic Events sammeln
-- Daten aus verschiedenen Quellen integrieren
-- Regelmässige Events auflisten und visuell darstellen
-	- Weekday, Location, Time, Cost, Comedy_language
+## Goal
+- Collect open mic events
+- Integrate data from multiple sources
+- List recurring events and visualise them
+  - Weekday, Location, Time, Cost, Comedy_language
 
-## Struktur
-- scrapers/: Daten sammeln
-- data/: Rohdaten und bereinigte Daten
-- src/: Analyse
-- docs/: Notizen und Methodik
-- `src/collect_data.py`: **ein Skript** — nutzt **Pixi** (`.pixi/envs/default`), falls `[tool.pixi.workspace]` im `pyproject.toml` und die Umgebung existiert bzw. `pixi install` möglich ist; sonst `.venv` + `requirements.txt`
-- **Ohne Argumente** (oder `pixi run collect`): voller Lauf — Listing → angereicherte JSON → **`data/processed/events_flat.csv`** (u. a. Weekday, Location, Time, Cost, **Comedy_language**, Regularity, **Event_title**, URL; gleiche Serie an mehreren Terminen → Regularity „recurring“). **Comedy_language** = on-stage language (not inferred from ``/en/`` etc. in the URL).
-- Nur Listing-JSON ohne viele Detailseiten: `python src/collect_data.py listing` bzw. `pixi run listing`
-- Einzelschritte weiterhin: `python -m scrapers enrich` / `flatten` (ohne `--from` bzw. `-i` = jeweils neueste Datei unter `data/raw` / `data/processed`)
-- IDE-Interpreter (Cursor/VS Code): unter Windows z. B. `.pixi/envs/default/python.exe`, unter Linux/macOS `.pixi/envs/default/bin/python` (nach `pixi install`; siehe `.vscode/settings.json` ggf. anpassen)
+## Structure
+- `scrapers/`: data collection
+- `data/`: raw and processed data
+- `src/`: analysis + app code
+- `docs/`: static site + notes/methodology
+- `src/collect_data.py`: **one script** — uses **Pixi** (`.pixi/envs/default`) if `[tool.pixi.workspace]` is set in `pyproject.toml` and the environment exists / `pixi install` is available; otherwise use `.venv` + `requirements.txt`
+- **Without arguments** (or `pixi run collect`): full run — listing → enriched JSON → **`data/processed/events_flat.csv`** (includes Weekday, Location, Time, Cost, **Comedy_language**, Regularity, **Event_title**, URL; same series across multiple dates → Regularity “recurring”). **Comedy_language** = on-stage language (not inferred from `/en/` etc. in the URL)
+- Listing JSON only (fewer detail pages): `python src/collect_data.py listing` or `pixi run listing`
+- Individual steps still work: `python -m scrapers enrich` / `flatten` (without `--from` / `-i` = uses the latest file under `data/raw` / `data/processed`)
+- IDE interpreter (Cursor/VS Code): on Windows e.g. `.pixi/envs/default/python.exe`, on Linux/macOS `.pixi/envs/default/bin/python` (after `pixi install`; adjust `.vscode/settings.json` if needed)
 
-## Quellcode & Contributor
+## Source code & contributors
 
 - **Repository:** [github.com/datenpunk-ch/open_mics_ZH](https://github.com/datenpunk-ch/open_mics_ZH)
-- **Organisation / Contributor:** [datenpunk-ch](https://github.com/datenpunk-ch)
+- **Organisation / contributor:** [datenpunk-ch](https://github.com/datenpunk-ch)
 
-## Visualisierung (lokale Web-App)
+## Visualisation (local web app)
 
-Interaktive Ansicht mit Filtern (Wochentag/Sprache/Regularity), Event-Liste und Karte.
+Interactive view with filters (weekday/language), event list, and map.
 
-- **Mit Pixi**:
+- **With Pixi**:
   - `pixi run app`
-  - oder: `pixi run start-app`
-- **Windows “ein Script”**:
-  - PowerShell: `.\start_app.ps1` (oder `.\src\start_app.ps1`)
-  - CMD: `start_app.cmd` (oder `src\start_app.cmd`)
-- **Ohne Pixi**:
+  - or: `pixi run start-app`
+- **Windows “one script”**:
+  - PowerShell: `.\start_app.ps1` (or `.\src\start_app.ps1`)
+  - CMD: `start_app.cmd` (or `src\start_app.cmd`)
+- **Without Pixi**:
   - `python -m pip install -r requirements.txt`
   - `streamlit run src/open_mics_app.py`
 
-## Website (GitHub Pages, statisch)
+## Website (GitHub Pages, static)
 
-Für das Einbetten/Hosting auf einer Website (z. B. GitHub Pages) gibt es eine **statische** Version unter `docs/`.
-Sie lädt `docs/data/events.json` und zeigt Karte + Filter + Event-Liste (ohne Server, ohne Runtime-Geocoding).
+For embedding/hosting (e.g. GitHub Pages) there is a **static** version under `docs/`.
+It loads `docs/data/events.json` and shows map + filters + event list (no server, no runtime geocoding).
 
-- **Build-time Geocoding (einmalig / wenn neue Locations kommen)**:
+- **Build-time geocoding (once / when new locations appear)**:
   - `pixi run geocode`
-- **Statische Site exportieren**:
+- **Export the static site**:
   - `pixi run export-site`
 
-Dann in GitHub unter **Settings → Pages** als Source **“Deploy from a branch”** wählen und als Folder **`/docs`**.
+Then in GitHub under **Settings → Pages**, choose **“Deploy from a branch”** and set the folder to **`/docs`**.

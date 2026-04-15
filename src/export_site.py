@@ -20,6 +20,7 @@ DOCS_EVENTS_JSON = DOCS_DATA_DIR / "events.json"
 
 WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 _RE_OPEN_MIC = re.compile(r"\bopen[\s-]*mic\b", re.I)
+_COUNTRY_TOKENS = {"schweiz", "suisse", "svizzera", "svizra", "switzerland"}
 
 
 def _load_geocache(path: Path) -> dict[str, dict]:
@@ -33,6 +34,132 @@ def _load_geocache(path: Path) -> dict[str, dict]:
 
 def _norm(s: str) -> str:
     return " ".join(str(s or "").split()).strip()
+
+
+def _clean_display_name(display_name: str) -> str:
+    raw = re.sub(r"\s+", " ", (display_name or "").strip())
+    if not raw:
+        return ""
+    parts = [p.strip() for p in raw.split(",") if p.strip()]
+
+    while parts:
+        last = parts[-1]
+        slash_tokens = {t.strip().lower() for t in last.split("/") if t.strip()}
+        if slash_tokens and slash_tokens <= _COUNTRY_TOKENS:
+            parts.pop()
+            continue
+        if last.lower() in _COUNTRY_TOKENS:
+            parts.pop()
+            continue
+        break
+
+    return ", ".join(parts)
+
+
+def _format_address_from_display_name(*, venue_hint: str, display_name: str) -> tuple[str, str, str]:
+    """
+    Return (venue, address, location_display).
+    - venue: cleaned venue name
+    - address: "Street No, ZIP City" (may be empty)
+    - location_display: "Venue, Street No, ZIP City" (or best-effort fallback)
+    """
+    dn = _clean_display_name(display_name)
+    parts = [p.strip() for p in dn.split(",") if p.strip()]
+
+    venue = (venue_hint or "").strip()
+    if venue:
+        if re.match(r"^\d", venue):
+            venue = ""
+        if len(venue) < 2:
+            venue = ""
+    if venue:
+        # Strip embedded address fragments from venue hint to avoid duplication.
+        v = re.sub(r"\s+", " ", venue).strip()
+        v = re.sub(r"\b\d{4}\s+(?:zürich|zurich)\b", "", v, flags=re.I).strip()
+        v = re.sub(
+            r"\b[\wÀ-ÿ.\-']+(?:strasse|straße|gasse|platz|weg|allee|quai|promenade|ring|ufer|hof|berg|steig|bühl|rain|brücke|bruecke)\s*\d+[a-z]?\b",
+            "",
+            v,
+            flags=re.I,
+        ).strip()
+        v = re.sub(r"\s{2,}", " ", v).strip(" ,-/–—")
+        if v and len(v) >= 2:
+            venue = v
+
+    venue_fold = (venue or "").strip().casefold()
+
+    def _looks_like_street_name(s: str) -> bool:
+        t = (s or "").strip().casefold()
+        if not t:
+            return False
+        return bool(
+            re.search(
+                r"(strasse|straße|gasse|platz|weg|allee|quai|promenade|ring|ufer|hof|berg|steig|bühl|rain|brücke|bruecke)\b",
+                t,
+                flags=re.I,
+            )
+        )
+
+    street = ""
+    number = ""
+    best = (0, "", "")
+    first = ("", "")
+    for i in range(len(parts) - 1):
+        a = parts[i]
+        b = parts[i + 1]
+        cand_street = ""
+        cand_no = ""
+        if re.fullmatch(r"\d+[a-z]?", a, flags=re.I) and re.search(r"[a-zA-ZÄÖÜäöü]", b):
+            cand_no, cand_street = a, b
+        elif re.search(r"[a-zA-ZÄÖÜäöü]", a) and re.fullmatch(r"\d+[a-z]?", b, flags=re.I):
+            cand_street, cand_no = a, b
+        else:
+            continue
+        if not first[0]:
+            first = (cand_street, cand_no)
+        street_fold = cand_street.strip().casefold()
+        score = 0
+        if _looks_like_street_name(cand_street):
+            score += 3
+        if venue_fold and street_fold and street_fold != venue_fold:
+            score += 1
+        if venue_fold and street_fold and street_fold == venue_fold:
+            score -= 5
+        if score > best[0]:
+            best = (score, cand_street, cand_no)
+    if best[1] and best[2]:
+        street, number = best[1], best[2]
+    elif first[0] and first[1]:
+        street, number = first[0], first[1]
+
+    street_line = " ".join(x for x in [street, number] if x).strip()
+
+    zip_code = ""
+    for p in parts:
+        m = re.search(r"\b(\d{4})\b", p)
+        if m:
+            zip_code = m.group(1)
+            if zip_code.startswith("8"):
+                break
+    city = ""
+    for p in parts:
+        if p.lower() in ("zürich", "zurich"):
+            city = "Zürich"
+            break
+    if not city and len(parts) >= 2:
+        for p in reversed(parts):
+            if re.search(r"\b\d{4}\b", p):
+                continue
+            if len(p) >= 3:
+                city = p
+                break
+    tail = " ".join(x for x in [zip_code, city] if x).strip()
+
+    address = ", ".join(x for x in [street_line, tail] if x).strip()
+    location_display = ", ".join(x for x in [venue, address] if x).strip()
+    if not location_display:
+        location_display = venue or address or dn
+    return venue, address, location_display
 
 
 def _write_index_html(path: Path, *, build_stamp: str) -> None:
@@ -323,6 +450,29 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
         return parts.includes(selected);
       }}
 
+      function formatLocation(loc) {{
+        const s = (loc || '').toString().trim();
+        if (!s) return '';
+        // Normalise comma-separated parts and remove obvious duplicates / venue echoes.
+        const parts = s.split(',').map(x => x.trim()).filter(Boolean);
+        if (!parts.length) return s;
+        const out = [];
+        const seen = new Set();
+        const venue = (parts[0] || '').toLowerCase();
+        for (let i = 0; i < parts.length; i++) {{
+          const p = parts[i];
+          const pl = p.toLowerCase();
+          if (seen.has(pl)) continue;
+          // Drop patterns like "Venue, Venue 131, 8005 Zürich" (venue echoed as "street").
+          if (i === 1 && venue && pl.startsWith(venue + ' ') && /\\b\\d+[a-z]?\\b/i.test(p.slice(venue.length))) {{
+            continue;
+          }}
+          seen.add(pl);
+          out.push(p);
+        }}
+        return out.join(', ');
+      }}
+
       function setActive(eventId) {{
         if (_lastActiveId) {{
           const prev = document.getElementById(_lastActiveId);
@@ -386,7 +536,7 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
 
           const ml = document.createElement('div');
           ml.className = 'meta';
-          ml.textContent = (e.location || '');
+          ml.textContent = formatLocation(e.location_display || e.location || '');
           div.appendChild(ml);
 
           const pills = document.createElement('div');
@@ -408,11 +558,12 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
                 title: e.title || '(untitled)',
               }});
               const safe = (s) => (s || '').toString().replaceAll('<','&lt;');
+              const locText = formatLocation(e.location_display || e.location || '');
               const popup = `<strong>${{safe(e.title)}}</strong><br/>` +
                             `${{safe(e.weekday)}} ${{safe(e.time)}}<br/>` +
-                            `${{safe(e.location)}}<br/>` +
+                            `${{safe(locText)}}<br/>` +
                             (e.url ? `<a href="${{e.url}}" target="_blank" rel="noreferrer">Open link</a><br/>` : '') +
-                            (e.location ? `<a href="https://www.google.com/maps/search/?api=1&query=${{encodeURIComponent(e.location)}}" target="_blank" rel="noreferrer">Open in Google Maps</a>` : '');
+                            (locText ? `<a href="https://www.google.com/maps/search/?api=1&query=${{encodeURIComponent(locText)}}" target="_blank" rel="noreferrer">Open in Google Maps</a>` : '');
               m.addListener('click', () => {{
                 setActive(eventId);
                 if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow();
@@ -422,11 +573,12 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
               gMarkers.push(m);
             }} else if (lmap && lMarkersLayer) {{
               const safe = (s) => (s || '').toString().replaceAll('<','&lt;');
+              const locText = formatLocation(e.location_display || e.location || '');
               const popup = `<strong>${{safe(e.title)}}</strong><br/>` +
                             `${{safe(e.weekday)}} ${{safe(e.time)}}<br/>` +
-                            `${{safe(e.location)}}<br/>` +
+                            `${{safe(locText)}}<br/>` +
                             (e.url ? `<a href="${{e.url}}" target="_blank" rel="noreferrer">Open link</a><br/>` : '') +
-                            (e.location ? `<a href="https://www.google.com/maps/search/?api=1&query=${{encodeURIComponent(e.location)}}" target="_blank" rel="noreferrer">Open in Google Maps</a>` : '');
+                            (locText ? `<a href="https://www.google.com/maps/search/?api=1&query=${{encodeURIComponent(locText)}}" target="_blank" rel="noreferrer">Open in Google Maps</a>` : '');
               const marker = L.circleMarker([e.lat, e.lon], {{
                 radius: 7,
                 color: '#3a677a',
@@ -552,6 +704,14 @@ def main() -> int:
         except (TypeError, ValueError):
             return None, None
 
+    def formatted_loc(loc: str) -> tuple[str, str, str]:
+        entry = cache.get(loc) or {}
+        dn = entry.get("display_name")
+        venue_hint = loc.split(",", 1)[0].strip() if "," in loc else loc
+        if isinstance(dn, str) and dn.strip():
+            return _format_address_from_display_name(venue_hint=venue_hint, display_name=dn)
+        return (venue_hint, "", loc)
+
     events = []
     missing_coords = 0
     for _, row in df.iterrows():
@@ -559,10 +719,14 @@ def main() -> int:
         lat, lon = coord_for(loc)
         if lat is None or lon is None:
             missing_coords += 1
+        venue, address, location_display = formatted_loc(loc)
         events.append(
             {
                 "weekday": _norm(row.get("Weekday", "")),
                 "location": loc,
+                "venue": _norm(venue),
+                "address": _norm(address),
+                "location_display": _norm(location_display),
                 "time": _norm(row.get("Time", "")),
                 "cost": _norm(row.get("Cost", "")),
                 "language": _norm(row.get("Comedy_language", "")),

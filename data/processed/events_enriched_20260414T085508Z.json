@@ -1,0 +1,79 @@
+{
+  "enriched_at": "2026-04-14T08:55:08.241696+00:00",
+  "listing_scraped_at": "2026-04-14T08:54:49.764670+00:00",
+  "listing_source": "gz_wollishofen_open_mic",
+  "listing_source_url": "https://gz-zh.ch/gz-wollishofen/angebote/open-mic/",
+  "event_count": 1,
+  "events": [
+    {
+      "url": "https://gz-zh.ch/gz-wollishofen/angebote/open-mic/",
+      "title": "Open Mic",
+      "path": "/gz-wollishofen/angebote/open-mic/",
+      "detail": {
+        "scraped_at": "2026-04-14T08:55:08.124639+00:00",
+        "kind": "event_page",
+        "url": "https://gz-zh.ch/gz-wollishofen/angebote/open-mic/",
+        "host": "gz-zh.ch",
+        "title_tag": "Open Mic - GZ Wollishofen - Zürcher Gemeinschaftszentren",
+        "og_title": "",
+        "og_image": "",
+        "h1": "Open Mic",
+        "text_preview": "Events, Musik Open Mic Fr., 24. Apr. 2026 19:00–23:00 Uhr GZ Wollishofen Alle Daten anzeigen Daten Der Anlass findet jeden letzten Freitag des Monats ab 19.00 Uhr statt, mit Ausnahme von den Monaten Juli und Dezember, in denen eine Pause eingelegt wird. Summer Special: Mai, Juni, August Ort GZ Wollishofen Bachstrasse 7 Saal 60 Veranstalter*in Open Mic Team Bianca, David, Peter und Alex – meldet euch bei Fragen via Facebook oder Instagram und GZ Wollishofen Sandra Hauser E-Mail 043 243 11 36 (keine Auskunft über Equipment etc) Kosten kostenlos Anmeldung Ohne Anmeldung Besondere Hinweise An der Bar bekommt ihr leckere Getränke und kleine Snacks zu einem guten Preis! Im Sommer findet der Event draussen in Form von einem Summer Special statt: hier findest du die Infos und Daten . Der Anlass für alle, die gerne Musik machen oder hören und die Woche am Freitagabend ausklingen lassen möchten. Ob Profi oder Anfänger*in, ob alleine oder mit anderen Musiker*innen; alle Genres, Niveaus und akustischen Kunstformen sind am Mikrofon willkommen! Nutze die Gelegenheit, deinen Sound zu teilen, Kontakte zu knüpfen und mit anderen zu jammen. Komm vorbei und geniesse einen vielfältigen Abend im GZ am See. Instagram: @openmicwolli",
+        "ld_json": [
+          {
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "WebPage",
+                "@id": "https://gz-zh.ch/gz-wollishofen/angebote/open-mic/",
+                "url": "https://gz-zh.ch/gz-wollishofen/angebote/open-mic/",
+                "name": "Open Mic - GZ Wollishofen - Zürcher Gemeinschaftszentren",
+                "isPartOf": {
+                  "@id": "https://gz-zh.ch/gz-wollishofen/#website"
+                },
+                "datePublished": "2019-06-12T09:57:52+00:00",
+                "dateModified": "2026-03-27T22:01:58+00:00",
+                "description": "Ob Profi oder Anfänger*in, ob alleine oder mit anderen Musiker*innen; alle Genres und Niveaus sind bei uns in Wollishofen willkommen!",
+                "inLanguage": "de",
+                "potentialAction": [
+                  {
+                    "@type": "ReadAction",
+                    "target": [
+                      "https://gz-zh.ch/gz-wollishofen/angebote/open-mic/"
+                    ]
+                  }
+                ]
+              },
+              {
+                "@type": "WebSite",
+                "@id": "https://gz-zh.ch/gz-wollishofen/#website",
+                "url": "https://gz-zh.ch/gz-wollishofen/",
+                "name": "GZ Wollishofen",
+                "description": "Zürcher Gemeinschaftszentren",
+                "potentialAction": [
+                  {
+                    "@type": "SearchAction",
+                    "target": {
+                      "@type": "EntryPoint",
+                      "urlTemplate": "https://gz-zh.ch/gz-wollishofen/search/{search_term_string}"
+                    },
+                    "query-input": {
+                      "@type": "PropertyValueSpecification",
+                      "valueRequired": true,
+                      "valueName": "search_term_string"
+                    }
+                  }
+                ],
+                "inLanguage": "de"
+              }
+            ]
+          }
+        ],
+        "meta": {
+          "url": "https://gz-zh.ch/gz-wollishofen/angebote/open-mic/",
+          "warnings": []
+        }
+      }
+    }
+  ]
+}

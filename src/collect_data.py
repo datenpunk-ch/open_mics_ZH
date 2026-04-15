@@ -40,7 +40,8 @@ _ROOT_CMDS = frozenset({"listing", "event-page", "list-sources", "enrich", "flat
 
 
 def _project_root() -> Path:
-    return Path(__file__).resolve().parent
+    # File lives under src/; project root is one level up.
+    return Path(__file__).resolve().parents[1]
 
 
 def _venv_python(project: Path) -> Path:
@@ -243,6 +244,8 @@ def _same_executable(a: Path, b: Path) -> bool:
 
 def main() -> int:
     project = _project_root()
+    if str(project) not in sys.path:
+        sys.path.insert(0, str(project))
     try:
         runner_py = ensure_environment(project)
     except subprocess.CalledProcessError as e:

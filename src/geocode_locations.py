@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 import time
 import urllib.parse
 import urllib.request
@@ -78,6 +79,7 @@ def main() -> int:
     for i, loc in enumerate(missing, start=1):
         candidates: list[str] = []
         candidates.append(loc)
+        candidates.append(re.sub(r"\bSaal\s*\d+\b", "", loc, flags=re.I).strip())
         if "," in loc:
             candidates.append(loc.split(",", 1)[1].strip())
         if "zürich" not in loc.lower() and "zurich" not in loc.lower():

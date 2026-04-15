@@ -225,7 +225,7 @@
     <a class="skip-link" href="#items">Skip to list</a>
     <header>
       <h1>Open Mics Zurich</h1>
-      <div class="sub">Recurring open mic events in and around Zürich. Filter by weekday and explore locations on the map. <span style="font-family:var(--font-mono); color:var(--color-muted);">Build: 2026-04-14T13:21:35Z</span></div>
+      <div class="sub">Recurring open mic events in and around Zürich. Filter by weekday and explore locations on the map. <span style="font-family:var(--font-mono); color:var(--color-muted);">Build: 2026-04-15T11:55:15Z</span></div>
     </header>
 
     <div class="layout">
@@ -264,7 +264,7 @@
       crossorigin=""
     ></script>
     <script>
-      const BUILD_STAMP = "2026-04-14T13:21:35Z";
+      const BUILD_STAMP = "2026-04-15T11:55:15Z";
       let gmap = null;
       let gInfoWindow = null;
       let gMarkers = [];
@@ -282,6 +282,29 @@
         if (!selected || selected === '__all__') return true;
         const parts = (cell || '').split(',').map(x => x.trim()).filter(Boolean);
         return parts.includes(selected);
+      }
+
+      function formatLocation(loc) {
+        const s = (loc || '').toString().trim();
+        if (!s) return '';
+        // Normalise comma-separated parts and remove obvious duplicates / venue echoes.
+        const parts = s.split(',').map(x => x.trim()).filter(Boolean);
+        if (!parts.length) return s;
+        const out = [];
+        const seen = new Set();
+        const venue = (parts[0] || '').toLowerCase();
+        for (let i = 0; i < parts.length; i++) {
+          const p = parts[i];
+          const pl = p.toLowerCase();
+          if (seen.has(pl)) continue;
+          // Drop patterns like "Venue, Venue 131, 8005 Zürich" (venue echoed as "street").
+          if (i === 1 && venue && pl.startsWith(venue + ' ') && /\b\d+[a-z]?\b/i.test(p.slice(venue.length))) {
+            continue;
+          }
+          seen.add(pl);
+          out.push(p);
+        }
+        return out.join(', ');
       }
 
       function setActive(eventId) {
@@ -347,7 +370,7 @@
 
           const ml = document.createElement('div');
           ml.className = 'meta';
-          ml.textContent = (e.location || '');
+          ml.textContent = formatLocation(e.location_display || e.location || '');
           div.appendChild(ml);
 
           const pills = document.createElement('div');
@@ -369,11 +392,12 @@
                 title: e.title || '(untitled)',
               });
               const safe = (s) => (s || '').toString().replaceAll('<','&lt;');
+              const locText = formatLocation(e.location_display || e.location || '');
               const popup = `<strong>${safe(e.title)}</strong><br/>` +
                             `${safe(e.weekday)} ${safe(e.time)}<br/>` +
-                            `${safe(e.location)}<br/>` +
+                            `${safe(locText)}<br/>` +
                             (e.url ? `<a href="${e.url}" target="_blank" rel="noreferrer">Open link</a><br/>` : '') +
-                            (e.location ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.location)}" target="_blank" rel="noreferrer">Open in Google Maps</a>` : '');
+                            (locText ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locText)}" target="_blank" rel="noreferrer">Open in Google Maps</a>` : '');
               m.addListener('click', () => {
                 setActive(eventId);
                 if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow();
@@ -383,11 +407,12 @@
               gMarkers.push(m);
             } else if (lmap && lMarkersLayer) {
               const safe = (s) => (s || '').toString().replaceAll('<','&lt;');
+              const locText = formatLocation(e.location_display || e.location || '');
               const popup = `<strong>${safe(e.title)}</strong><br/>` +
                             `${safe(e.weekday)} ${safe(e.time)}<br/>` +
-                            `${safe(e.location)}<br/>` +
+                            `${safe(locText)}<br/>` +
                             (e.url ? `<a href="${e.url}" target="_blank" rel="noreferrer">Open link</a><br/>` : '') +
-                            (e.location ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.location)}" target="_blank" rel="noreferrer">Open in Google Maps</a>` : '');
+                            (locText ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locText)}" target="_blank" rel="noreferrer">Open in Google Maps</a>` : '');
               const marker = L.circleMarker([e.lat, e.lon], {
                 radius: 7,
                 color: '#3a677a',

@@ -68,7 +68,7 @@ _RE_SHOW_IN_EN = re.compile(
 _RE_PERFORMED_EN = re.compile(r"\bperformed in english\b", re.I)
 
 _SLUG_LANG_HINTS: tuple[tuple[str, str], ...] = (
-    ("dini-muetter", "Swiss German"),
+    ("dini-muetter", "German"),
     ("comedia-en-espanol", "Spanish"),
     ("comedia-en-espa", "Spanish"),
 )
@@ -86,6 +86,257 @@ _LANG_CODE_MAP: dict[str, str] = {
     "it": "Italian",
     "ita": "Italian",
 }
+
+_COUNTRY_TOKENS = {
+    "schweiz",
+    "suisse",
+    "svizzera",
+    "svizra",
+    "switzerland",
+}
+
+
+def _clean_display_name(display_name: str) -> str:
+    raw = re.sub(r"\s+", " ", (display_name or "").strip())
+    if not raw:
+        return ""
+    parts = [p.strip() for p in raw.split(",") if p.strip()]
+
+    while parts:
+        last = parts[-1]
+        slash_tokens = {t.strip().lower() for t in last.split("/") if t.strip()}
+        if slash_tokens and slash_tokens <= _COUNTRY_TOKENS:
+            parts.pop()
+            continue
+        if last.lower() in _COUNTRY_TOKENS:
+            parts.pop()
+            continue
+        break
+
+    return ", ".join(parts)
+
+
+def _load_location_geocache() -> dict[str, dict]:
+    try:
+        p = Path(__file__).resolve().parents[1] / "data" / "processed" / "location_geocache.json"
+        if not p.is_file():
+            return {}
+        return json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+_LOCATION_GEOCACHE = _load_location_geocache()
+
+
+def _format_address(*, venue_hint: str, display_name: str) -> str:
+    """
+    Format as: "Venue, StreetName No, ZIP City"
+    using a venue hint (usually from the original Location string) plus Nominatim display_name.
+    """
+    dn = _clean_display_name(display_name)
+    parts = [p.strip() for p in dn.split(",") if p.strip()]
+
+    # Venue: keep hint if it looks like a name (not a number/address fragment)
+    venue = (venue_hint or "").strip()
+    if venue:
+        if re.match(r"^\d", venue):
+            venue = ""
+        if len(venue) < 2:
+            venue = ""
+    if venue:
+        # If the "venue" already includes address fragments (street/zip/city), strip them.
+        # This avoids outputs like "GZ Wollishofen Bachstrasse 7 ..., Bachstrasse 7, 8038 Zürich".
+        v = re.sub(r"\s+", " ", venue).strip()
+        # Remove common "ZIP City" tails inside the venue hint.
+        v = re.sub(r"\b\d{4}\s+(?:zürich|zurich)\b", "", v, flags=re.I).strip()
+        # Remove embedded "StreetName No" patterns from venue hint.
+        v = re.sub(
+            r"\b[\wÀ-ÿ.\-']+(?:strasse|straße|gasse|platz|weg|allee|quai|promenade|ring|ufer|hof|berg|steig|bühl|rain|brücke|bruecke)\s*\d+[a-z]?\b",
+            "",
+            v,
+            flags=re.I,
+        ).strip()
+        v = re.sub(r"\s{2,}", " ", v).strip(" ,-/–—")
+        if v and len(v) >= 2:
+            venue = v
+
+    # Street + number: Nominatim often gives "No, Street" (e.g. "359, Schaffhauserstrasse")
+    street = ""
+    number = ""
+    venue_fold = (venue or "").strip().casefold()
+
+    def _looks_like_street_name(s: str) -> bool:
+        t = (s or "").strip().casefold()
+        if not t:
+            return False
+        # Zurich-centric street tokens; keep broad but avoid obvious venue names.
+        return bool(
+            re.search(
+                # allow suffix matches like "Sihlquai" (not just "... quai")
+                r"(strasse|straße|gasse|platz|weg|allee|quai|promenade|ring|ufer|hof|berg|steig|bühl|rain|brücke|bruecke)\b",
+                t,
+                flags=re.I,
+            )
+        )
+
+    best = (0, "", "")  # (score, street, number)
+    first = ("", "")
+    for i in range(len(parts) - 1):
+        a = parts[i]
+        b = parts[i + 1]
+        cand_street = ""
+        cand_no = ""
+        if re.fullmatch(r"\d+[a-z]?", a, flags=re.I) and re.search(r"[a-zA-ZÄÖÜäöü]", b):
+            cand_no, cand_street = a, b
+        elif re.search(r"[a-zA-ZÄÖÜäöü]", a) and re.fullmatch(r"\d+[a-z]?", b, flags=re.I):
+            cand_street, cand_no = a, b
+        else:
+            continue
+
+        if not first[0]:
+            first = (cand_street, cand_no)
+
+        street_fold = cand_street.strip().casefold()
+        # Prefer real street names; avoid using the venue name as street ("Auer & Co, 131").
+        score = 0
+        if _looks_like_street_name(cand_street):
+            score += 3
+        if venue_fold and street_fold and street_fold != venue_fold:
+            score += 1
+        if venue_fold and street_fold and street_fold == venue_fold:
+            score -= 5
+
+        if score > best[0]:
+            best = (score, cand_street, cand_no)
+
+    if best[1] and best[2]:
+        street, number = best[1], best[2]
+    elif first[0] and first[1]:
+        # Fallback for non-streety places; better than blank, but last resort.
+        street, number = first[0], first[1]
+    street_line = " ".join(x for x in [street, number] if x).strip()
+
+    # ZIP + City: find the first 4-digit token (prefer 8xxx) and a nearby city token (prefer Zürich)
+    zip_code = ""
+    for p in parts:
+        m = re.search(r"\b(\d{4})\b", p)
+        if m:
+            zip_code = m.group(1)
+            if zip_code.startswith("8"):
+                break
+    city = ""
+    for p in parts:
+        if p.lower() in ("zürich", "zurich"):
+            city = "Zürich"
+            break
+    if not city and len(parts) >= 2:
+        # fallback: last non-zip part
+        for p in reversed(parts):
+            if re.search(r"\b\d{4}\b", p):
+                continue
+            if len(p) >= 3:
+                city = p
+                break
+
+    tail = " ".join(x for x in [zip_code, city] if x).strip()
+
+    out = ", ".join(x for x in [venue, street_line, tail] if x)
+    return out.strip()
+
+
+def _canonicalize_location(loc: str) -> str:
+    """
+    Canonicalize different formatting of the same venue/address via geocode cache.
+    Example: "Amboss Rampe, Zürich (CH)" -> "Amboss Rampe, 80, Zollstrasse, ... , 8005"
+    """
+    l = (loc or "").strip()
+    if not l:
+        return ""
+    entry = _LOCATION_GEOCACHE.get(l) if isinstance(_LOCATION_GEOCACHE, dict) else None
+    if isinstance(entry, dict):
+        dn = entry.get("display_name")
+        if isinstance(dn, str) and dn.strip():
+            venue_hint = l.split(",", 1)[0].strip() if "," in l else l
+            formatted = _format_address(venue_hint=venue_hint, display_name=dn)
+            if formatted:
+                return formatted
+    return l
+
+_LANG_STOPWORDS: dict[str, set[str]] = {
+    "English": {
+        "the",
+        "and",
+        "or",
+        "with",
+        "doors",
+        "show",
+        "starts",
+        "start",
+        "free",
+        "tickets",
+        "comedy",
+        "open",
+        "mic",
+        "night",
+        "join",
+        "hosted",
+        "every",
+        "audience",
+    },
+    "German": {
+        "und",
+        "oder",
+        "mit",
+        "tür",
+        "tuer",
+        "einlass",
+        "beginn",
+        "kostenlos",
+        "tickets",
+        "komödie",
+        "komodie",
+        "kultur",
+        "jeden",
+        "monat",
+        "uhr",
+        "anmeldung",
+        "hinweis",
+        "bühne",
+        "buehne",
+    },
+    "French": {"et", "avec", "entrée", "entree", "gratuit", "spectacle", "comédie", "comedie"},
+    "Spanish": {"y", "con", "entrada", "gratis", "comedia", "español", "espanol"},
+}
+
+
+def _infer_language_from_text(blob: str) -> str:
+    """
+    Lightweight fallback when no explicit language cues exist.
+    Uses stopword scoring over title + visible copy.
+    """
+    if not blob:
+        return ""
+    t = blob.lower()
+    t = re.sub(r"[^a-z0-9äöüéèàçñß\s]", " ", t, flags=re.I)
+    t = re.sub(r"\s+", " ", t).strip()
+    if len(t) < 60:
+        return ""
+    toks = t.split()
+    if len(toks) < 12:
+        return ""
+
+    scores: dict[str, int] = {k: 0 for k in _LANG_STOPWORDS}
+    for tok in toks:
+        for lang, sw in _LANG_STOPWORDS.items():
+            if tok in sw:
+                scores[lang] += 1
+
+    best_lang, best = max(scores.items(), key=lambda kv: kv[1])
+    second = sorted(scores.values(), reverse=True)[1] if len(scores) > 1 else 0
+    if best >= 4 and best - second >= 2:
+        return best_lang
+    return ""
 
 
 def _fold_for_clustering(s: str) -> str:
@@ -186,6 +437,29 @@ def _detail_meta_blob(detail: dict | None) -> str:
         str(detail.get("text_preview") or "")[:12000],
     ]
     return " ".join(p for p in parts if p).strip()
+
+
+def _gz_extract_fields(detail: dict | None) -> tuple[str, str]:
+    """
+    Extract (location, cost) from gz-zh.ch offer pages.
+    Their pages have consistent labels like "Ort" and "Kosten" in the visible text preview.
+    """
+    if not detail or str(detail.get("host") or "").lower() != "gz-zh.ch":
+        return "", ""
+    text = str(detail.get("text_preview") or "")
+    if not text:
+        return "", ""
+    t = re.sub(r"\s+", " ", text).strip()
+
+    loc = ""
+    m = re.search(r"\bOrt\b\s+(.+?)\s+\bVeranstalter", t, flags=re.I)
+    if m:
+        loc = m.group(1).strip()
+    cost = ""
+    m2 = re.search(r"\bKosten\b\s+(.+?)\s+\bAnmeldung\b", t, flags=re.I)
+    if m2:
+        cost = m2.group(1).strip()
+    return loc[:300], cost[:120]
 
 
 def _location_after_events_count(title: str) -> str:
@@ -466,7 +740,7 @@ def _normalize_in_language_token(raw: str) -> str:
         "french": "French",
         "spanish": "Spanish",
         "italian": "Italian",
-        "swiss german": "Swiss German",
+        "swiss german": "German",
     }
     if low in known:
         return known[low]
@@ -499,7 +773,7 @@ def _language_from_description(desc: str) -> str:
         if "french" in low or "français" in low or "francais" in low:
             return "French"
         if "german" in low and "swiss" in low:
-            return "Swiss German"
+            return "German"
         if "german" in low or "deutsch" in low:
             return "German"
         if "english" in low or low.strip() in ("yes.", "yes", "y"):
@@ -571,9 +845,9 @@ def _infer_comedy_language(
     if "english stand-up" in blob or "english stand up" in blob or "english comedy" in blob:
         add("English")
     if "schwugo" in f"{path} {url} {title}".lower():
-        add("Swiss German")
+        add("German")
     if "swiss german" in blob or "schwiizertüütsch" in blob or "schweizerdeutsch" in blob:
-        add("Swiss German")
+        add("German")
     if "auf deutsch" in blob or re.search(r"\bin german\b", blob):
         add("German")
     if "français" in blob or " en français" in blob or "in french" in blob:
@@ -586,8 +860,7 @@ def _infer_comedy_language(
     if parts_out:
         return "; ".join(dict.fromkeys(parts_out))
 
-    # Unknown — do not infer from ``/en/`` URL locale alone.
-    return ""
+    return _infer_language_from_text(blob)
 
 
 def _event_node_from_detail(detail: dict | None) -> dict | None:
@@ -704,6 +977,14 @@ def _flatten_row_and_key(event: dict) -> tuple[dict[str, str], str]:
         path=path,
     )
 
+    gz_loc, gz_cost = _gz_extract_fields(detail)
+    if gz_loc:
+        location = gz_loc
+    if gz_cost and not cost:
+        cost = gz_cost
+
+    location = _canonicalize_location(location)
+
     ld_list = detail.get("ld_json") if detail else None
     if not isinstance(ld_list, list):
         ld_list = None
@@ -714,6 +995,13 @@ def _flatten_row_and_key(event: dict) -> tuple[dict[str, str], str]:
         url=url,
         has_event_node=node is not None,
     )
+    if (
+        detail
+        and str(detail.get("host") or "").lower() == "gz-zh.ch"
+        and isinstance(detail.get("text_preview"), str)
+        and re.search(r"\bjeden\b[^.]{0,80}\bmonat", detail["text_preview"].lower())
+    ):
+        regularity = "recurring"
 
     titel_event = _titel_event(node, detail, title)
     series_key = _series_identity_key(title=title, detail=detail, node=node)
@@ -740,6 +1028,22 @@ def _flatten_row_and_key(event: dict) -> tuple[dict[str, str], str]:
 
 def _norm_slot_field(s: str) -> str:
     return re.sub(r"\s+", " ", (s or "").strip().lower())
+
+
+_RE_OPEN_MIC = re.compile(r"\bopen[\s-]*mic\b", re.I)
+_RE_SOLO_COMEDIAN_EXCLUDE = re.compile(
+    r"\b(?:ck\s+presents|comedy\s+kiss\s+presents|presents:)\b", re.I
+)
+
+
+def _is_open_mic_confirmed(*texts: str) -> bool:
+    blob = " ".join(t for t in texts if t)
+    return bool(_RE_OPEN_MIC.search(blob))
+
+
+def _looks_like_single_comedian_show(*texts: str) -> bool:
+    blob = " ".join(t for t in texts if t)
+    return bool(_RE_SOLO_COMEDIAN_EXCLUDE.search(blob))
 
 
 def _slot_dedup_title(row: dict[str, str]) -> str:
@@ -804,12 +1108,120 @@ def _dedupe_recurring_slots(rows: list[dict[str, str]]) -> list[dict[str, str]]:
     return out
 
 
+def _token_set(s: str) -> set[str]:
+    t = re.sub(r"[^a-z0-9äöüéèàçñß\s]", " ", (s or "").lower(), flags=re.I)
+    t = re.sub(r"\s+", " ", t).strip()
+    if not t:
+        return set()
+    return {w for w in t.split(" ") if len(w) >= 3}
+
+
+def _titles_look_equivalent(a: str, b: str) -> bool:
+    """
+    Best-effort duplicate detection across sources.
+    We only use this for events that already collide on (location, weekday, time).
+    """
+    fa = _fold_for_clustering(_normalize_series_name(a or ""))
+    fb = _fold_for_clustering(_normalize_series_name(b or ""))
+    if not fa or not fb:
+        return False
+    if fa == fb:
+        return True
+    if fa in fb or fb in fa:
+        return True
+    ta = _token_set(fa)
+    tb = _token_set(fb)
+    if not ta or not tb:
+        return False
+    j = len(ta & tb) / max(1, len(ta | tb))
+    return j >= 0.6
+
+
+def _dedupe_loose_same_slot(rows: list[dict[str, str]]) -> list[dict[str, str]]:
+    """
+    Additional cross-source dedupe: same (location, weekday, time) but minor title formatting
+    differences (e.g. EN vs DE listing, punctuation/case, etc.).
+
+    This is intentionally conservative: we only merge if titles look equivalent.
+    """
+    groups: OrderedDict[tuple[str, str, str], list[dict[str, str]]] = OrderedDict()
+    for r in rows:
+        k = (
+            _norm_slot_field(r.get("Location", "")),
+            _norm_slot_field(r.get("Weekday", "")),
+            _norm_slot_field(r.get("Time", "")),
+        )
+        groups.setdefault(k, []).append(r)
+
+    out: list[dict[str, str]] = []
+    for grp in groups.values():
+        if len(grp) == 1:
+            out.append(dict(grp[0]))
+            continue
+
+        # Partition by "equivalent title" clusters
+        clusters: list[list[dict[str, str]]] = []
+        for r in grp:
+            placed = False
+            for c in clusters:
+                if _titles_look_equivalent(r.get("Event_title", ""), c[0].get("Event_title", "")):
+                    c.append(r)
+                    placed = True
+                    break
+            if not placed:
+                clusters.append([r])
+
+        for c in clusters:
+            if len(c) == 1:
+                out.append(dict(c[0]))
+                continue
+            base = dict(c[0])
+            # Prefer group URLs when available
+            urls = [x.get("URL", "").strip() for x in c if x.get("URL", "").strip()]
+            if urls:
+                pref = [u for u in urls if "/p/groups/" in u.lower()]
+                base["URL"] = (pref[0] if pref else urls[0])
+
+            # Keep the "best" title (longest non-empty after normalization)
+            titles = [x.get("Event_title", "").strip() for x in c if x.get("Event_title", "").strip()]
+            if titles:
+                best = max(titles, key=lambda s: len(_normalize_series_name(s)))
+                base["Event_title"] = re.sub(r"\s+", " ", _normalize_series_name(best)).strip()[:200]
+
+            # Merge language/cost if missing
+            if not base.get("Comedy_language", "").strip():
+                langs = [x.get("Comedy_language", "").strip() for x in c if x.get("Comedy_language", "").strip()]
+                if langs:
+                    base["Comedy_language"] = "; ".join(dict.fromkeys(langs))
+            if not base.get("Cost", "").strip():
+                costs = [x.get("Cost", "").strip() for x in c if x.get("Cost", "").strip()]
+                if costs:
+                    base["Cost"] = costs[0]
+
+            # Prefer an image if base lacks one
+            if not base.get("Image_url", "").strip():
+                imgs = [x.get("Image_url", "").strip() for x in c if x.get("Image_url", "").strip()]
+                if imgs:
+                    base["Image_url"] = imgs[0]
+
+            out.append(base)
+
+    return out
+
+
 def flatten_events_rows(events: list[Any]) -> list[dict[str, str]]:
     pairs: list[tuple[dict[str, str], str]] = []
     for ev in events:
         if not isinstance(ev, dict):
             continue
         row, key = _flatten_row_and_key(ev)
+        # Confirm "open mic" in title OR visible copy
+        detail = ev.get("detail") if isinstance(ev.get("detail"), dict) else None
+        detail_blob = _detail_meta_blob(detail) if detail else ""
+        if _looks_like_single_comedian_show(row.get("Event_title", ""), row.get("Listing_title", "")):
+            continue
+        if not _is_open_mic_confirmed(row.get("Event_title", ""), row.get("Listing_title", ""), detail_blob):
+            continue
         pairs.append((row, key))
     counts = Counter(k for _, k in pairs if k)
     multi = {k for k, v in counts.items() if v >= 2}
@@ -817,7 +1229,11 @@ def flatten_events_rows(events: list[Any]) -> list[dict[str, str]]:
         if key and key in multi:
             row["Regularity"] = "recurring"
     rows = [r for r, _ in pairs]
-    return _dedupe_recurring_slots(rows)
+    rows = _dedupe_recurring_slots(rows)
+    rows = _dedupe_loose_same_slot(rows)
+    # Project output is focused on recurring open mics; drop one-off/single-performer shows.
+    rows = [r for r in rows if (r.get("Regularity") or "").strip().lower() == "recurring"]
+    return rows
 
 
 def flatten_row(event: dict) -> dict[str, str]:
@@ -854,6 +1270,16 @@ def cmd_flatten(args: argparse.Namespace) -> int:
         return 2
 
     rows = flatten_events_rows(events)
+
+    # Duplicate precheck (helps spot multi-source duplicates)
+    by_url = Counter((r.get("URL") or "").strip() for r in rows if (r.get("URL") or "").strip())
+    dup_urls = sum(1 for _, c in by_url.items() if c > 1)
+    if dup_urls:
+        print(f"[flatten] Note: {dup_urls} duplicate URL(s) in output (after filtering).")
+    slot_keys = Counter(_slot_dedup_key(r) for r in rows)
+    dup_slots = sum(1 for _, c in slot_keys.items() if c > 1)
+    if dup_slots:
+        print(f"[flatten] Note: {dup_slots} duplicate slot key(s) in output (after filtering).")
     fieldnames = [
         "Weekday",
         "Location",
