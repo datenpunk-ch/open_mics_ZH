@@ -129,6 +129,18 @@ def _pick_best_result(items: list[dict], *, expected_zip: str, expects_zurich: b
     return good[0] if good else items[0]
 
 
+def _within_viewbox(lat: float, lon: float) -> bool:
+    """Check if a point is inside the configured Zürich viewbox."""
+    try:
+        left = float(_ZURICH_VIEWBOX.get("left"))
+        top = float(_ZURICH_VIEWBOX.get("top"))
+        right = float(_ZURICH_VIEWBOX.get("right"))
+        bottom = float(_ZURICH_VIEWBOX.get("bottom"))
+    except Exception:
+        return True
+    return (left <= float(lon) <= right) and (bottom <= float(lat) <= top)
+
+
 def _nominatim_geocode(query: str, *, timeout_s: int = 20) -> dict | None:
     params: dict[str, str | int] = {
         "q": query,
@@ -236,6 +248,16 @@ def main() -> int:
         if _expects_zurich(loc) and isinstance(dn, str) and not re.search(r"\bzürich\b|\bzurich\b", dn, flags=re.I):
             refresh.append(loc)
             continue
+        # If a "Zürich" location is pinned outside the Zürich viewbox, refresh it.
+        if _expects_zurich(loc):
+            try:
+                lat0 = float(entry.get("lat")) if entry.get("lat") is not None else None
+                lon0 = float(entry.get("lon")) if entry.get("lon") is not None else None
+            except (TypeError, ValueError):
+                lat0 = lon0 = None
+            if isinstance(lat0, float) and isinstance(lon0, float) and not _within_viewbox(lat0, lon0):
+                refresh.append(loc)
+                continue
 
     todo = [*missing, *[x for x in refresh if x not in missing]]
     if not todo:
@@ -252,6 +274,12 @@ def main() -> int:
         candidates.append(re.sub(r"\bSaal\s*\d+\b", "", loc, flags=re.I).strip())
         if "," in loc:
             candidates.append(loc.split(",", 1)[1].strip())
+            # If the venue name is present, also try a plain "Venue, Zürich" query.
+            # This helps when the original location string contains noisy postcode/city duplicates.
+            venue = loc.split(",", 1)[0].strip()
+            if venue and len(venue) >= 2 and _expects_zurich(loc):
+                candidates.append(f"{venue}, Zürich")
+                candidates.append(f"{venue}, Zürich (CH)")
         if "zürich" not in loc.lower() and "zurich" not in loc.lower():
             candidates.append(f"{loc}, Zürich, Switzerland")
         # Deduplicate while preserving order

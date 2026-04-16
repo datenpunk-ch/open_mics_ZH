@@ -24,6 +24,132 @@ from pathlib import Path
 from typing import Any, Iterator
 from urllib.parse import unquote, urlparse
 
+_RULES_JSON_PATH = Path(__file__).resolve().parents[1] / "config" / "rules.json"
+_LOCATION_OVERRIDES_CACHE: list[dict[str, Any]] | None = None
+
+# Eventfrog group pages often repeat "Venue, 8xxx Zürich, CH" in the scraped schedule table while
+# the listing title only has "Venue, Zürich".
+_RE_EVENTFROG_VENUE_PLZ = re.compile(
+    r"(?P<venue>[A-Za-z0-9'’&][A-Za-z0-9'’&.,\s\-–]{1,140}?),\s*(?P<plz>8\d{3})\s+Zürich(?:\s*,\s*CH)?",
+    re.I,
+)
+
+_RE_LEADING_TIME_IN_LOCATION = re.compile(
+    r"^\s*(?:"
+    r"\d{1,2}:\d{2}\s*(?:uhr)?\s+"  # "20:00 Uhr Venue…"
+    r"|"
+    r"\d{2}\s*uhr\s+"  # "00 Uhr Venue…" / "30 Uhr Venue…" (minutes-only scrape artefact)
+    r"|"
+    r"(?:00|15|30|45)\s+"  # "00 Venue…" (minutes-only artefact without "Uhr")
+    r"|"
+    r"uhr\s+"  # stray "Uhr Venue…"
+    r")",
+    re.I,
+)
+
+
+def _strip_leading_time_from_location(loc: str) -> str:
+    s = (loc or "").strip()
+    if not s:
+        return ""
+    s2 = _RE_LEADING_TIME_IN_LOCATION.sub("", s, count=1).strip()
+    return s2 or s
+
+
+def _load_location_overrides() -> list[dict[str, Any]]:
+    global _LOCATION_OVERRIDES_CACHE
+    if _LOCATION_OVERRIDES_CACHE is not None:
+        return _LOCATION_OVERRIDES_CACHE
+    out: list[dict[str, Any]] = []
+    try:
+        data = json.loads(_RULES_JSON_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        _LOCATION_OVERRIDES_CACHE = out
+        return out
+    raw = data.get("location_overrides")
+    if isinstance(raw, list):
+        for item in raw:
+            if isinstance(item, dict):
+                out.append(item)
+    _LOCATION_OVERRIDES_CACHE = out
+    return out
+
+
+def _eventfrog_plz_location_from_preview(detail: dict | None, location: str) -> str:
+    if not detail or str(detail.get("host") or "").lower() != "eventfrog.ch":
+        return location
+    tp = detail.get("text_preview")
+    if not isinstance(tp, str) or not tp.strip():
+        return location
+    loc = (location or "").strip()
+    if re.search(r"\b8\d{3}\s+Zürich\b", loc, re.I):
+        return location
+    venue_hint = loc.split(",", 1)[0].strip().casefold() if loc else ""
+    if not venue_hint:
+        return location
+    best: str | None = None
+    for m in _RE_EVENTFROG_VENUE_PLZ.finditer(tp):
+        v = m.group("venue").strip()
+        plz = m.group("plz").strip()
+        if not v or not plz:
+            continue
+        v_fold = v.casefold()
+        if venue_hint not in v_fold and v_fold not in venue_hint:
+            continue
+        cand = f"{v}, {plz} Zürich"
+        if best is None or len(cand) > len(best):
+            best = cand
+    return best if best else location
+
+
+def _apply_location_overrides(url: str, location: str) -> str:
+    u = (url or "").strip().lower()
+    loc_cur = (location or "").strip()
+    for item in _load_location_overrides():
+        needle = item.get("url_contains")
+        if not isinstance(needle, str) or not needle.strip():
+            continue
+        if needle.strip().lower() not in u:
+            continue
+        loc_need = item.get("location_contains")
+        if isinstance(loc_need, str) and loc_need.strip():
+            if loc_need.strip().lower() not in loc_cur.lower():
+                continue
+        repl = item.get("location")
+        if isinstance(repl, str) and repl.strip():
+            return repl.strip()
+    return loc_cur
+
+
+def _location_looks_complete(loc: str) -> bool:
+    """Heuristic: Swiss PLZ plus structured tail → skip LLM-based replacement."""
+    s = (loc or "").strip()
+    if not s or "," not in s:
+        return False
+    if not re.search(r"\b8\d{3}\b", s):
+        return False
+    return len(s) >= 18
+
+
+def _location_from_venue_llm(detail: dict | None, location: str) -> str:
+    """Prefer ``detail['venue_llm']`` from enrich when location is still vague."""
+    if not detail or not isinstance(detail.get("venue_llm"), dict):
+        return location
+    vr = detail["venue_llm"]
+    try:
+        conf = float(vr.get("confidence") or 0)
+    except (TypeError, ValueError):
+        conf = 0.0
+    if conf < 0.65:
+        return location
+    fl = vr.get("formatted_location")
+    if not isinstance(fl, str) or not fl.strip():
+        return location
+    if _location_looks_complete(location):
+        return location
+    return fl.strip()
+
+
 # ISO weekday 1=Monday … 7=Sunday → English name
 _WEEKDAY_EN: dict[int, str] = {
     1: "Monday",
@@ -846,6 +972,9 @@ def _language_from_description(desc: str) -> str:
     if not desc:
         return ""
     dl = desc.lower()
+    # Explicit on-stage language (common on Swiss sites even when schema.org inLanguage is "en").
+    if re.search(r"\bdeutschsprachig", dl, re.I):
+        return "German"
     # English Eventfrog copy (do not use "bringt" — German marketing is common for English shows)
     if "comedy connection brings" in dl:
         return "English"
@@ -897,6 +1026,17 @@ def _infer_comedy_language(
     On-stage / performance language. Does **not** treat ``/en/`` (or other locale paths)
     as proof of English — that is only the site language on Eventfrog.
     """
+    # Visible page copy (not only schema.org description) — avoids wrong inLanguage from site locale.
+    desc_for_lang = ""
+    if node and isinstance(node.get("description"), str) and node["description"].strip():
+        desc_for_lang = node["description"].strip()
+    meta_blob = _detail_meta_blob(detail) if detail else ""
+    if meta_blob:
+        desc_for_lang = (desc_for_lang + " " + meta_blob).strip() if desc_for_lang else meta_blob
+
+    if desc_for_lang and re.search(r"\bdeutschsprachig", desc_for_lang, re.I):
+        return "German"
+
     parts_out: list[str] = []
 
     if node:
@@ -910,8 +1050,8 @@ def _infer_comedy_language(
         elif isinstance(lang, str) and lang.strip():
             parts_out.append(_normalize_in_language_token(lang))
 
-    desc = ""
-    if node and isinstance(node.get("description"), str):
+    desc = desc_for_lang if desc_for_lang else ""
+    if not desc and node and isinstance(node.get("description"), str):
         desc = node["description"]
     from_desc = _language_from_description(desc)
     if from_desc and from_desc not in parts_out:
@@ -1007,16 +1147,30 @@ def _image_url_from_detail(detail: dict | None, node: dict | None) -> str:
 
 
 def _titel_event(node: dict | None, detail: dict | None, listing_title: str) -> str:
+    def _strip_trailing_city_suffix(s: str) -> str:
+        t = re.sub(r"\s+", " ", (s or "").strip())
+        if not t:
+            return ""
+        # Common artifact from some sources: "... in Zürich" / "... in Zurich"
+        # Only strip when it appears as a trailing suffix.
+        t2 = re.sub(
+            r"\s+\bin\s+z(?:ü|u)rich(?:\s*,\s*(?:ch|che))?\s*$",
+            "",
+            t,
+            flags=re.I,
+        ).strip()
+        return t2 or t
+
     if node:
         n = (node.get("name") or "").strip()
         if n:
-            return n[:200]
+            return _strip_trailing_city_suffix(n)[:200]
     blob = (detail.get("og_title") or detail.get("title_tag") or "").strip() if detail else ""
     if blob and "|" in blob:
         blob = blob.split("|", 1)[0].strip()
     if blob:
-        return blob[:200]
-    return (listing_title or "")[:200]
+        return _strip_trailing_city_suffix(blob)[:200]
+    return _strip_trailing_city_suffix(listing_title or "")[:200]
 
 
 def _flatten_row_and_key(event: dict) -> tuple[dict[str, str], str]:
@@ -1084,7 +1238,11 @@ def _flatten_row_and_key(event: dict) -> tuple[dict[str, str], str]:
     if gz_cost and not cost:
         cost = gz_cost
 
+    location = _location_from_venue_llm(detail, location)
+    location = _eventfrog_plz_location_from_preview(detail, location)
+    location = _strip_leading_time_from_location(location)
     location = _canonicalize_location(location)
+    location = _apply_location_overrides(url, location)
 
     ld_list = detail.get("ld_json") if detail else None
     if not isinstance(ld_list, list):

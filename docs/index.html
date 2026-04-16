@@ -141,11 +141,19 @@
         width: 100%;
         padding: 10px 10px;
         border-radius: 0;
+        box-sizing: border-box;
         border: 1px solid var(--color-rule);
         background: var(--color-bg-soft);
         color: var(--color-ink);
         outline: none;
         font-family: var(--font-ui);
+        appearance: none;
+        -webkit-appearance: none;
+      }
+      .controls select:focus, .controls select:focus-visible,
+      .controls input:focus, .controls input:focus-visible {
+        border-color: var(--color-accent);
+        outline: none;
       }
       .controls option {
         background: var(--color-bg);
@@ -156,6 +164,32 @@
         height: calc(100vh - 140px);
         min-height: 520px;
         overflow: auto;
+      }
+      .list-heading {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding-bottom: 6px;
+        border-bottom: 1px solid var(--color-rule);
+        margin-bottom: 6px;
+      }
+      .list-heading-title {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--color-ink);
+        letter-spacing: -0.02em;
+      }
+      .list-heading-updated {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--color-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        white-space: nowrap;
       }
       .item {
         padding: 10px 0;
@@ -227,6 +261,14 @@
         border-top: 1px solid var(--color-rule);
         font-family: var(--font-mono);
       }
+      .site-footer {
+        padding: 10px 28px 18px 28px;
+        color: var(--color-muted);
+        font-size: 12px;
+        font-family: var(--font-mono);
+        border-top: 1px solid var(--color-rule);
+        text-align: center;
+      }
       @media (max-width: 980px) {
         .layout {
           grid-template-columns: 1fr;
@@ -239,10 +281,10 @@
     </style>
   </head>
   <body>
-    <a class="skip-link" href="#items">Skip to list</a>
+    <a class="skip-link" href="#list-top">Skip to list</a>
     <header>
       <h1>Open Mics Zurich</h1>
-      <div class="sub">Recurring open mic events in and around Zürich. Filter by weekday and explore locations on the map. <span style="font-family:var(--font-mono); color:var(--color-muted);">Build: 2026-04-15T14:02:15Z</span></div>
+      <div class="sub">Recurring open mic events in and around Zürich. <span style="font-family:var(--font-mono); color:var(--color-muted);">Build: 2026-04-16T06:44:49Z</span></div>
     </header>
 
     <div class="layout">
@@ -268,12 +310,18 @@
             <input id="q" placeholder="title or location" />
           </div>
         </div>
-        <div class="list">
+        <div class="list" id="list-top">
+          <div class="list-heading">
+            <h2 class="list-heading-title">Events</h2>
+            <span class="list-heading-updated">Updated 16/04/2026 (UTC)</span>
+          </div>
           <div class="meta" id="count"></div>
           <div id="items"></div>
         </div>
       </div>
     </div>
+
+    <footer class="site-footer">Data: 16/04/2026 (UTC) · Build 2026-04-16T06:44:49Z</footer>
 
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -281,7 +329,7 @@
       crossorigin=""
     ></script>
     <script>
-      const BUILD_STAMP = "2026-04-15T14:02:15Z";
+      const BUILD_STAMP = "2026-04-16T06:44:49Z";
       let gmap = null;
       let gInfoWindow = null;
       let gMarkers = [];
@@ -324,6 +372,117 @@
         return out.join(', ');
       }
 
+      function cleanVenueLabel(venueText) {
+        // Remove trailing "comedy" from venue labels like "stubä comedy",
+        // but keep names like "ComedyHaus" intact.
+        const v = (venueText || '').toString().trim();
+        return v.replace(/\s+comedy$/i, '').trim();
+      }
+
+      function capFirst(s) {
+        const v = (s || '').toString();
+        if (!v) return v;
+        const c0 = v[0];
+        // Only adjust if the first char is a lowercase letter (covers ü/ä/ö too).
+        if (c0 !== c0.toUpperCase()) {
+          return c0.toUpperCase() + v.slice(1);
+        }
+        return v;
+      }
+
+      const PIN_FILL = '#3a677a';
+      const PIN_STROKE = '#2d5366';
+
+      function escapeHtml(s) {
+        return (s || '').toString().replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+      }
+
+      function weekdayAbbr(d) {
+        const x = (d || '').toString().trim().toLowerCase();
+        if (x.startsWith('mon')) return 'Mon';
+        if (x.startsWith('tue')) return 'Tue';
+        if (x.startsWith('wed')) return 'Wed';
+        if (x.startsWith('thu')) return 'Thu';
+        if (x.startsWith('fri')) return 'Fri';
+        if (x.startsWith('sat')) return 'Sat';
+        if (x.startsWith('sun')) return 'Sun';
+        return (d || '').toString().trim();
+      }
+
+      function venueGroupKey(e) {
+        const venueText = (e.venue || (e.location_display || e.location || '').split(',')[0] || '').toString().trim();
+        let k = norm(cleanVenueLabel(venueText));
+        if (!k) k = norm(venueText);
+        if (!k) k = 'unknown';
+        return k;
+      }
+
+      // One pin per venue (normalized label); coordinates are the median of member points so
+      // nearby geocode duplicates still collapse to a single marker.
+      function pinGroupsForFiltered(filtered) {
+        const groups = new Map();
+        const eventToKey = filtered.map(() => '');
+        for (let i = 0; i < filtered.length; i++) {
+          const e = filtered[i];
+          const lat = Number(e.lat);
+          const lon = Number(e.lon);
+          if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+          const k = venueGroupKey(e);
+          eventToKey[i] = k;
+          if (!groups.has(k)) groups.set(k, { idxs: [], lats: [], lons: [] });
+          const g = groups.get(k);
+          g.idxs.push(i);
+          g.lats.push(lat);
+          g.lons.push(lon);
+        }
+        function medianNums(arr) {
+          if (!arr.length) return NaN;
+          const s = [...arr].sort((a, b) => a - b);
+          const m = Math.floor(s.length / 2);
+          return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+        }
+        const out = [];
+        for (const [k, g] of groups.entries()) {
+          out.push({
+            key: k,
+            lat: medianNums(g.lats),
+            lon: medianNums(g.lons),
+            idxs: g.idxs,
+          });
+        }
+        return { groups: out, eventToKey };
+      }
+
+      function groupPopupHtml(filtered, idxs) {
+        const first = filtered[idxs[0]] || {};
+        const venueText = (first.venue || (first.location_display || first.location || '').split(',')[0] || '').toString().trim();
+        const venueLabel = capFirst(cleanVenueLabel(venueText));
+        const locText = formatLocation(first.location_display || first.location || '');
+        const locQuery = locText || venueText;
+        const mapsLine = locQuery
+          ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locQuery)}" target="_blank" rel="noreferrer">${escapeHtml(venueLabel || venueText || locQuery)}</a><br/>`
+          : '';
+
+        const wset = new Set();
+        for (const i of idxs) wset.add(weekdayAbbr((filtered[i] || {}).weekday));
+        const weekdays = Array.from(wset).filter(Boolean).join('/');
+        const header = `<strong>${escapeHtml(venueLabel || venueText || '(venue)')}</strong><br/>` +
+                       (weekdays ? `${escapeHtml(weekdays)}<br/>` : '') +
+                       mapsLine +
+                       (locText ? `${escapeHtml(locText)}<br/>` : '');
+
+        const rows = idxs.map(i => {
+          const e = filtered[i] || {};
+          const t = escapeHtml(e.title || '(untitled)');
+          const w = escapeHtml(weekdayAbbr(e.weekday));
+          const tm = escapeHtml(e.time || '');
+          const line = [w, tm].filter(Boolean).join(' ');
+          const link = e.url ? `<a href="${e.url}" target="_blank" rel="noreferrer">${t}</a>` : t;
+          return `<div style="margin-top:6px;"><span style="opacity:0.85;">${escapeHtml(line)}</span><br/>${link}</div>`;
+        }).join('');
+        return header + rows;
+      }
+
       function setActive(eventId) {
         if (_lastActiveId) {
           const prev = document.getElementById(_lastActiveId);
@@ -334,12 +493,15 @@
         if (el) {
           el.classList.add('active');
           const scroller = document.querySelector('.list');
-          if (scroller && typeof scroller.scrollTo === 'function') {
-            const top = el.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
-            scroller.scrollTo({ top: Math.max(0, top - 40), behavior: 'smooth' });
-          } else {
-            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          }
+          const doScroll = () => {
+            if (scroller && typeof scroller.scrollTo === 'function') {
+              const top = el.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
+              scroller.scrollTo({ top: Math.max(0, top - 40), behavior: 'smooth' });
+            } else {
+              el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+          };
+          requestAnimationFrame(() => requestAnimationFrame(doScroll));
         }
       }
 
@@ -365,6 +527,11 @@
           }
           return true;
         });
+
+        const pins = pinGroupsForFiltered(filtered);
+        const pinGroups = pins.groups;
+        const eventToKey = pins.eventToKey;
+        const markerByKey = new Map();
 
         document.getElementById('count').textContent = `${filtered.length} event(s)`;
 
@@ -394,12 +561,14 @@
           const ml = document.createElement('div');
           ml.className = 'meta venue';
           const venueText = (e.venue || (e.location_display || e.location || '').split(',')[0] || '').toString().trim();
+          const venueLabel = capFirst(cleanVenueLabel(venueText));
+          // Keep the Maps query as specific as possible; only clean the visible label.
           const locQuery = formatLocation(e.location_display || e.location || venueText);
           const mapsA = document.createElement('a');
           mapsA.href = locQuery ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locQuery)}` : '#';
           mapsA.target = '_blank';
           mapsA.rel = 'noreferrer';
-          mapsA.textContent = venueText || '(venue)';
+          mapsA.textContent = venueLabel || venueText || '(venue)';
           ml.appendChild(mapsA);
           div.appendChild(ml);
 
@@ -414,76 +583,79 @@
 
           items.appendChild(div);
 
-          if (typeof e.lat === 'number' && typeof e.lon === 'number') {
-            if (gmap) {
-              const m = new google.maps.Marker({
-                position: { lat: e.lat, lng: e.lon },
-                map: gmap,
-                title: e.title || '(untitled)',
-              });
-              const safe = (s) => (s || '').toString().replaceAll('<','&lt;');
-              const locText = formatLocation(e.location_display || e.location || '');
-              const venueText = (e.venue || (e.location_display || e.location || '').split(',')[0] || '').toString().trim();
-              const locQuery = locText || venueText;
-              const mapsLine = locQuery
-                ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locQuery)}" target="_blank" rel="noreferrer">${safe(venueText || locQuery)}</a><br/>`
-                : '';
-              const popup = `<strong>${safe(e.title)}</strong><br/>` +
-                            `${safe(e.weekday)} ${safe(e.time)}<br/>` +
-                            mapsLine +
-                            (e.url ? `<a href="${e.url}" target="_blank" rel="noreferrer">Open link</a>` : '');
-              m.addListener('click', () => {
-                setActive(eventId);
+          const k = eventToKey[idx];
+          if (k) {
+            div.addEventListener('mouseenter', () => {
+              const mk = markerByKey.get(k);
+              if (!mk) return;
+              if (gmap) {
                 if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow();
-                gInfoWindow.setContent(popup);
-                gInfoWindow.open({ anchor: m, map: gmap });
-              });
-              // Hover list item -> preview popup on the map (until mouse leaves).
-              div.addEventListener('mouseenter', () => {
-                if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow();
-                gInfoWindow.setContent(popup);
-                gInfoWindow.open({ anchor: m, map: gmap });
-              });
-              div.addEventListener('mouseleave', () => {
+                gInfoWindow.setContent(mk.popupHtml || '');
+                gInfoWindow.open({ anchor: mk.marker, map: gmap });
+              } else {
+                try { mk.marker.openPopup(); } catch (e) {}
+              }
+            });
+            div.addEventListener('mouseleave', () => {
+              const mk = markerByKey.get(k);
+              if (!mk) return;
+              if (gmap) {
                 if (gInfoWindow) gInfoWindow.close();
-              });
-              gMarkers.push(m);
-            } else if (lmap && lMarkersLayer) {
-              const safe = (s) => (s || '').toString().replaceAll('<','&lt;');
-              const locText = formatLocation(e.location_display || e.location || '');
-              const venueText = (e.venue || (e.location_display || e.location || '').split(',')[0] || '').toString().trim();
-              const locQuery = locText || venueText;
-              const mapsLine = locQuery
-                ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locQuery)}" target="_blank" rel="noreferrer">${safe(venueText || locQuery)}</a><br/>`
-                : '';
-              const popup = `<strong>${safe(e.title)}</strong><br/>` +
-                            `${safe(e.weekday)} ${safe(e.time)}<br/>` +
-                            mapsLine +
-                            (e.url ? `<a href="${e.url}" target="_blank" rel="noreferrer">Open link</a>` : '');
-              const marker = L.circleMarker([e.lat, e.lon], {
-                radius: 7,
-                color: '#3a677a',
-                weight: 2,
-                fillColor: '#3a677a',
-                fillOpacity: 0.45,
-              });
-              marker.bindPopup(popup);
-              marker.on('click', () => setActive(eventId));
-              // Hover list item -> preview popup on the map (until mouse leaves).
-              div.addEventListener('mouseenter', () => {
-                try { marker.openPopup(); } catch (e) {}
-              });
-              div.addEventListener('mouseleave', () => {
-                try { marker.closePopup(); } catch (e) {}
-              });
-              marker.addTo(lMarkersLayer);
-            }
+              } else {
+                try { mk.marker.closePopup(); } catch (e) {}
+              }
+            });
           }
         }
 
-        const pinned = filtered.filter(e => typeof e.lat === 'number' && typeof e.lon === 'number').length;
+        // Add one marker per venue group.
+        for (const g of pinGroups) {
+          const popupHtml = groupPopupHtml(filtered, g.idxs);
+          const firstEventId = `event-${g.idxs[0]}`;
+          if (gmap) {
+            const marker = new google.maps.Marker({
+              position: { lat: g.lat, lng: g.lon },
+              map: gmap,
+              title: (filtered[g.idxs[0]] || {}).title || '(untitled)',
+              icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 7,
+                fillColor: PIN_FILL,
+                fillOpacity: 1,
+                strokeColor: PIN_STROKE,
+                strokeWeight: 1,
+                strokeOpacity: 1,
+              },
+            });
+            marker.addListener('click', () => {
+              setActive(firstEventId);
+              if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow();
+              gInfoWindow.setContent(popupHtml);
+              gInfoWindow.open({ anchor: marker, map: gmap });
+            });
+            gMarkers.push(marker);
+            markerByKey.set(g.key, { marker, popupHtml });
+          } else if (lmap && lMarkersLayer) {
+            const marker = L.circleMarker([g.lat, g.lon], {
+              radius: 7,
+              color: PIN_STROKE,
+              weight: 1,
+              opacity: 1,
+              fillColor: PIN_FILL,
+              fillOpacity: 1,
+            });
+            marker.bindPopup(popupHtml);
+            marker.on('click', () => {
+              setActive(firstEventId);
+            });
+            marker.addTo(lMarkersLayer);
+            markerByKey.set(g.key, { marker, popupHtml });
+          }
+        }
+
+        const pinned = pinGroups.length;
         document.getElementById('mapNote').textContent =
-          `Pins: ${pinned} / ${filtered.length}`;
+          `Venues: ${pinned} · ${filtered.length} event(s)`;
       }
 
       function getGoogleMapsKey() {

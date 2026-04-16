@@ -8,12 +8,15 @@ import urllib.request
 import re
 import base64
 from dataclasses import dataclass
-from html import escape
+from datetime import datetime, timezone
+from html import escape, unescape
 from pathlib import Path
 
 import folium
 import pandas as pd
 import streamlit as st
+
+import pipeline_meta
 from streamlit_folium import st_folium
 import streamlit.components.v1 as components
 
@@ -47,6 +50,21 @@ def _is_confirmed_open_mic(*texts: str) -> bool:
 def _google_maps_url(location: str) -> str:
     q = urllib.parse.quote_plus(location)
     return f"https://www.google.com/maps/search/?api=1&query={q}"
+
+
+def _clean_venue_label(venue: str) -> str:
+    # Display-only cleanup: keep Maps query unchanged, but avoid redundant labels like "Stubä Comedy".
+    return re.sub(r"\s+comedy\s*$", "", (venue or "").strip(), flags=re.I).strip()
+
+
+def _cap_first(s: str) -> str:
+    t = (s or "").strip()
+    if not t:
+        return t
+    c0 = t[0]
+    if c0 != c0.upper():
+        return c0.upper() + t[1:]
+    return t
 
 
 def _static_map_url(lat: float, lon: float) -> str:
@@ -285,8 +303,62 @@ def _weekday_matches(weekday_cell: str, selected: set[str]) -> bool:
     return bool(parts & selected)
 
 
+def _venue_pin_key_from_loc(loc: str) -> str:
+    """Stable key for one map pin per venue (first location segment, normalized)."""
+    first = (loc or "").split(",", 1)[0].strip()
+    k = _clean_venue_label(first).strip().lower()
+    k = re.sub(r"\s+", " ", k)
+    return k or "unknown"
+
+
+def _folium_venue_tooltip_html(grp: pd.DataFrame, *, primary_ek: str) -> str:
+    """Combined tooltip for all rows sharing a venue pin."""
+    loc0 = str(grp.iloc[0].get("Location_norm") or "").strip()
+    venue = _cap_first(_clean_venue_label(loc0.split(",")[0].strip() if loc0 else ""))
+    gmaps = _google_maps_url(loc0) if loc0 else ""
+    wset: set[str] = set()
+    for _, r in grp.iterrows():
+        w = str(r.get("Weekday_norm") or "").strip()
+        if w:
+            wset.add(w)
+    wd_line = " / ".join(sorted(wset)) if wset else ""
+    lines: list[str] = [
+        "<div style='width:260px;white-space:normal;line-height:1.25;padding:2px 0;'>",
+        f"<div style='font-weight:650;margin-bottom:4px;'>{escape(venue or '(venue)')}</div>",
+    ]
+    if wd_line:
+        lines.append(f"<div style='opacity:0.9;margin-bottom:4px;'>{escape(wd_line)}</div>")
+    if gmaps:
+        lines.append(
+            "<div style='margin-bottom:6px;'><a href=\""
+            + escape(gmaps)
+            + "\" target=\"_blank\" rel=\"noreferrer\">Google Maps</a></div>"
+        )
+    sort_cols = [c for c in ("Weekday_sort", "Time_norm") if c in grp.columns]
+    g2 = grp.sort_values(list(sort_cols), kind="mergesort") if sort_cols else grp
+    for _, r in g2.iterrows():
+        title = (r.get("Event_title") or "").strip() or "(untitled)"
+        wd = (r.get("Weekday_norm") or "").strip()
+        tm = (r.get("Time_norm") or "").strip()
+        loc = (r.get("Location_norm") or "").strip()
+        lines.append(
+            "<div style='margin-top:6px;padding-top:4px;border-top:1px solid #ddd;'>"
+            f"<div style='font-weight:600'>{escape(title)}</div>"
+            f"<div style='opacity:0.85'>{escape((wd + ' ' + tm).strip())}</div>"
+            f"<div style='opacity:0.8;font-size:0.92em'>{escape(loc[:140])}</div>"
+            "</div>"
+        )
+    lines.append(f'<span data-ek="{escape(primary_ek)}" style="display:none"></span>')
+    lines.append("</div>")
+    return "".join(lines)
+
+
 def main() -> None:
-    st.set_page_config(page_title="Open Mics Zurich", layout="wide")
+    st.set_page_config(
+        page_title="Open Mics Zurich",
+        layout="wide",
+        initial_sidebar_state="collapsed",
+    )
     st.title("Open Mics Zurich")
 
     # Minor widget chrome tweaks to better match STYLE_CI_GUIDE.md.
@@ -301,6 +373,12 @@ def main() -> None:
     --ci-bg:#ffffff;
     --ci-bg-soft:#f7f8f9;
   }
+  /* Hide default sidebar so filters + map + events share one top-aligned row. */
+  [data-testid="stSidebar"] { display: none !important; }
+  [data-testid="collapsedControl"] { display: none !important; }
+  .stMainBlockContainer { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
+  /* Tighten gap between page title and the main grid */
+  .block-container h1:first-of-type { margin-bottom: 0.35rem !important; }
   a, a:visited{
     color: var(--ci-accent) !important;
   }
@@ -323,22 +401,28 @@ def main() -> None:
     outline: 2px solid var(--ci-accent) !important;
     outline-offset: 2px !important;
   }
+
+  /* Folium map lives in an iframe: Leaflet outline CSS must be injected via folium.Element. */
 </style>
 """,
         unsafe_allow_html=True,
     )
 
-    with st.sidebar:
-        st.header("Filters")
-        # Always use the default processed CSV (no visible file/path control).
-        csv_path = Path(DEFAULT_CSV)
+    csv_path = Path(DEFAULT_CSV)
+    if not csv_path.is_file():
+        st.error("Event data CSV not found. Run the rebuild pipeline first.")
+        st.stop()
 
-        if not csv_path.is_file():
-            st.error("Event data CSV not found. Run the rebuild pipeline first.")
-            st.stop()
+    df = _load_events(csv_path)
 
-        df = _load_events(csv_path)
+    filt_col, map_col, evt_col = st.columns([0.22, 0.43, 0.35], gap="large")
 
+    with filt_col:
+        st.markdown(
+            '<p style="margin:0 0 0.5rem 0;padding-bottom:6px;border-bottom:1px solid var(--ci-rule);'
+            'font-size:1.35rem;font-weight:600;color:var(--ci-ink);letter-spacing:-0.02em;">Filters</p>',
+            unsafe_allow_html=True,
+        )
         weekday_sel = st.multiselect("Weekday", options=WEEKDAYS, default=WEEKDAYS)
         weekday_set = set(weekday_sel)
 
@@ -349,7 +433,6 @@ def main() -> None:
         query = st.text_input("Search (title/location)")
 
         st.divider()
-        st.header("Map")
         # Always on (no visible switches).
         auto_geocode = True
         geocode_missing = False
@@ -407,10 +490,12 @@ def main() -> None:
     if (geocode_missing or auto_geocode) and unique_locations:
         missing = [loc for loc in unique_locations if loc and loc not in cache]
         if missing:
-            _geocode_locations(missing)
+            with filt_col:
+                _geocode_locations(missing)
         else:
             if geocode_missing:
-                st.info("No missing locations to geocode for the current filter.")
+                with filt_col:
+                    st.info("No missing locations to geocode for the current filter.")
 
     def _lat(loc: str) -> float | None:
         v = cache.get(loc, {}).get("lat")
@@ -429,6 +514,10 @@ def main() -> None:
     filtered["lat"] = filtered["Location_norm"].apply(_lat)
     filtered["lon"] = filtered["Location_norm"].apply(_lon)
     mdf = filtered.dropna(subset=["lat", "lon"]).copy()
+
+    data_updated_disp, _ = pipeline_meta.latest_listing_scraped_meta(ROOT / "data" / "processed")
+    if not data_updated_disp:
+        data_updated_disp = datetime.now(timezone.utc).strftime("%d/%m/%Y")
     mdf["_event_key"] = (
         mdf["Event_title"].astype(str)
         + "|"
@@ -439,83 +528,108 @@ def main() -> None:
         + mdf["Location_norm"].astype(str)
     )
 
-    left, right = st.columns([0.55, 0.45], gap="large")
-
-    with left:
-        st.subheader("Map")
+    with map_col:
+        st.markdown(
+            '<p style="margin:0 0 0.5rem 0;padding-bottom:6px;border-bottom:1px solid var(--ci-rule);'
+            'font-size:1.35rem;font-weight:600;color:var(--ci-ink);letter-spacing:-0.02em;">Map</p>',
+            unsafe_allow_html=True,
+        )
         if len(mdf) == 0:
-            st.info("No map pins yet. Click “Geocode missing locations” in the sidebar.")
+            st.info("No map pins yet.")
         else:
             center_lat = float(mdf["lat"].mean())
             center_lon = float(mdf["lon"].mean())
 
             m = folium.Map(location=[center_lat, center_lon], zoom_start=12, tiles="OpenStreetMap")
+            # Folium renders inside an iframe: page-level st.markdown CSS does not apply here.
+            folium.Element(
+                """
+<style>
+  .leaflet-container *:focus,
+  .leaflet-container *:focus-visible {
+    outline: none !important;
+  }
+  .leaflet-container svg path.leaflet-interactive {
+    outline: none !important;
+  }
+</style>
+"""
+            ).add_to(m)
 
-            for _, r in mdf.iterrows():
-                title = (r.get("Event_title") or "").strip() or "(untitled)"
-                wd = (r.get("Weekday_norm") or "").strip()
-                tm = (r.get("Time_norm") or "").strip()
-                loc = (r.get("Location_norm") or "").strip()
-                url = (r.get("URL") or "").strip()
-                gmaps = _google_maps_url(loc) if loc else ""
-                ek = str(r.get("_event_key") or "")
+            mdf["_vk"] = mdf["Location_norm"].astype(str).map(lambda s: _venue_pin_key_from_loc(str(s)))
 
-                tooltip_html = (
-                    "<div style="
-                    "'width: 240px; white-space: normal; line-height: 1.25; padding: 2px 0;'"
-                    ">"
-                    f"<div style='font-weight: 650; margin-bottom: 4px;'>{escape(title)}</div>"
-                    f"<div style='opacity: 0.9; margin-bottom: 3px;'>{escape((wd + ' ' + tm).strip())}</div>"
-                    f"<div style='opacity: 0.9;'>{escape(loc)}</div>"
-                    f"<span data-ek='{escape(ek)}' style='display:none'></span>"
-                    "</div>"
-                )
-
+            venue_pin_points: list[tuple[float, float, str]] = []
+            for _vk, grp in mdf.groupby("_vk", sort=False):
+                lat_m = float(grp["lat"].median())
+                lon_m = float(grp["lon"].median())
+                sort_cols = [c for c in ("Weekday_sort", "Time_norm") if c in grp.columns]
+                g2 = grp.sort_values(sort_cols, kind="mergesort") if sort_cols else grp
+                primary_ek = str(g2.iloc[0]["_event_key"])
+                tooltip_html = _folium_venue_tooltip_html(g2, primary_ek=primary_ek)
                 folium.CircleMarker(
-                    location=[float(r["lat"]), float(r["lon"])],
-                    radius=6,
-                    color="#3a677a",
-                    weight=2,
+                    location=[lat_m, lon_m],
+                    radius=7,
+                    color="#2d5366",
+                    weight=1,
+                    opacity=1,
                     fill=True,
                     fill_color="#3a677a",
-                    fill_opacity=0.45,
+                    fill_opacity=1,
                     tooltip=folium.Tooltip(tooltip_html, sticky=False),
                 ).add_to(m)
+                venue_pin_points.append((lat_m, lon_m, primary_ek))
 
-            map_state = st_folium(m, width="stretch", height=560)
+            map_state = st_folium(
+                m,
+                height=560,
+                use_container_width=True,
+                key="open_mics_folium_map",
+            )
             clicked = (map_state or {}).get("last_object_clicked") or {}
             clicked_tip = (map_state or {}).get("last_object_clicked_tooltip") or ""
 
-            # Prefer exact event key from the clicked marker tooltip.
+            sel: str | None = None
+            # 1) Tooltip HTML may include data-ek (exact match).
             if isinstance(clicked_tip, str) and "data-ek=" in clicked_tip:
-                m_ek = re.search(r"data-ek=['\\\"]([^'\\\"]+)['\\\"]", clicked_tip)
+                m_ek = re.search(r'data-ek="([^"]*)"', clicked_tip)
+                if not m_ek:
+                    m_ek = re.search(r"data-ek='([^']*)'", clicked_tip)
                 if m_ek:
-                    sel = m_ek.group(1)
-                    if sel and st.session_state.get("selected_event_key") != sel:
-                        st.session_state["selected_event_key"] = sel
+                    sel = unescape(m_ek.group(1)).strip()
 
-            elif isinstance(clicked, dict) and "lat" in clicked and "lng" in clicked and len(mdf) > 0:
-                try:
-                    clat = float(clicked["lat"])
-                    clon = float(clicked["lng"])
-                    last = st.session_state.get("last_clicked_latlon")
-                    cur = (round(clat, 7), round(clon, 7))
-                    if last != cur:
-                        st.session_state["last_clicked_latlon"] = cur
-                    tmp = mdf.copy()
-                    tmp["_d2"] = (tmp["lat"].astype(float) - clat) ** 2 + (tmp["lon"].astype(float) - clon) ** 2
-                    nearest = tmp.sort_values("_d2").iloc[0]
-                    sel = str(nearest["_event_key"])
-                    if st.session_state.get("selected_event_key") != sel:
-                        st.session_state["selected_event_key"] = sel
-                except Exception:
-                    pass
+            # 2) Nearest venue pin by lat/lng (markers sit at per-venue medians, not per-event coords).
+            if not sel and isinstance(clicked, dict) and venue_pin_points:
+                lat_k = "lat" if "lat" in clicked else None
+                lng_k = "lng" if "lng" in clicked else ("lon" if "lon" in clicked else None)
+                if lat_k and lng_k:
+                    try:
+                        clat = float(clicked[lat_k])
+                        clon = float(clicked[lng_k])
+                        best = min(
+                            venue_pin_points,
+                            key=lambda t: (t[0] - clat) ** 2 + (t[1] - clon) ** 2,
+                        )
+                        sel = str(best[2])
+                    except Exception:
+                        pass
+
+            if sel and st.session_state.get("selected_event_key") != sel:
+                st.session_state["selected_event_key"] = sel
             st.caption(
-                f"Hover a point to see event info. Showing {len(mdf)} pinned events (of {len(filtered)} filtered)."
+                f"Hover a point to see event info. {len(venue_pin_points)} venue pin(s) "
+                f"({len(mdf)} events of {len(filtered)} filtered)."
             )
 
-    with right:
-        st.subheader(f"Events ({len(filtered)})")
+    with evt_col:
+        st.markdown(
+            f'<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;'
+            f'flex-wrap:wrap;border-bottom:1px solid var(--ci-rule);padding-bottom:6px;margin:0 0 8px 0;">'
+            f'<h3 style="margin:0;font-size:1.35rem;font-weight:600;">Events ({len(filtered)})</h3>'
+            f'<span style="font-family:ui-monospace,monospace;font-size:0.72rem;color:var(--ci-muted);'
+            f'text-transform:uppercase;letter-spacing:0.08em;">Updated {escape(data_updated_disp)} (UTC)</span>'
+            f"</div>",
+            unsafe_allow_html=True,
+        )
         if len(filtered) == 0:
             st.warning("No events match the current filters.")
         else:
@@ -598,7 +712,7 @@ def main() -> None:
                             st.markdown(top)
                             if meta_time:
                                 st.markdown(f"**{meta_time}**")
-                            venue = (loc.split(",", 1)[0].strip() if loc else "")
+                            venue = _cap_first(_clean_venue_label(loc.split(",", 1)[0].strip() if loc else ""))
                             if venue and gmaps:
                                 st.markdown(f"**[{venue}]({gmaps})**")
                             elif venue:
@@ -609,7 +723,7 @@ def main() -> None:
                         st.markdown(top)
                         if meta_time:
                             st.markdown(f"**{meta_time}**")
-                        venue = (loc.split(",", 1)[0].strip() if loc else "")
+                        venue = _cap_first(_clean_venue_label(loc.split(",", 1)[0].strip() if loc else ""))
                         if venue and gmaps:
                             st.markdown(f"**[{venue}]({gmaps})**")
                         elif venue:

@@ -81,6 +81,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         timeout_ms=args.timeout_ms,
         delay=args.delay,
         limit=args.limit,
+        venue_llm=bool(getattr(args, "venue_llm", False)),
     )
     rc = cmd_enrich(enrich_ns)
     if rc != 0:
@@ -312,6 +313,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--enrich-output",
         default="",
         help="Pfad für events_enriched*.json (Standard: data/processed/events_enriched_<Zeitstempel>.json)",
+    )
+    p_run.add_argument(
+        "--venue-llm",
+        action="store_true",
+        help="Nach Scraping: LLM für Adresse (OPENAI_API_KEY); siehe enrich --venue-llm",
     )
     p_run.add_argument(
         "-o",

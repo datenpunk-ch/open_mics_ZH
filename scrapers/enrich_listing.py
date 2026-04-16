@@ -8,6 +8,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from .event_page import _norm_url, scrape_event_urls_batch
+from .venue_llm import apply_venue_llm_to_events
 
 
 def _project_root() -> Path:
@@ -33,6 +34,7 @@ def enrich_listing_payload(
     timeout_ms: int,
     delay_s: float,
     limit: int | None,
+    venue_llm: bool = False,
 ) -> dict:
     events: list[dict] = list(listing.get("events") or [])
     if limit is not None:
@@ -52,6 +54,10 @@ def enrich_listing_payload(
         u = ev.get("url") or ""
         key = _norm_url(u) if u else ""
         merged.append({**ev, "detail": by_url.get(key)})
+
+    if venue_llm:
+        print("[enrich] venue_llm: calling LLM per event (OPENAI_API_KEY, OPENAI_BASE_URL)…", flush=True)
+        merged = apply_venue_llm_to_events(merged, llm_delay_s=max(0.35, delay_s * 0.25))
 
     return {
         "enriched_at": datetime.now(timezone.utc).isoformat(),
@@ -95,6 +101,7 @@ def cmd_enrich(args: argparse.Namespace) -> int:
         timeout_ms=args.timeout_ms,
         delay_s=args.delay,
         limit=args.limit,
+        venue_llm=bool(args.venue_llm),
     )
 
     if args.output:
@@ -136,6 +143,11 @@ def build_enrich_parser() -> argparse.ArgumentParser:
         help="Seconds between page loads (be nice to the server)",
     )
     p.add_argument("--limit", type=int, default=None, help="Only first N events (debug)")
+    p.add_argument(
+        "--venue-llm",
+        action="store_true",
+        help="After scraping, call an LLM (OPENAI_API_KEY) to infer venue address from page text; stored under detail.venue_llm",
+    )
     p.set_defaults(func=cmd_enrich)
     return p
 

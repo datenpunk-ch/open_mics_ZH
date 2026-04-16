@@ -8,6 +8,8 @@ from datetime import datetime, timezone
 
 import pandas as pd
 
+import pipeline_meta
+
 
 ROOT = Path(__file__).resolve().parent.parent
 RULES_PATH = ROOT / "config" / "rules.json"
@@ -244,7 +246,7 @@ def _format_address_from_display_name(*, venue_hint: str, display_name: str) -> 
     return venue, address, location_display
 
 
-def _write_index_html(path: Path, *, build_stamp: str) -> None:
+def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: str) -> None:
     # Static page with optional Google Maps basemap (keyed) and free OSM fallback (Leaflet).
     html = f"""<!doctype html>
 <html lang="en">
@@ -389,11 +391,19 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
         width: 100%;
         padding: 10px 10px;
         border-radius: 0;
+        box-sizing: border-box;
         border: 1px solid var(--color-rule);
         background: var(--color-bg-soft);
         color: var(--color-ink);
         outline: none;
         font-family: var(--font-ui);
+        appearance: none;
+        -webkit-appearance: none;
+      }}
+      .controls select:focus, .controls select:focus-visible,
+      .controls input:focus, .controls input:focus-visible {{
+        border-color: var(--color-accent);
+        outline: none;
       }}
       .controls option {{
         background: var(--color-bg);
@@ -404,6 +414,32 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
         height: calc(100vh - 140px);
         min-height: 520px;
         overflow: auto;
+      }}
+      .list-heading {{
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding-bottom: 6px;
+        border-bottom: 1px solid var(--color-rule);
+        margin-bottom: 6px;
+      }}
+      .list-heading-title {{
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--color-ink);
+        letter-spacing: -0.02em;
+      }}
+      .list-heading-updated {{
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--color-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        white-space: nowrap;
       }}
       .item {{
         padding: 10px 0;
@@ -475,6 +511,14 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
         border-top: 1px solid var(--color-rule);
         font-family: var(--font-mono);
       }}
+      .site-footer {{
+        padding: 10px 28px 18px 28px;
+        color: var(--color-muted);
+        font-size: 12px;
+        font-family: var(--font-mono);
+        border-top: 1px solid var(--color-rule);
+        text-align: center;
+      }}
       @media (max-width: 980px) {{
         .layout {{
           grid-template-columns: 1fr;
@@ -487,10 +531,10 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
     </style>
   </head>
   <body>
-    <a class="skip-link" href="#items">Skip to list</a>
+    <a class="skip-link" href="#list-top">Skip to list</a>
     <header>
       <h1>Open Mics Zurich</h1>
-      <div class="sub">Recurring open mic events in and around Zürich. Filter by weekday and explore locations on the map. <span style="font-family:var(--font-mono); color:var(--color-muted);">Build: {build_stamp}</span></div>
+      <div class="sub">Recurring open mic events in and around Zürich. <span style="font-family:var(--font-mono); color:var(--color-muted);">Build: {build_stamp}</span></div>
     </header>
 
     <div class="layout">
@@ -516,12 +560,18 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
             <input id="q" placeholder="title or location" />
           </div>
         </div>
-        <div class="list">
+        <div class="list" id="list-top">
+          <div class="list-heading">
+            <h2 class="list-heading-title">Events</h2>
+            <span class="list-heading-updated">Updated {site_data_date_display} (UTC)</span>
+          </div>
           <div class="meta" id="count"></div>
           <div id="items"></div>
         </div>
       </div>
     </div>
+
+    <footer class="site-footer">Data: {site_data_date_display} (UTC) · Build {build_stamp}</footer>
 
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -572,6 +622,117 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
         return out.join(', ');
       }}
 
+      function cleanVenueLabel(venueText) {{
+        // Remove trailing "comedy" from venue labels like "stubä comedy",
+        // but keep names like "ComedyHaus" intact.
+        const v = (venueText || '').toString().trim();
+        return v.replace(/\\s+comedy$/i, '').trim();
+      }}
+
+      function capFirst(s) {{
+        const v = (s || '').toString();
+        if (!v) return v;
+        const c0 = v[0];
+        // Only adjust if the first char is a lowercase letter (covers ü/ä/ö too).
+        if (c0 !== c0.toUpperCase()) {{
+          return c0.toUpperCase() + v.slice(1);
+        }}
+        return v;
+      }}
+
+      const PIN_FILL = '#3a677a';
+      const PIN_STROKE = '#2d5366';
+
+      function escapeHtml(s) {{
+        return (s || '').toString().replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+      }}
+
+      function weekdayAbbr(d) {{
+        const x = (d || '').toString().trim().toLowerCase();
+        if (x.startsWith('mon')) return 'Mon';
+        if (x.startsWith('tue')) return 'Tue';
+        if (x.startsWith('wed')) return 'Wed';
+        if (x.startsWith('thu')) return 'Thu';
+        if (x.startsWith('fri')) return 'Fri';
+        if (x.startsWith('sat')) return 'Sat';
+        if (x.startsWith('sun')) return 'Sun';
+        return (d || '').toString().trim();
+      }}
+
+      function venueGroupKey(e) {{
+        const venueText = (e.venue || (e.location_display || e.location || '').split(',')[0] || '').toString().trim();
+        let k = norm(cleanVenueLabel(venueText));
+        if (!k) k = norm(venueText);
+        if (!k) k = 'unknown';
+        return k;
+      }}
+
+      // One pin per venue (normalized label); coordinates are the median of member points so
+      // nearby geocode duplicates still collapse to a single marker.
+      function pinGroupsForFiltered(filtered) {{
+        const groups = new Map();
+        const eventToKey = filtered.map(() => '');
+        for (let i = 0; i < filtered.length; i++) {{
+          const e = filtered[i];
+          const lat = Number(e.lat);
+          const lon = Number(e.lon);
+          if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+          const k = venueGroupKey(e);
+          eventToKey[i] = k;
+          if (!groups.has(k)) groups.set(k, {{ idxs: [], lats: [], lons: [] }});
+          const g = groups.get(k);
+          g.idxs.push(i);
+          g.lats.push(lat);
+          g.lons.push(lon);
+        }}
+        function medianNums(arr) {{
+          if (!arr.length) return NaN;
+          const s = [...arr].sort((a, b) => a - b);
+          const m = Math.floor(s.length / 2);
+          return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+        }}
+        const out = [];
+        for (const [k, g] of groups.entries()) {{
+          out.push({{
+            key: k,
+            lat: medianNums(g.lats),
+            lon: medianNums(g.lons),
+            idxs: g.idxs,
+          }});
+        }}
+        return {{ groups: out, eventToKey }};
+      }}
+
+      function groupPopupHtml(filtered, idxs) {{
+        const first = filtered[idxs[0]] || {{}};
+        const venueText = (first.venue || (first.location_display || first.location || '').split(',')[0] || '').toString().trim();
+        const venueLabel = capFirst(cleanVenueLabel(venueText));
+        const locText = formatLocation(first.location_display || first.location || '');
+        const locQuery = locText || venueText;
+        const mapsLine = locQuery
+          ? `<a href="https://www.google.com/maps/search/?api=1&query=${{encodeURIComponent(locQuery)}}" target="_blank" rel="noreferrer">${{escapeHtml(venueLabel || venueText || locQuery)}}</a><br/>`
+          : '';
+
+        const wset = new Set();
+        for (const i of idxs) wset.add(weekdayAbbr((filtered[i] || {{}}).weekday));
+        const weekdays = Array.from(wset).filter(Boolean).join('/');
+        const header = `<strong>${{escapeHtml(venueLabel || venueText || '(venue)')}}</strong><br/>` +
+                       (weekdays ? `${{escapeHtml(weekdays)}}<br/>` : '') +
+                       mapsLine +
+                       (locText ? `${{escapeHtml(locText)}}<br/>` : '');
+
+        const rows = idxs.map(i => {{
+          const e = filtered[i] || {{}};
+          const t = escapeHtml(e.title || '(untitled)');
+          const w = escapeHtml(weekdayAbbr(e.weekday));
+          const tm = escapeHtml(e.time || '');
+          const line = [w, tm].filter(Boolean).join(' ');
+          const link = e.url ? `<a href="${{e.url}}" target="_blank" rel="noreferrer">${{t}}</a>` : t;
+          return `<div style="margin-top:6px;"><span style="opacity:0.85;">${{escapeHtml(line)}}</span><br/>${{link}}</div>`;
+        }}).join('');
+        return header + rows;
+      }}
+
       function setActive(eventId) {{
         if (_lastActiveId) {{
           const prev = document.getElementById(_lastActiveId);
@@ -582,12 +743,15 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
         if (el) {{
           el.classList.add('active');
           const scroller = document.querySelector('.list');
-          if (scroller && typeof scroller.scrollTo === 'function') {{
-            const top = el.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
-            scroller.scrollTo({{ top: Math.max(0, top - 40), behavior: 'smooth' }});
-          }} else {{
-            el.scrollIntoView({{ behavior: 'smooth', block: 'nearest' }});
-          }}
+          const doScroll = () => {{
+            if (scroller && typeof scroller.scrollTo === 'function') {{
+              const top = el.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
+              scroller.scrollTo({{ top: Math.max(0, top - 40), behavior: 'smooth' }});
+            }} else {{
+              el.scrollIntoView({{ behavior: 'smooth', block: 'nearest' }});
+            }}
+          }};
+          requestAnimationFrame(() => requestAnimationFrame(doScroll));
         }}
       }}
 
@@ -613,6 +777,11 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
           }}
           return true;
         }});
+
+        const pins = pinGroupsForFiltered(filtered);
+        const pinGroups = pins.groups;
+        const eventToKey = pins.eventToKey;
+        const markerByKey = new Map();
 
         document.getElementById('count').textContent = `${{filtered.length}} event(s)`;
 
@@ -642,12 +811,14 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
           const ml = document.createElement('div');
           ml.className = 'meta venue';
           const venueText = (e.venue || (e.location_display || e.location || '').split(',')[0] || '').toString().trim();
+          const venueLabel = capFirst(cleanVenueLabel(venueText));
+          // Keep the Maps query as specific as possible; only clean the visible label.
           const locQuery = formatLocation(e.location_display || e.location || venueText);
           const mapsA = document.createElement('a');
           mapsA.href = locQuery ? `https://www.google.com/maps/search/?api=1&query=${{encodeURIComponent(locQuery)}}` : '#';
           mapsA.target = '_blank';
           mapsA.rel = 'noreferrer';
-          mapsA.textContent = venueText || '(venue)';
+          mapsA.textContent = venueLabel || venueText || '(venue)';
           ml.appendChild(mapsA);
           div.appendChild(ml);
 
@@ -662,76 +833,79 @@ def _write_index_html(path: Path, *, build_stamp: str) -> None:
 
           items.appendChild(div);
 
-          if (typeof e.lat === 'number' && typeof e.lon === 'number') {{
-            if (gmap) {{
-              const m = new google.maps.Marker({{
-                position: {{ lat: e.lat, lng: e.lon }},
-                map: gmap,
-                title: e.title || '(untitled)',
-              }});
-              const safe = (s) => (s || '').toString().replaceAll('<','&lt;');
-              const locText = formatLocation(e.location_display || e.location || '');
-              const venueText = (e.venue || (e.location_display || e.location || '').split(',')[0] || '').toString().trim();
-              const locQuery = locText || venueText;
-              const mapsLine = locQuery
-                ? `<a href="https://www.google.com/maps/search/?api=1&query=${{encodeURIComponent(locQuery)}}" target="_blank" rel="noreferrer">${{safe(venueText || locQuery)}}</a><br/>`
-                : '';
-              const popup = `<strong>${{safe(e.title)}}</strong><br/>` +
-                            `${{safe(e.weekday)}} ${{safe(e.time)}}<br/>` +
-                            mapsLine +
-                            (e.url ? `<a href="${{e.url}}" target="_blank" rel="noreferrer">Open link</a>` : '');
-              m.addListener('click', () => {{
-                setActive(eventId);
+          const k = eventToKey[idx];
+          if (k) {{
+            div.addEventListener('mouseenter', () => {{
+              const mk = markerByKey.get(k);
+              if (!mk) return;
+              if (gmap) {{
                 if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow();
-                gInfoWindow.setContent(popup);
-                gInfoWindow.open({{ anchor: m, map: gmap }});
-              }});
-              // Hover list item -> preview popup on the map (until mouse leaves).
-              div.addEventListener('mouseenter', () => {{
-                if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow();
-                gInfoWindow.setContent(popup);
-                gInfoWindow.open({{ anchor: m, map: gmap }});
-              }});
-              div.addEventListener('mouseleave', () => {{
+                gInfoWindow.setContent(mk.popupHtml || '');
+                gInfoWindow.open({{ anchor: mk.marker, map: gmap }});
+              }} else {{
+                try {{ mk.marker.openPopup(); }} catch (e) {{}}
+              }}
+            }});
+            div.addEventListener('mouseleave', () => {{
+              const mk = markerByKey.get(k);
+              if (!mk) return;
+              if (gmap) {{
                 if (gInfoWindow) gInfoWindow.close();
-              }});
-              gMarkers.push(m);
-            }} else if (lmap && lMarkersLayer) {{
-              const safe = (s) => (s || '').toString().replaceAll('<','&lt;');
-              const locText = formatLocation(e.location_display || e.location || '');
-              const venueText = (e.venue || (e.location_display || e.location || '').split(',')[0] || '').toString().trim();
-              const locQuery = locText || venueText;
-              const mapsLine = locQuery
-                ? `<a href="https://www.google.com/maps/search/?api=1&query=${{encodeURIComponent(locQuery)}}" target="_blank" rel="noreferrer">${{safe(venueText || locQuery)}}</a><br/>`
-                : '';
-              const popup = `<strong>${{safe(e.title)}}</strong><br/>` +
-                            `${{safe(e.weekday)}} ${{safe(e.time)}}<br/>` +
-                            mapsLine +
-                            (e.url ? `<a href="${{e.url}}" target="_blank" rel="noreferrer">Open link</a>` : '');
-              const marker = L.circleMarker([e.lat, e.lon], {{
-                radius: 7,
-                color: '#3a677a',
-                weight: 2,
-                fillColor: '#3a677a',
-                fillOpacity: 0.45,
-              }});
-              marker.bindPopup(popup);
-              marker.on('click', () => setActive(eventId));
-              // Hover list item -> preview popup on the map (until mouse leaves).
-              div.addEventListener('mouseenter', () => {{
-                try {{ marker.openPopup(); }} catch (e) {{}}
-              }});
-              div.addEventListener('mouseleave', () => {{
-                try {{ marker.closePopup(); }} catch (e) {{}}
-              }});
-              marker.addTo(lMarkersLayer);
-            }}
+              }} else {{
+                try {{ mk.marker.closePopup(); }} catch (e) {{}}
+              }}
+            }});
           }}
         }}
 
-        const pinned = filtered.filter(e => typeof e.lat === 'number' && typeof e.lon === 'number').length;
+        // Add one marker per venue group.
+        for (const g of pinGroups) {{
+          const popupHtml = groupPopupHtml(filtered, g.idxs);
+          const firstEventId = `event-${{g.idxs[0]}}`;
+          if (gmap) {{
+            const marker = new google.maps.Marker({{
+              position: {{ lat: g.lat, lng: g.lon }},
+              map: gmap,
+              title: (filtered[g.idxs[0]] || {{}}).title || '(untitled)',
+              icon: {{
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 7,
+                fillColor: PIN_FILL,
+                fillOpacity: 1,
+                strokeColor: PIN_STROKE,
+                strokeWeight: 1,
+                strokeOpacity: 1,
+              }},
+            }});
+            marker.addListener('click', () => {{
+              setActive(firstEventId);
+              if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow();
+              gInfoWindow.setContent(popupHtml);
+              gInfoWindow.open({{ anchor: marker, map: gmap }});
+            }});
+            gMarkers.push(marker);
+            markerByKey.set(g.key, {{ marker, popupHtml }});
+          }} else if (lmap && lMarkersLayer) {{
+            const marker = L.circleMarker([g.lat, g.lon], {{
+              radius: 7,
+              color: PIN_STROKE,
+              weight: 1,
+              opacity: 1,
+              fillColor: PIN_FILL,
+              fillOpacity: 1,
+            }});
+            marker.bindPopup(popupHtml);
+            marker.on('click', () => {{
+              setActive(firstEventId);
+            }});
+            marker.addTo(lMarkersLayer);
+            markerByKey.set(g.key, {{ marker, popupHtml }});
+          }}
+        }}
+
+        const pinned = pinGroups.length;
         document.getElementById('mapNote').textContent =
-          `Pins: ${{pinned}} / ${{filtered.length}}`;
+          `Venues: ${{pinned}} · ${{filtered.length}} event(s)`;
       }}
 
       function getGoogleMapsKey() {{
@@ -842,14 +1016,12 @@ def main() -> int:
     df = pd.read_csv(CSV_PATH, sep=";", dtype=str).fillna("")
     if "Regularity" in df.columns:
         df = df[df["Regularity"].astype(str).str.strip().str.lower() == "recurring"].copy()
-    # Explode multi-weekday rows into one row per weekday for clearer browsing.
+    # Keep multi-weekday rows intact (e.g. "Tuesday, Friday, Sunday") so each recurring
+    # series appears only once in the event list. The frontend already handles filtering
+    # comma-separated weekday lists.
     if "Weekday" in df.columns:
         df["Weekday"] = df["Weekday"].astype(str).fillna("")
         df["Weekday"] = df["Weekday"].apply(lambda s: ", ".join([p.strip() for p in s.split(",") if p.strip()]))
-        df["_weekday_list"] = df["Weekday"].apply(lambda s: [p.strip() for p in str(s).split(",") if p.strip()] or [""])
-        df = df.explode("_weekday_list").copy()
-        df["Weekday"] = df["_weekday_list"].astype(str)
-        df.drop(columns=["_weekday_list"], inplace=True)
     # Confirmed open mic: title or description must mention it
     for col in ["Event_title", "Listing_title", "Description_preview"]:
         if col not in df.columns:
@@ -880,25 +1052,73 @@ def main() -> int:
             return None, None
 
     def formatted_loc(loc: str) -> tuple[str, str, str]:
-        entry = cache.get(loc) or {}
-        dn = entry.get("display_name")
-        venue_hint = loc.split(",", 1)[0].strip() if "," in loc else loc
-        if isinstance(dn, str) and dn.strip():
-            return _format_address_from_display_name(venue_hint=venue_hint, display_name=dn)
-        return (venue_hint, "", loc)
+        # Use the cleaned Location string as source of truth for display.
+        # This keeps "venue" + "address" stable (and LLM-improved) instead of relying on
+        # Nominatim's sometimes-odd display_name formatting.
+        s = _norm(loc)
+        if not s:
+            return ("", "", "")
+        parts = [p.strip() for p in s.split(",") if p.strip()]
+        # Drop trailing country tokens if present.
+        while parts and parts[-1].strip().lower() in {"ch", "che", "schweiz", "switzerland"}:
+            parts.pop()
+        if not parts:
+            return ("", "", s)
+        venue = parts[0]
+        address = ", ".join(parts[1:]).strip() if len(parts) > 1 else ""
+        if address:
+            a_parts = [p.strip() for p in address.split(",") if p.strip()]
+            # De-duplicate exact repeats while preserving order.
+            seen = set()
+            deduped: list[str] = []
+            for p in a_parts:
+                key = p.casefold()
+                if key in seen:
+                    continue
+                seen.add(key)
+                deduped.append(p)
+            # Prefer "800x Zürich" over "Zürich 800x" when both appear.
+            has_zip_city = any(re.fullmatch(r"8\d{3}\s+zürich", p, flags=re.I) for p in deduped)
+            if has_zip_city:
+                deduped = [p for p in deduped if not re.fullmatch(r"zürich\s+8\d{3}", p, flags=re.I)]
+            address = ", ".join(deduped).strip()
+        location_display = ", ".join(x for x in [venue, address] if x).strip() or s
+
+        # If we only have "800x Zürich" (no street), try to improve address from the geocode cache
+        # but only accept it when it clearly contains a street + house number.
+        if venue and re.fullmatch(r"8\d{3}\s+zürich", (address or "").strip(), flags=re.I):
+            entry = cache.get(s) or {}
+            dn = entry.get("display_name")
+            if isinstance(dn, str) and dn.strip():
+                v2, a2, ld2 = _format_address_from_display_name(venue_hint=venue, display_name=dn)
+                a2n = _norm(a2)
+                if a2n:
+                    has_house_no = bool(re.search(r"\b\d+[a-z]?\b", a2n, re.I))
+                    has_street_token = bool(
+                        re.search(
+                            r"\b(strasse|straße|gasse|platz|weg|allee|quai|promenade|ring|ufer|hof|berg|steig|bühl|rain|brücke|bruecke)\b",
+                            a2n,
+                            re.I,
+                        )
+                    )
+                    has_zip = bool(re.search(r"\b8\d{3}\b", a2n))
+                    if has_zip and has_house_no and has_street_token:
+                        return (_norm(v2) or venue, a2n, _norm(ld2) or location_display)
+
+        return (venue, address, location_display)
 
     events = []
     missing_coords = 0
     for _, row in df.iterrows():
-        loc = _norm(row.get("Location", ""))
-        lat, lon = coord_for(loc)
+        loc_raw = _norm(row.get("Location", ""))
+        lat, lon = coord_for(loc_raw)
         if lat is None or lon is None:
             missing_coords += 1
-        venue, address, location_display = formatted_loc(loc)
+        venue, address, location_display = formatted_loc(loc_raw)
         events.append(
             {
                 "weekday": _norm(row.get("Weekday", "")),
-                "location": loc,
+                "location": _norm(location_display) or loc_raw,
                 "venue": _norm(venue),
                 "address": _norm(address),
                 "location_display": _norm(location_display),
@@ -916,10 +1136,19 @@ def main() -> int:
     DOCS_DATA_DIR.mkdir(parents=True, exist_ok=True)
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
 
+    now_utc = datetime.now(timezone.utc)
+    build_stamp = now_utc.strftime("%Y-%m-%dT%H:%M:%SZ")
+    listing_disp, listing_iso = pipeline_meta.latest_listing_scraped_meta(ROOT / "data" / "processed")
+    site_data_date_display = listing_disp or now_utc.strftime("%d/%m/%Y")
+
     DOCS_EVENTS_JSON.write_text(
         json.dumps(
             {
+                "generated_at": now_utc.isoformat(),
                 "generated_from": str(CSV_PATH.as_posix()),
+                "build_stamp": build_stamp,
+                "listing_scraped_at": listing_iso,
+                "data_updated_display": site_data_date_display,
                 "events_total": len(events),
                 "events_missing_coords": missing_coords,
                 "events": events,
@@ -930,8 +1159,11 @@ def main() -> int:
         encoding="utf-8",
     )
 
-    build_stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    _write_index_html(DOCS_DIR / "index.html", build_stamp=build_stamp)
+    _write_index_html(
+        DOCS_DIR / "index.html",
+        build_stamp=build_stamp,
+        site_data_date_display=site_data_date_display,
+    )
     (DOCS_DIR / ".nojekyll").write_text("", encoding="utf-8")
 
     print(f"[export-site] Wrote {DOCS_DIR / 'index.html'}")
