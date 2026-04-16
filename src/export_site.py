@@ -336,7 +336,8 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
       }}
       .layout {{
         display: grid;
-        grid-template-columns: 1.35fr 0.85fr;
+        /* Match Streamlit layout: filters / map / events */
+        grid-template-columns: 0.22fr 0.43fr 0.35fr;
         gap: 18px;
         padding: 18px 28px 28px 28px;
       }}
@@ -344,6 +345,16 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
         background: transparent;
         border: none;
         min-height: 200px;
+      }}
+      .panel-title {{
+        margin: 0 0 10px 0;
+        padding-bottom: 6px;
+        border-bottom: 1px solid var(--color-rule);
+        font-family: var(--font-display);
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--color-ink);
+        letter-spacing: -0.02em;
       }}
       #map {{
         height: calc(100vh - 140px);
@@ -372,10 +383,10 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
         font-family: var(--font-mono);
       }}
       .controls {{
-        padding: 12px 0 14px 0;
+        padding: 0 0 14px 0;
         border-bottom: 1px solid var(--color-rule);
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
         gap: 10px;
       }}
       .controls label {{
@@ -399,6 +410,10 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
         font-family: var(--font-ui);
         appearance: none;
         -webkit-appearance: none;
+      }}
+      .controls select[multiple] {{
+        min-height: 130px;
+        padding: 8px 10px;
       }}
       .controls select:focus, .controls select:focus-visible,
       .controls input:focus, .controls input:focus-visible {{
@@ -539,6 +554,28 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
 
     <div class="layout">
       <div class="card">
+        <h2 class="panel-title">Filters</h2>
+        <div class="controls">
+          <div>
+            <label for="weekday">Weekday</label>
+            <select id="weekday" multiple>
+              {"".join([f'<option value="{d}" selected>{d}</option>' for d in WEEKDAYS])}
+            </select>
+          </div>
+          <div>
+            <label for="language">Comedy language</label>
+            <select id="language" multiple></select>
+          </div>
+          <div>
+            <label for="q">Search</label>
+            <input id="q" placeholder="title or location" />
+          </div>
+        </div>
+        <div class="meta" id="count" style="padding-top:10px;"></div>
+      </div>
+
+      <div class="card">
+        <h2 class="panel-title">Map</h2>
         <div style="position: relative;">
           <div class="banner" id="banner" style="display:none;"></div>
           <div id="map"></div>
@@ -547,25 +584,11 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
       </div>
 
       <div class="card">
-        <div class="controls">
-          <div>
-            <label for="weekday">Weekday</label>
-            <select id="weekday">
-              <option value="__all__">All</option>
-              {"".join([f'<option value="{d}">{d}</option>' for d in WEEKDAYS])}
-            </select>
-          </div>
-          <div>
-            <label for="q">Search</label>
-            <input id="q" placeholder="title or location" />
-          </div>
-        </div>
         <div class="list" id="list-top">
           <div class="list-heading">
             <h2 class="list-heading-title">Events</h2>
             <span class="list-heading-updated">Updated {site_data_date_display} (UTC)</span>
           </div>
-          <div class="meta" id="count"></div>
           <div id="items"></div>
         </div>
       </div>
@@ -593,10 +616,28 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
         return (s || '').toString().trim().toLowerCase();
       }}
 
-      function weekdayMatches(cell, selected) {{
-        if (!selected || selected === '__all__') return true;
+      function selectedValues(selectEl) {{
+        if (!selectEl) return [];
+        const out = [];
+        for (const opt of Array.from(selectEl.options || [])) {{
+          if (opt && opt.selected && opt.value) out.push(opt.value);
+        }}
+        return out;
+      }}
+
+      function weekdayMatches(cell, selectedList) {{
+        const selected = (selectedList || []).map(x => (x || '').toString().trim()).filter(Boolean);
+        if (!selected.length) return true;
         const parts = (cell || '').split(',').map(x => x.trim()).filter(Boolean);
-        return parts.includes(selected);
+        return parts.some(p => selected.includes(p));
+      }}
+
+      function languageMatches(cell, selectedList) {{
+        const selected = (selectedList || []).map(x => (x || '').toString().trim()).filter(Boolean);
+        if (!selected.length) return true;
+        const parts = (cell || '').split(/[;,]/).map(x => x.trim()).filter(Boolean);
+        // Any language overlap is a match.
+        return parts.some(p => selected.includes(p));
       }}
 
       function formatLocation(loc) {{
@@ -766,11 +807,13 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
       }}
 
       function render(events) {{
-        const weekday = document.getElementById('weekday').value;
+        const weekdaySel = selectedValues(document.getElementById('weekday'));
+        const langSel = selectedValues(document.getElementById('language'));
         const q = norm(document.getElementById('q').value);
 
         const filtered = events.filter(e => {{
-          if (!weekdayMatches(e.weekday, weekday)) return false;
+          if (!weekdayMatches(e.weekday, weekdaySel)) return false;
+          if (!languageMatches(e.language, langSel)) return false;
           if (q) {{
             const hay = norm(e.title) + ' ' + norm(e.location);
             if (!hay.includes(q)) return false;
@@ -930,6 +973,25 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
         const payload = await resp.json();
         const events = payload.events || [];
 
+        // Populate language multiselect from payload values.
+        const langEl = document.getElementById('language');
+        if (langEl) {{
+          const all = new Set();
+          for (const e of events) {{
+            const parts = (e.language || '').toString().split(/[;,]/).map(x => x.trim()).filter(Boolean);
+            for (const p of parts) all.add(p);
+          }}
+          const langs = Array.from(all).sort((a, b) => a.localeCompare(b));
+          langEl.innerHTML = '';
+          for (const l of langs) {{
+            const opt = document.createElement('option');
+            opt.value = l;
+            opt.textContent = l;
+            opt.selected = true;
+            langEl.appendChild(opt);
+          }}
+        }}
+
         const key = getGoogleMapsKey();
         if (!key) {{
           // OSM fallback map
@@ -957,6 +1019,7 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
             `or set <code>localStorage.setItem('open_mics_gmaps_key','YOUR_KEY')</code>.`
           );
           document.getElementById('weekday').addEventListener('change', () => render(events));
+          document.getElementById('language').addEventListener('change', () => render(events));
           document.getElementById('q').addEventListener('input', () => render(events));
           render(events);
           return;
@@ -992,6 +1055,7 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
         }});
 
         document.getElementById('weekday').addEventListener('change', () => render(events));
+        document.getElementById('language').addEventListener('change', () => render(events));
         document.getElementById('q').addEventListener('input', () => render(events));
         render(events);
       }}

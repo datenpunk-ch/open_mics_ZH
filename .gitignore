@@ -7,3 +7,6 @@ __pycache__/
 .mypy_cache/
 data/raw/*.json
 !data/raw/.gitkeep
+
+# Generated intermediate outputs (scrape/enrich snapshots)
+data/processed/events_enriched_*.json
