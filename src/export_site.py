@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 import pandas as pd
 
 import pipeline_meta
+import base64
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -19,6 +20,7 @@ GEOCACHE_PATH = ROOT / "data" / "processed" / "location_geocache.json"
 DOCS_DIR = ROOT / "docs"
 DOCS_DATA_DIR = DOCS_DIR / "data"
 DOCS_EVENTS_JSON = DOCS_DATA_DIR / "events.json"
+PLACEHOLDER_SVG = ROOT / "assets" / "open_mic_placeholder.svg"
 
 
 WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
@@ -246,7 +248,9 @@ def _format_address_from_display_name(*, venue_hint: str, display_name: str) -> 
     return venue, address, location_display
 
 
-def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: str) -> None:
+def _write_index_html(
+    path: Path, *, build_stamp: str, site_data_date_display: str, placeholder_data_url: str = ""
+) -> None:
     # Static page with optional Google Maps basemap (keyed) and free OSM fallback (Leaflet).
     html = f"""<!doctype html>
 <html lang="en">
@@ -257,9 +261,12 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
     <meta http-equiv="Cache-Control" content="no-store, max-age=0" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Spectral:opsz,wght@7..72,400,600,700&family=Karla:ital,wght@0,400,500,600;1,400&family=JetBrains+Mono:wght@400,600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Karla:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -280,21 +287,49 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
         --font-display: "Spectral", "Georgia", serif;
         --font-ui: "Karla", system-ui, sans-serif;
         --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+        --space-1: 0.5rem;
+        --space-2: 1rem;
+        --space-3: 1.5rem;
+        --space-4: 2.25rem;
+        --space-5: 3.5rem;
+        --space-6: 5rem;
+
+        --measure: 42rem;
+        --page-max: 74rem;
+        --gutter-start: clamp(1.25rem, 4vw, 2.5rem);
+        --gutter-end: clamp(1.5rem, 8vw, 5rem);
+
+        --lh-tight: 1.02;
+        --lh-head: 1.08;
+        --lh-snug: 1.2;
+        --lh-body: 1.65;
+        --text-body: clamp(0.95rem, 0.15vw + 0.9rem, 1rem);
       }}
       body {{
         margin: 0;
-        font-family: var(--font-ui);
         background: var(--color-bg);
         color: var(--color-ink-body);
-        line-height: 1.55;
+        font-family: var(--font-ui);
+        font-size: var(--text-body);
+        font-weight: 400;
+        line-height: var(--lh-body);
+        letter-spacing: 0.005em;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }}
+      /* Editorial measure: constrain overall chrome a bit */
+      .layout {{
+        max-width: 1440px;
+        margin: 0 auto;
       }}
       a {{
-        color: var(--color-accent);
-        text-decoration-color: var(--color-accent);
-        text-underline-offset: 3px;
+        color: var(--color-ink);
+        text-decoration: none;
+        transition: color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
       }}
       a:hover {{
-        color: var(--color-accent-hover);
+        color: var(--color-accent);
       }}
       a:focus-visible {{
         outline: 2px solid var(--color-accent);
@@ -302,31 +337,36 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
       }}
       .skip-link {{
         position: absolute;
-        left: 12px;
-        top: 10px;
-        padding: 8px 10px;
-        background: var(--color-bg);
-        border: 1px solid var(--color-rule);
-        color: var(--color-ink);
-        font-family: var(--font-mono);
-        font-size: 12px;
-        text-decoration: none;
-        transform: translateY(-150%);
+        left: -9999px;
+        top: var(--space-2);
+        z-index: 200;
+        padding: var(--space-1) var(--space-3);
+        background: var(--color-ink);
+        color: var(--color-bg);
+        font-family: var(--font-ui);
+        font-size: 0.6875rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
       }}
       .skip-link:focus {{
-        transform: translateY(0);
+        left: var(--space-2);
       }}
       header {{
-        padding: 22px 28px 16px 28px;
-        border-bottom: 1px solid var(--color-rule);
-        background: var(--color-bg);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(255, 255, 255, 0.96);
+        border-bottom: 1px solid var(--color-ink);
+        backdrop-filter: blur(8px);
+        padding: var(--space-3) var(--gutter-end) var(--space-3) var(--gutter-start);
       }}
       header h1 {{
         font-family: var(--font-display);
         font-size: 42px;
-        line-height: 1.05;
-        margin: 0 0 10px 0;
-        letter-spacing: -0.4px;
+        line-height: var(--lh-head);
+        margin: 0 0 0.5rem 0;
+        letter-spacing: -0.02em;
         color: var(--color-ink);
       }}
       header .sub {{
@@ -337,9 +377,9 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
       .layout {{
         display: grid;
         /* Match Streamlit layout: filters / map / events */
-        grid-template-columns: 0.22fr 0.43fr 0.35fr;
-        gap: 18px;
-        padding: 18px 28px 28px 28px;
+        grid-template-columns: minmax(260px, 320px) minmax(520px, 1fr) minmax(340px, 420px);
+        gap: var(--space-3);
+        padding: var(--space-3) var(--gutter-end) var(--space-4) var(--gutter-start);
       }}
       .card {{
         background: transparent;
@@ -350,15 +390,18 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
         margin: 0 0 10px 0;
         padding-bottom: 6px;
         border-bottom: 1px solid var(--color-rule);
+        /* Match event title styling in sidebar list */
         font-family: var(--font-display);
-        font-size: 22px;
-        font-weight: 600;
+        font-size: 18px;
+        line-height: 1.25;
+        font-weight: 400;
         color: var(--color-ink);
-        letter-spacing: -0.02em;
+        letter-spacing: 0;
       }}
       #map {{
-        height: calc(100vh - 140px);
-        min-height: 520px;
+        /* Slightly shorter, editorial feel */
+        height: var(--panel-h, clamp(420px, calc(100vh - 240px), 560px));
+        min-height: 420px;
         border: 1px solid var(--color-rule);
       }}
       /* Leaflet/SVG "focus" styling can leave clicked markers looking selected. */
@@ -391,11 +434,13 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
       }}
       .controls label {{
         display: block;
-        font-size: 11px;
-        color: var(--color-muted);
-        font-family: var(--font-mono);
-        text-transform: uppercase;
-        letter-spacing: 0.12em;
+        font-family: var(--font-display);
+        font-size: 18px;
+        line-height: 1.25;
+        font-weight: 400;
+        color: var(--color-ink);
+        text-transform: none;
+        letter-spacing: 0;
         margin-bottom: 6px;
       }}
       .controls select, .controls input {{
@@ -411,9 +456,123 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
         appearance: none;
         -webkit-appearance: none;
       }}
-      .controls select[multiple] {{
-        min-height: 130px;
-        padding: 8px 10px;
+      /* Compact multiselect popovers (keeps filters small) */
+      .filter-row {{
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }}
+      .filter-button {{
+        width: 100%;
+        text-align: left;
+        padding: 10px 10px;
+        border: 1px solid var(--color-rule);
+        background: var(--color-bg-soft);
+        color: var(--color-ink);
+        font-family: var(--font-ui);
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }}
+      .filter-button .left {{
+        display: inline-flex;
+        align-items: baseline;
+        gap: 8px;
+        min-width: 0;
+      }}
+      .filter-button:focus-visible {{
+        outline: 2px solid var(--color-accent);
+        outline-offset: 2px;
+      }}
+      .filter-button .meta {{
+        font-family: var(--font-mono);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--color-muted);
+        white-space: nowrap;
+      }}
+      .filter-button .caret {{
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--color-muted);
+        margin-left: 4px;
+      }}
+      .filter-button[data-open="1"] {{
+        background: #ffffff;
+        border-color: var(--color-accent);
+      }}
+      .filter-button[data-open="1"] .meta,
+      .filter-button[data-open="1"] .caret {{
+        color: var(--color-accent);
+      }}
+      .filter-popover {{
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: calc(100% + 6px);
+        border: 1px solid var(--color-rule);
+        background: var(--color-bg);
+        padding: 8px;
+        z-index: 20;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      }}
+      .filter-popover[hidden] {{ display: none; }}
+      .checklist {{
+        display: block;
+        padding: 0;
+        margin: 0;
+        max-height: 220px;
+        overflow: auto;
+      }}
+      .check {{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 4px 6px;
+        border-bottom: 1px solid rgba(0,0,0,0.06);
+        font-size: 12.5px;
+        user-select: none;
+        cursor: pointer;
+      }}
+      .check.select-all {{
+        position: sticky;
+        top: 0;
+        background: var(--color-bg-soft);
+        border-bottom: 1px solid rgba(0,0,0,0.10);
+        z-index: 2;
+      }}
+      .check:hover {{
+        background: var(--color-bg-soft);
+      }}
+      .check input {{
+        margin: 0;
+        position: absolute;
+        opacity: 0;
+        width: 1px;
+        height: 1px;
+      }}
+      .check .label {{
+        font-family: var(--font-ui);
+        line-height: 1.2;
+      }}
+      .check[data-on="1"] .label {{
+        font-weight: 650;
+        color: var(--color-ink);
+      }}
+      .check[data-on="0"] .label {{
+        font-weight: 400;
+        color: var(--color-ink-body);
+      }}
+      .check.select-all .label {{
+        font-family: var(--font-ui);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--color-muted);
       }}
       .controls select:focus, .controls select:focus-visible,
       .controls input:focus, .controls input:focus-visible {{
@@ -426,8 +585,8 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
       }}
       .list {{
         padding: 10px 0 12px 0;
-        height: calc(100vh - 140px);
-        min-height: 520px;
+        height: var(--panel-h, clamp(420px, calc(100vh - 240px), 560px));
+        min-height: 420px;
         overflow: auto;
       }}
       .list-heading {{
@@ -460,13 +619,36 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
         padding: 10px 0;
         border-bottom: 1px solid var(--color-rule);
       }}
+      .item-inner {{
+        display: grid;
+        grid-template-columns: 116px 1fr;
+        gap: 12px;
+        align-items: start;
+      }}
+      .thumb {{
+        width: 116px;
+        height: 76px;
+        object-fit: cover;
+        border: 1px solid var(--color-rule);
+        background: var(--color-bg-soft);
+      }}
+      @media (max-width: 980px) {{
+        .item-inner {{
+          grid-template-columns: 1fr;
+        }}
+        .thumb {{
+          width: 100%;
+          height: 160px;
+        }}
+      }}
       .item.active {{
-        background: transparent;
-        outline: 2px solid rgba(58, 103, 122, 0.25);
-        outline-offset: 4px;
+        background: rgba(58, 103, 122, 0.08);
+        outline: 2px solid rgba(58, 103, 122, 0.30);
+        outline-offset: 3px;
       }}
       .item.active a {{
         color: var(--color-accent);
+        font-weight: 700;
       }}
       .item a {{
         color: var(--color-ink);
@@ -549,22 +731,35 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
     <a class="skip-link" href="#list-top">Skip to list</a>
     <header>
       <h1>Open Mics Zurich</h1>
-      <div class="sub">Recurring open mic events in and around Zürich. <span style="font-family:var(--font-mono); color:var(--color-muted);">Build: {build_stamp}</span></div>
+      <div class="sub">Recurring open mic events in and around Zürich.</div>
     </header>
 
     <div class="layout">
       <div class="card">
-        <h2 class="panel-title">Filters</h2>
         <div class="controls">
           <div>
             <label for="weekday">Weekday</label>
-            <select id="weekday" multiple>
-              {"".join([f'<option value="{d}" selected>{d}</option>' for d in WEEKDAYS])}
-            </select>
+            <div class="filter-row" style="position:relative;">
+              <button class="filter-button" id="weekdayBtn" type="button" aria-expanded="false" data-open="0">
+                <span class="meta" id="weekdayMeta">All</span>
+                <span class="caret">▾</span>
+              </button>
+              <div class="filter-popover" id="weekdayPop" hidden>
+                <div class="checklist" id="weekdayChecks"></div>
+              </div>
+            </div>
           </div>
           <div>
             <label for="language">Comedy language</label>
-            <select id="language" multiple></select>
+            <div class="filter-row" style="position:relative;">
+              <button class="filter-button" id="languageBtn" type="button" aria-expanded="false" data-open="0">
+                <span class="meta" id="languageMeta">All</span>
+                <span class="caret">▾</span>
+              </button>
+              <div class="filter-popover" id="languagePop" hidden>
+                <div class="checklist" id="languageChecks"></div>
+              </div>
+            </div>
           </div>
           <div>
             <label for="q">Search</label>
@@ -575,7 +770,6 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
       </div>
 
       <div class="card">
-        <h2 class="panel-title">Map</h2>
         <div style="position: relative;">
           <div class="banner" id="banner" style="display:none;"></div>
           <div id="map"></div>
@@ -586,8 +780,7 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
       <div class="card">
         <div class="list" id="list-top">
           <div class="list-heading">
-            <h2 class="list-heading-title">Events</h2>
-            <span class="list-heading-updated">Updated {site_data_date_display} (UTC)</span>
+            <h2 class="list-heading-title" style="display:none;">Events</h2>
           </div>
           <div id="items"></div>
         </div>
@@ -603,6 +796,7 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
     ></script>
     <script>
       const BUILD_STAMP = "{build_stamp}";
+      const PLACEHOLDER_THUMB = "{placeholder_data_url}";
       let gmap = null;
       let gInfoWindow = null;
       let gMarkers = [];
@@ -616,11 +810,12 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
         return (s || '').toString().trim().toLowerCase();
       }}
 
-      function selectedValues(selectEl) {{
-        if (!selectEl) return [];
+      function checkedValues(containerId) {{
+        const root = document.getElementById(containerId);
+        if (!root) return [];
         const out = [];
-        for (const opt of Array.from(selectEl.options || [])) {{
-          if (opt && opt.selected && opt.value) out.push(opt.value);
+        for (const el of Array.from(root.querySelectorAll('input[type=\"checkbox\"][data-value]'))) {{
+          if (el && el.checked) out.push(el.getAttribute('data-value'));
         }}
         return out;
       }}
@@ -751,16 +946,11 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
         const locText = formatLocation(first.location_display || first.location || '');
         const locQuery = locText || venueText;
         const mapsLine = locQuery
-          ? `<a href="https://www.google.com/maps/search/?api=1&query=${{encodeURIComponent(locQuery)}}" target="_blank" rel="noreferrer">${{escapeHtml(venueLabel || venueText || locQuery)}}</a><br/>`
-          : '';
+          ? `<a href="https://www.google.com/maps/search/?api=1&query=${{encodeURIComponent(locQuery)}}" target="_blank" rel="noreferrer">${{escapeHtml(venueLabel || venueText || locQuery)}}</a>`
+          : escapeHtml(venueLabel || venueText || '(venue)');
 
-        const wset = new Set();
-        for (const i of idxs) wset.add(weekdayAbbr((filtered[i] || {{}}).weekday));
-        const weekdays = Array.from(wset).filter(Boolean).join('/');
-        const header = `<strong>${{escapeHtml(venueLabel || venueText || '(venue)')}}</strong><br/>` +
-                       (weekdays ? `${{escapeHtml(weekdays)}}<br/>` : '') +
-                       mapsLine +
-                       (locText ? `${{escapeHtml(locText)}}<br/>` : '');
+        // Header: venue name only (as Google Maps link when possible)
+        const header = `<strong>${{mapsLine}}</strong><br/>`;
 
         const rows = idxs.map(i => {{
           const e = filtered[i] || {{}};
@@ -807,8 +997,8 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
       }}
 
       function render(events) {{
-        const weekdaySel = selectedValues(document.getElementById('weekday'));
-        const langSel = selectedValues(document.getElementById('language'));
+        const weekdaySel = checkedValues('weekdayChecks');
+        const langSel = checkedValues('languageChecks');
         const q = norm(document.getElementById('q').value);
 
         const filtered = events.filter(e => {{
@@ -819,6 +1009,38 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
             if (!hay.includes(q)) return false;
           }}
           return true;
+        }});
+
+        // Sort by weekday (Mon..Sun), then time, then venue/title.
+        const WD = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+        function wdIndex(cell) {{
+          const parts = (cell || '').toString().split(',').map(x => x.trim()).filter(Boolean);
+          let best = 999;
+          for (const p of parts) {{
+            const i = WD.indexOf(p);
+            if (i >= 0 && i < best) best = i;
+          }}
+          return best;
+        }}
+        function timeKey(t) {{
+          const m = (t || '').toString().trim().match(/^(\\d{1,2}):(\\d{2})$/);
+          if (!m) return 9999;
+          return (parseInt(m[1], 10) * 60) + parseInt(m[2], 10);
+        }}
+        filtered.sort((a, b) => {{
+          const da = wdIndex(a.weekday);
+          const db = wdIndex(b.weekday);
+          if (da !== db) return da - db;
+          const ta = timeKey(a.time);
+          const tb = timeKey(b.time);
+          if (ta !== tb) return ta - tb;
+          const va = norm((a.venue || '').toString());
+          const vb = norm((b.venue || '').toString());
+          if (va !== vb) return va < vb ? -1 : 1;
+          const la = norm((a.title || '').toString());
+          const lb = norm((b.title || '').toString());
+          if (la !== lb) return la < lb ? -1 : 1;
+          return 0;
         }});
 
         const pins = pinGroupsForFiltered(filtered);
@@ -839,17 +1061,42 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
           div.className = 'item';
           div.id = eventId;
 
+          const inner = document.createElement('div');
+          inner.className = 'item-inner';
+
+          // Thumbnail (use placeholder when missing)
+          const imgUrl = (e.image_url || '').toString().trim();
+          const thumbUrl = imgUrl || (PLACEHOLDER_THUMB || '');
+          if (thumbUrl) {{
+            const img = document.createElement('img');
+            img.className = 'thumb';
+            img.loading = 'lazy';
+            img.alt = '';
+            img.src = thumbUrl;
+            img.addEventListener('error', () => {{
+              // If the real image fails and we have a placeholder, swap to it.
+              if (imgUrl && PLACEHOLDER_THUMB) {{
+                img.src = PLACEHOLDER_THUMB;
+                return;
+              }}
+              try {{ img.remove(); }} catch (e) {{}}
+            }});
+            inner.appendChild(img);
+          }}
+
+          const textCol = document.createElement('div');
+
           const a = document.createElement('a');
           a.href = e.url || '#';
           a.target = '_blank';
           a.rel = 'noreferrer';
           a.textContent = e.title || '(untitled)';
-          div.appendChild(a);
+          textCol.appendChild(a);
 
           const mt = document.createElement('div');
           mt.className = 'meta-strong';
           mt.textContent = [e.weekday, e.time].filter(Boolean).join(' · ');
-          div.appendChild(mt);
+          textCol.appendChild(mt);
 
           const ml = document.createElement('div');
           ml.className = 'meta venue';
@@ -863,16 +1110,23 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
           mapsA.rel = 'noreferrer';
           mapsA.textContent = venueLabel || venueText || '(venue)';
           ml.appendChild(mapsA);
-          div.appendChild(ml);
+          textCol.appendChild(ml);
 
           const pills = document.createElement('div');
-          for (const p of [e.language, e.regularity, e.cost].filter(Boolean)) {{
+          for (const p of [e.language, e.cost].filter(Boolean)) {{
             const s = document.createElement('span');
             s.className = 'pill';
             s.textContent = p;
             pills.appendChild(s);
           }}
-          div.appendChild(pills);
+          textCol.appendChild(pills);
+
+          // If there is no image, let text span full width.
+          if (!thumbUrl) {{
+            inner.style.gridTemplateColumns = '1fr';
+          }}
+          inner.appendChild(textCol);
+          div.appendChild(inner);
 
           items.appendChild(div);
 
@@ -969,28 +1223,179 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
       }}
 
       async function boot() {{
+        // Dynamically size map + list to viewport, with safe bounds.
+        function updatePanelHeight() {{
+          const minH = 420;
+          const maxH = 560;
+          const header = document.querySelector('header');
+          const headerH = header ? header.getBoundingClientRect().height : 120;
+          // Reserve space for header + gutters + footer
+          const reserve = headerH + 190;
+          const h = Math.max(minH, Math.min(maxH, Math.floor(window.innerHeight - reserve)));
+          document.documentElement.style.setProperty('--panel-h', `${{h}}px`);
+        }}
+        updatePanelHeight();
+        window.addEventListener('resize', updatePanelHeight, {{ passive: true }});
+
         const resp = await fetch(`./data/events.json?v=${{encodeURIComponent(BUILD_STAMP)}}`, {{ cache: 'no-cache' }});
         const payload = await resp.json();
         const events = payload.events || [];
 
-        // Populate language multiselect from payload values.
-        const langEl = document.getElementById('language');
-        if (langEl) {{
-          const all = new Set();
-          for (const e of events) {{
-            const parts = (e.language || '').toString().split(/[;,]/).map(x => x.trim()).filter(Boolean);
-            for (const p of parts) all.add(p);
+        // Build Streamlit-like checkbox filters (all checked by default).
+        function mountChecks(containerId, values, metaId) {{
+          const root = document.getElementById(containerId);
+          if (!root) return;
+          root.innerHTML = '';
+
+          function updateRowStates() {{
+            for (const lab of Array.from(root.querySelectorAll('label.check'))) {{
+              const cb = lab.querySelector('input[type="checkbox"]');
+              if (!cb) continue;
+              // Do not set state for the "select all" row here.
+              if (cb.getAttribute('data-select-all') === '1') continue;
+              lab.setAttribute('data-on', cb.checked ? '1' : '0');
+            }}
           }}
-          const langs = Array.from(all).sort((a, b) => a.localeCompare(b));
-          langEl.innerHTML = '';
-          for (const l of langs) {{
-            const opt = document.createElement('option');
-            opt.value = l;
-            opt.textContent = l;
-            opt.selected = true;
-            langEl.appendChild(opt);
+
+          function updateSelectAll() {{
+            const selAll = root.querySelector('input[type="checkbox"][data-select-all="1"]');
+            const boxes = Array.from(root.querySelectorAll('input[type="checkbox"][data-value]'));
+            if (!selAll || !boxes.length) return;
+            const checkedN = boxes.filter(b => b.checked).length;
+            selAll.indeterminate = checkedN > 0 && checkedN < boxes.length;
+            selAll.checked = checkedN === boxes.length;
+
+            const selAllLabel = root.querySelector('[data-select-all-label="1"]');
+            if (selAllLabel) {{
+              selAllLabel.textContent = (checkedN === boxes.length) ? 'Select none' : 'Select all';
+            }}
+
+            const metaEl = metaId ? document.getElementById(metaId) : null;
+            if (metaEl) {{
+              if (checkedN === boxes.length) {{
+                metaEl.textContent = 'All';
+              }} else if (checkedN === 0) {{
+                metaEl.textContent = 'None';
+              }} else {{
+                const checkedSet = new Set(boxes.filter(b => b.checked).map(b => b.getAttribute('data-value')));
+                const ordered = values.filter(v => checkedSet.has(v));
+                const maxNames = 3;
+                const head = ordered.slice(0, maxNames);
+                const rest = Math.max(0, ordered.length - head.length);
+                const headText = head.join(', ');
+                metaEl.textContent = rest ? `${{headText}} (+${{rest}})` : headText;
+              }}
+            }}
+          }}
+
+          // "Select all" row
+          const allLab = document.createElement('label');
+          allLab.className = 'check select-all';
+          const allCb = document.createElement('input');
+          allCb.type = 'checkbox';
+          allCb.checked = true;
+          allCb.setAttribute('data-select-all', '1');
+          allCb.addEventListener('change', () => {{
+            const boxes = Array.from(root.querySelectorAll('input[type="checkbox"][data-value]'));
+            for (const b of boxes) b.checked = allCb.checked;
+            allCb.indeterminate = false;
+            updateRowStates();
+            updateSelectAll();
+            render(events);
+          }});
+          const allSpan = document.createElement('span');
+          allSpan.textContent = 'Select all';
+          allSpan.className = 'label';
+          allSpan.setAttribute('data-select-all-label', '1');
+          allLab.appendChild(allCb);
+          allLab.appendChild(allSpan);
+          root.appendChild(allLab);
+
+          for (const v of values) {{
+            const lab = document.createElement('label');
+            lab.className = 'check';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.checked = true;
+            cb.setAttribute('data-value', v);
+            cb.addEventListener('change', () => {{
+              updateRowStates();
+              updateSelectAll();
+              render(events);
+            }});
+            const span = document.createElement('span');
+            span.textContent = v;
+            span.className = 'label';
+            lab.appendChild(cb);
+            lab.appendChild(span);
+            root.appendChild(lab);
+          }}
+
+          updateRowStates();
+          updateSelectAll();
+        }}
+
+        mountChecks('weekdayChecks', {json.dumps(WEEKDAYS)}, 'weekdayMeta');
+
+        const langSet = new Set();
+        for (const e of events) {{
+          const parts = (e.language || '').toString().split(/[;,]/).map(x => x.trim()).filter(Boolean);
+          for (const p of parts) langSet.add(p);
+        }}
+        const langs = Array.from(langSet).sort((a, b) => a.localeCompare(b));
+        mountChecks('languageChecks', langs, 'languageMeta');
+
+        function setOpen(btnId, popId, open) {{
+          const btn = document.getElementById(btnId);
+          const pop = document.getElementById(popId);
+          if (!btn || !pop) return;
+          if (open) {{
+            pop.removeAttribute('hidden');
+            btn.setAttribute('data-open', '1');
+            btn.setAttribute('aria-expanded', 'true');
+          }} else {{
+            pop.setAttribute('hidden','');
+            btn.setAttribute('data-open', '0');
+            btn.setAttribute('aria-expanded', 'false');
           }}
         }}
+
+        function closeAllPops() {{
+          setOpen('weekdayBtn', 'weekdayPop', false);
+          setOpen('languageBtn', 'languagePop', false);
+        }}
+
+        function togglePop(btnId, popId) {{
+          const btn = document.getElementById(btnId);
+          const pop = document.getElementById(popId);
+          if (!btn || !pop) return;
+          btn.addEventListener('click', (ev) => {{
+            ev.preventDefault();
+            const isOpen = !pop.hasAttribute('hidden');
+            closeAllPops();
+            if (!isOpen) setOpen(btnId, popId, true);
+          }});
+        }}
+        togglePop('weekdayBtn', 'weekdayPop');
+        togglePop('languageBtn', 'languagePop');
+
+        document.addEventListener('click', (ev) => {{
+          const t = ev.target;
+          const wp = document.getElementById('weekdayPop');
+          const lp = document.getElementById('languagePop');
+          const wb = document.getElementById('weekdayBtn');
+          const lb = document.getElementById('languageBtn');
+          const inside = (el) => el && (el === t || (t && el.contains && el.contains(t)));
+          if (!inside(wp) && !inside(lp) && !inside(wb) && !inside(lb)) {{
+            closeAllPops();
+          }}
+        }});
+
+        document.addEventListener('keydown', (ev) => {{
+          if (ev.key === 'Escape') {{
+            closeAllPops();
+          }}
+        }});
 
         const key = getGoogleMapsKey();
         if (!key) {{
@@ -1018,8 +1423,6 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
             `Using OpenStreetMap (no Google key). To enable Google basemap add <code>?gmaps_key=YOUR_KEY</code> ` +
             `or set <code>localStorage.setItem('open_mics_gmaps_key','YOUR_KEY')</code>.`
           );
-          document.getElementById('weekday').addEventListener('change', () => render(events));
-          document.getElementById('language').addEventListener('change', () => render(events));
           document.getElementById('q').addEventListener('input', () => render(events));
           render(events);
           return;
@@ -1054,8 +1457,6 @@ def _write_index_html(path: Path, *, build_stamp: str, site_data_date_display: s
           fullscreenControl: true,
         }});
 
-        document.getElementById('weekday').addEventListener('change', () => render(events));
-        document.getElementById('language').addEventListener('change', () => render(events));
         document.getElementById('q').addEventListener('input', () => render(events));
         render(events);
       }}
@@ -1192,6 +1593,7 @@ def main() -> int:
                 "regularity": _norm(row.get("Regularity", "")),
                 "title": _norm(row.get("Event_title", "")),
                 "url": _norm(row.get("URL", "")),
+                "image_url": _norm(row.get("Image_url", "")),
                 "lat": lat,
                 "lon": lon,
             }
@@ -1223,10 +1625,19 @@ def main() -> int:
         encoding="utf-8",
     )
 
+    # Embed placeholder SVG as data URL for static site thumbnails
+    placeholder_data_url = ""
+    try:
+        svg = PLACEHOLDER_SVG.read_bytes()
+        placeholder_data_url = "data:image/svg+xml;base64," + base64.b64encode(svg).decode("ascii")
+    except OSError:
+        placeholder_data_url = ""
+
     _write_index_html(
         DOCS_DIR / "index.html",
         build_stamp=build_stamp,
         site_data_date_display=site_data_date_display,
+        placeholder_data_url=placeholder_data_url,
     )
     (DOCS_DIR / ".nojekyll").write_text("", encoding="utf-8")
 

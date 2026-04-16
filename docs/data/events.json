@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-04-16T06:59:35.012296+00:00",
+  "generated_at": "2026-04-16T07:48:26.383259+00:00",
   "generated_from": "G:/My Drive/DATENPUNK/Open_Mics/data/processed/events_flat.csv",
-  "build_stamp": "2026-04-16T06:59:35Z",
+  "build_stamp": "2026-04-16T07:48:26Z",
   "listing_scraped_at": "2026-04-16T06:39:46.221332+00:00",
   "data_updated_display": "16/04/2026",
   "events_total": 12,
@@ -19,6 +19,7 @@
       "regularity": "recurring",
       "title": "Wednesday Open Mic Comedy, Zurich",
       "url": "https://eventfrog.ch/en/p/groups/wednesday-open-mic-comedy-zurich-7322872166394914763.html",
+      "image_url": "https://eventfrog.ch/upload/rm/op/en/open-mic-new-F661R910.webp?_=1774463489000",
       "lat": 47.3863871,
       "lon": 8.5245012
     },
@@ -34,6 +35,7 @@
       "regularity": "recurring",
       "title": "Color Comedy Open Mic: Zürich’s Funniest Stand-Up",
       "url": "https://eventfrog.ch/en/p/groups/color-comedy-open-mic-zuerichs-funniest-stand-up-7405948073317250257.html",
+      "image_url": "https://eventfrog.ch/upload/rm/op/en/open-mic-zurich-5-YH4QJKOB.webp?_=1769961581000",
       "lat": 47.4108189,
       "lon": 8.5439538
     },
@@ -49,6 +51,7 @@
       "regularity": "recurring",
       "title": "Dini Muetter Comedy - Open Mic",
       "url": "https://eventfrog.ch/en/p/groups/dini-muetter-comedy-open-mic-7402400053803883617.html",
+      "image_url": "https://eventfrog.ch/upload/rm/ev/en/eventfrog-PW4IYX1S.webp?_=1773084749000",
       "lat": 47.3725451,
       "lon": 8.5418172
     },
@@ -64,6 +67,7 @@
       "regularity": "recurring",
       "title": "Pulp Non-Fiction Storytelling Open Mic Zurich",
       "url": "https://eventfrog.ch/en/p/groups/pulp-non-fiction-storytelling-open-mic-zurich-7447274382609654226.html",
+      "image_url": "https://eventfrog.ch/upload/rm/pu/lp/pulpnon-fiction-2026-ef-FMULTCHP.png?_=1775568499000",
       "lat": 47.3725451,
       "lon": 8.5418172
     },
@@ -79,6 +83,7 @@
       "regularity": "recurring",
       "title": "IN YOUR FACE - English Stand-Up Comedy Open Mic in Zurich",
       "url": "https://eventfrog.ch/en/p/groups/in-your-face-english-stand-up-comedy-open-mic-in-zurich-7132091334890862636.html",
+      "image_url": "https://eventfrog.ch/upload/rm/co/me/comedy-brew-eventfrog-JUS94OAP.png?_=1750329611000",
       "lat": 47.3757594,
       "lon": 8.5444649
     },
@@ -94,6 +99,7 @@
       "regularity": "recurring",
       "title": "Funny Women Zurich - Comedy Open Mic",
       "url": "https://eventfrog.ch/en/p/groups/funny-women-zurich-comedy-open-mic-7256690401515381606.html",
+      "image_url": "https://eventfrog.ch/upload/rm/zu/ri/zurich-1080x1080-1-2Z9F9DRZ.webp?_=1763579823000",
       "lat": 47.3863871,
       "lon": 8.5245012
     },
@@ -109,6 +115,7 @@
       "regularity": "recurring",
       "title": "COMEDY CONNECTION – Stand-up Comedy Open Mic Zurich",
       "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/comedy-connection-stand-up-comedy-open-mic-zurich-7439773372123216028.html",
+      "image_url": "https://eventfrog.ch/upload/rm/fl/ye/flyer-teal-ROIC9YVC.webp?_=1773780196000",
       "lat": 47.3730958,
       "lon": 8.5432094
     },
@@ -124,6 +131,7 @@
       "regularity": "recurring",
       "title": "La Tarima - Comedia en Español",
       "url": "https://eventfrog.ch/en/p/groups/la-tarima-comedia-en-espanol-7415721905318030787.html",
+      "image_url": "https://eventfrog.ch/upload/rm/co/py/copy-of-red-and-beige-collage-aesthe-FTFWR7HF.webp?_=1768395655000",
       "lat": 47.3774661,
       "lon": 8.5279076
     },
@@ -139,6 +147,7 @@
       "regularity": "recurring",
       "title": "Jokes, Jokes, Jokes - English Stand-up comedy show",
       "url": "https://eventfrog.ch/en/p/groups/jokes-jokes-jokes-english-stand-up-comedy-show-7413564801610218198.html",
+      "image_url": "https://eventfrog.ch/upload/rm/jo/ke/jokes-jokes-jokes-event-frog-1-PM6A1V9B.webp?_=1770463910000",
       "lat": 47.3757274,
       "lon": 8.5444631
     },
@@ -154,6 +163,7 @@
       "regularity": "recurring",
       "title": "Sunday Comedy Night at Cooper's",
       "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/sunday-comedy-night-at-cooper-s-7445944148354413444.html",
+      "image_url": "https://eventfrog.ch/upload/rm/co/op/cooper-s-pub-poster-april-2026-horizontal-1.webp?_=1775251566000",
       "lat": 47.410739,
       "lon": 8.5463648
     },
@@ -169,6 +179,7 @@
       "regularity": "recurring",
       "title": "Kon-Tiki Comedy",
       "url": "https://eventfrog.ch/en/p/theatre-stage/comedy-cabaret/kon-tiki-comedy-april-21st-7441817599552301255.html",
+      "image_url": "https://eventfrog.ch/upload/rm/13/8B/1-38-BL0Y7INN.jpg?_=1774267607000",
       "lat": 47.3738276,
       "lon": 8.5437708
     },
@@ -184,6 +195,7 @@
       "regularity": "recurring",
       "title": "Stubä Comedy",
       "url": "https://www.milanski-comedy.ch/stubae-comedy",
+      "image_url": "",
       "lat": 47.3779051,
       "lon": 8.5271003
     }
