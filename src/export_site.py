@@ -257,7 +257,7 @@ def _write_index_html(
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Open Mics Zurich</title>
+    <title>Open MicZH</title>
     <meta http-equiv="Cache-Control" content="no-store, max-age=0" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
@@ -646,10 +646,6 @@ def _write_index_html(
         outline: 2px solid rgba(58, 103, 122, 0.30);
         outline-offset: 3px;
       }}
-      .item.active a {{
-        color: var(--color-accent);
-        font-weight: 700;
-      }}
       .item a {{
         color: var(--color-ink);
         text-decoration: none;
@@ -903,17 +899,23 @@ def _write_index_html(
         return k;
       }}
 
-      // One pin per venue (normalized label); coordinates are the median of member points so
-      // nearby geocode duplicates still collapse to a single marker.
+      // One pin per location (rounded coordinates). This keeps multiple events at the same
+      // place on a single pin even if venue labels vary slightly.
       function pinGroupsForFiltered(filtered) {{
         const groups = new Map();
         const eventToKey = filtered.map(() => '');
+        function coordKey(lat, lon) {{
+          // Round to avoid tiny float differences creating multiple pins.
+          // Use ~1e-4 degrees (~11m lat) to tolerate cache/key differences while
+          // still keeping distinct venues separate in practice.
+          return `${{lat.toFixed(4)}},${{lon.toFixed(4)}}`;
+        }}
         for (let i = 0; i < filtered.length; i++) {{
           const e = filtered[i];
           const lat = Number(e.lat);
           const lon = Number(e.lon);
           if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
-          const k = venueGroupKey(e);
+          const k = coordKey(lat, lon);
           eventToKey[i] = k;
           if (!groups.has(k)) groups.set(k, {{ idxs: [], lats: [], lons: [] }});
           const g = groups.get(k);
@@ -964,25 +966,36 @@ def _write_index_html(
         return header + rows;
       }}
 
-      function setActive(eventId) {{
-        if (_lastActiveId) {{
-          const prev = document.getElementById(_lastActiveId);
-          if (prev) prev.classList.remove('active');
-        }}
+      function clearActive() {{
+        // Clear any stuck highlights (do not rely only on _lastActiveId).
+        try {{
+          document.querySelectorAll('.item.active').forEach(el => el.classList.remove('active'));
+        }} catch (e) {{}}
+        _lastActiveId = null;
+      }}
+
+      function setActive(eventId, opts) {{
+        const scroll = opts && Object.prototype.hasOwnProperty.call(opts, 'scroll') ? !!opts.scroll : false;
+        // Ensure only one active item, even if something else applied `.active`.
+        try {{
+          document.querySelectorAll('.item.active').forEach(el => el.classList.remove('active'));
+        }} catch (e) {{}}
         _lastActiveId = eventId;
         const el = document.getElementById(eventId);
         if (el) {{
           el.classList.add('active');
-          const scroller = document.querySelector('.list');
-          const doScroll = () => {{
-            if (scroller && typeof scroller.scrollTo === 'function') {{
-              const top = el.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
-              scroller.scrollTo({{ top: Math.max(0, top - 40), behavior: 'smooth' }});
-            }} else {{
-              el.scrollIntoView({{ behavior: 'smooth', block: 'nearest' }});
-            }}
-          }};
-          requestAnimationFrame(() => requestAnimationFrame(doScroll));
+          if (scroll) {{
+            const scroller = document.querySelector('.list');
+            const doScroll = () => {{
+              if (scroller && typeof scroller.scrollTo === 'function') {{
+                const top = el.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
+                scroller.scrollTo({{ top: Math.max(0, top - 40), behavior: 'smooth' }});
+              }} else {{
+                el.scrollIntoView({{ behavior: 'smooth', block: 'nearest' }});
+              }}
+            }};
+            requestAnimationFrame(() => requestAnimationFrame(doScroll));
+          }}
         }}
       }}
 
@@ -1053,6 +1066,15 @@ def _write_index_html(
         const items = document.getElementById('items');
         items.innerHTML = '';
         clearMarkers();
+        clearActive();
+
+        // When leaving the list area, clear the hover selection.
+        try {{
+          const listEl = document.querySelector('.list');
+          if (listEl) {{
+            listEl.onmouseleave = () => clearActive();
+          }}
+        }} catch (e) {{}}
 
         for (let idx = 0; idx < filtered.length; idx++) {{
           const e = filtered[idx];
@@ -1087,6 +1109,7 @@ def _write_index_html(
           const textCol = document.createElement('div');
 
           const a = document.createElement('a');
+          a.className = 'title-link';
           a.href = e.url || '#';
           a.target = '_blank';
           a.rel = 'noreferrer';
@@ -1130,13 +1153,19 @@ def _write_index_html(
 
           items.appendChild(div);
 
+          // Hovering in the sidebar should be the only active selection.
+          div.addEventListener('mouseenter', () => {{
+            setActive(eventId, {{ scroll: false }});
+          }});
+
           const k = eventToKey[idx];
           if (k) {{
+            // Show venue tooltip on hover (without auto-panning the map).
             div.addEventListener('mouseenter', () => {{
               const mk = markerByKey.get(k);
               if (!mk) return;
               if (gmap) {{
-                if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow();
+                if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({{ disableAutoPan: true }});
                 gInfoWindow.setContent(mk.popupHtml || '');
                 gInfoWindow.open({{ anchor: mk.marker, map: gmap }});
               }} else {{
@@ -1152,6 +1181,23 @@ def _write_index_html(
                 try {{ mk.marker.closePopup(); }} catch (e) {{}}
               }}
             }});
+
+            // Also open the popup when the user explicitly clicks an item.
+            div.addEventListener('click', (ev) => {{
+              try {{
+                const t = ev && ev.target;
+                if (t && typeof t.closest === 'function' && t.closest('a')) return;
+              }} catch (e) {{}}
+              const mk = markerByKey.get(k);
+              if (!mk) return;
+              if (gmap) {{
+                if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({{ disableAutoPan: true }});
+                gInfoWindow.setContent(mk.popupHtml || '');
+                gInfoWindow.open({{ anchor: mk.marker, map: gmap }});
+              }} else {{
+                try {{ mk.marker.openPopup(); }} catch (e) {{}}
+              }}
+            }});
           }}
         }}
 
@@ -1160,10 +1206,14 @@ def _write_index_html(
           const popupHtml = groupPopupHtml(filtered, g.idxs);
           const firstEventId = `event-${{g.idxs[0]}}`;
           if (gmap) {{
+            const first = filtered[g.idxs[0]] || {{}};
+            const venueText = (first.venue || (first.location_display || first.location || '').split(',')[0] || '').toString().trim();
+            const venueLabel = capFirst(cleanVenueLabel(venueText));
             const marker = new google.maps.Marker({{
               position: {{ lat: g.lat, lng: g.lon }},
               map: gmap,
-              title: (filtered[g.idxs[0]] || {{}}).title || '(untitled)',
+              // Use venue name for the native hover title (not just the first event).
+              title: venueLabel || venueText || '(venue)',
               icon: {{
                 path: google.maps.SymbolPath.CIRCLE,
                 scale: 7,
@@ -1174,9 +1224,18 @@ def _write_index_html(
                 strokeOpacity: 1,
               }},
             }});
+            // Show popup on hover (no auto-pan), hide on rollout.
+            marker.addListener('mouseover', () => {{
+              if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({{ disableAutoPan: true }});
+              gInfoWindow.setContent(popupHtml);
+              gInfoWindow.open({{ anchor: marker, map: gmap }});
+            }});
+            marker.addListener('mouseout', () => {{
+              if (gInfoWindow) gInfoWindow.close();
+            }});
             marker.addListener('click', () => {{
-              setActive(firstEventId);
-              if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow();
+              setActive(firstEventId, {{ scroll: true }});
+              if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({{ disableAutoPan: true }});
               gInfoWindow.setContent(popupHtml);
               gInfoWindow.open({{ anchor: marker, map: gmap }});
             }});
@@ -1191,9 +1250,15 @@ def _write_index_html(
               fillColor: PIN_FILL,
               fillOpacity: 1,
             }});
-            marker.bindPopup(popupHtml);
+            marker.bindPopup(popupHtml, {{ autoPan: false }});
+            marker.on('mouseover', () => {{
+              try {{ marker.openPopup(); }} catch (e) {{}}
+            }});
+            marker.on('mouseout', () => {{
+              try {{ marker.closePopup(); }} catch (e) {{}}
+            }});
             marker.on('click', () => {{
-              setActive(firstEventId);
+              setActive(firstEventId, {{ scroll: true }});
             }});
             marker.addTo(lMarkersLayer);
             markerByKey.set(g.key, {{ marker, popupHtml }});
@@ -1481,9 +1546,7 @@ def main() -> int:
     df = pd.read_csv(CSV_PATH, sep=";", dtype=str).fillna("")
     if "Regularity" in df.columns:
         df = df[df["Regularity"].astype(str).str.strip().str.lower() == "recurring"].copy()
-    # Keep multi-weekday rows intact (e.g. "Tuesday, Friday, Sunday") so each recurring
-    # series appears only once in the event list. The frontend already handles filtering
-    # comma-separated weekday lists.
+    # Normalize weekday lists (e.g. "Tuesday,Friday" -> "Tuesday, Friday").
     if "Weekday" in df.columns:
         df["Weekday"] = df["Weekday"].astype(str).fillna("")
         df["Weekday"] = df["Weekday"].apply(lambda s: ", ".join([p.strip() for p in s.split(",") if p.strip()]))
@@ -1508,13 +1571,54 @@ def main() -> int:
     df = df[confirmed_mask].copy()
 
     def coord_for(loc: str) -> tuple[float | None, float | None]:
+        def _coords_from_entry(entry: dict) -> tuple[float | None, float | None]:
+            try:
+                return float(entry.get("lat")), float(entry.get("lon"))
+            except (TypeError, ValueError):
+                return None, None
+
         entry = cache.get(loc)
-        if not entry:
-            return None, None
-        try:
-            return float(entry.get("lat")), float(entry.get("lon"))
-        except (TypeError, ValueError):
-            return None, None
+        if entry:
+            return _coords_from_entry(entry)
+
+        # Fallback: the same venue may appear under slightly different `Location` strings
+        # (e.g. neighborhood tokens, duplicated "8001 Zürich"). Reuse cached coords by
+        # matching venue + ZIP/city in the cache keys.
+        venue, _, _ = formatted_loc(loc)
+        venue_q = (venue or "").strip().casefold()
+        zip_m = re.search(r"\b(8\d{3})\b", loc or "")
+        zip_q = zip_m.group(1) if zip_m else ""
+
+        def _score_key(k: str) -> int:
+            kk = (k or "").casefold()
+            if venue_q and venue_q not in kk:
+                return -1
+            score = 0
+            if venue_q:
+                score += 10
+            if zip_q and zip_q in kk:
+                score += 10
+            if "zürich" in kk or "zurich" in kk:
+                score += 2
+            # Prefer more specific keys (street address tends to be longer).
+            score += min(len(k), 120) // 20
+            return score
+
+        best_key = None
+        best_score = -1
+        for k, v in cache.items():
+            sc = _score_key(k)
+            if sc <= best_score:
+                continue
+            lat, lon = _coords_from_entry(v)
+            if lat is None or lon is None:
+                continue
+            best_key = k
+            best_score = sc
+
+        if best_key:
+            return _coords_from_entry(cache[best_key])
+        return None, None
 
     def formatted_loc(loc: str) -> tuple[str, str, str]:
         # Use the cleaned Location string as source of truth for display.
@@ -1577,27 +1681,31 @@ def main() -> int:
     for _, row in df.iterrows():
         loc_raw = _norm(row.get("Location", ""))
         lat, lon = coord_for(loc_raw)
-        if lat is None or lon is None:
-            missing_coords += 1
         venue, address, location_display = formatted_loc(loc_raw)
-        events.append(
-            {
-                "weekday": _norm(row.get("Weekday", "")),
-                "location": _norm(location_display) or loc_raw,
-                "venue": _norm(venue),
-                "address": _norm(address),
-                "location_display": _norm(location_display),
-                "time": _norm(row.get("Time", "")),
-                "cost": _norm(row.get("Cost", "")),
-                "language": _norm(row.get("Comedy_language", "")),
-                "regularity": _norm(row.get("Regularity", "")),
-                "title": _norm(row.get("Event_title", "")),
-                "url": _norm(row.get("URL", "")),
-                "image_url": _norm(row.get("Image_url", "")),
-                "lat": lat,
-                "lon": lon,
-            }
-        )
+        weekdays = [p.strip() for p in str(row.get("Weekday", "") or "").split(",") if p.strip()]
+        if not weekdays:
+            weekdays = [""]
+        for wd in weekdays:
+            if lat is None or lon is None:
+                missing_coords += 1
+            events.append(
+                {
+                    "weekday": _norm(wd),
+                    "location": _norm(location_display) or loc_raw,
+                    "venue": _norm(venue),
+                    "address": _norm(address),
+                    "location_display": _norm(location_display),
+                    "time": _norm(row.get("Time", "")),
+                    "cost": _norm(row.get("Cost", "")),
+                    "language": _norm(row.get("Comedy_language", "")),
+                    "regularity": _norm(row.get("Regularity", "")),
+                    "title": _norm(row.get("Event_title", "")),
+                    "url": _norm(row.get("URL", "")),
+                    "image_url": _norm(row.get("Image_url", "")),
+                    "lat": lat,
+                    "lon": lon,
+                }
+            )
 
     DOCS_DATA_DIR.mkdir(parents=True, exist_ok=True)
     DOCS_DIR.mkdir(parents=True, exist_ok=True)

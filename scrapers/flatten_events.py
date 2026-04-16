@@ -687,19 +687,61 @@ def _fill_group_row_gaps(
     if not time_s:
         # Prefer show start / begin times over doors/location-open times.
         # This avoids picking up "Location offen 15:00" instead of "Showstart 19:00".
+        def _norm_hhmm(
+            h: str,
+            m: str,
+            suffix: str | None,
+            *,
+            sep: str = ":",
+            tail: str = "",
+        ) -> str:
+            try:
+                hh = int(h)
+                mm = int(m)
+            except Exception:
+                return ""
+            if not (0 <= hh <= 23 and 0 <= mm <= 59):
+                return ""
+            # Avoid interpreting dates like "16.04.2026" as a time "16:04".
+            # This is a common artifact in Eventfrog/landing pages where the date appears
+            # near words like "Start:".
+            if sep == ".":
+                t = (tail or "").lstrip()
+                if t.startswith(".") or (t[:1].isdigit()):
+                    return ""
+            suf = (suffix or "").strip().lower()
+            # Convert 12h clock if suffix present.
+            if suf in {"am", "pm"}:
+                if hh == 12:
+                    hh = 0
+                if suf == "pm":
+                    hh = (hh + 12) % 24
+            return f"{hh:02d}:{mm:02d}"
+
         m = re.search(
-            r"\b(?:show\s*starts?|show\s*start|showstart|beginn)\b[^0-9]{0,25}(\d{1,2}:\d{2})",
+            r"\b(?:show\s*starts?|show\s*start|showstart|beginn|start)\b[^0-9]{0,25}(\d{1,2})([:.])(\d{2})\s*(am|pm|uhr)?",
             combined,
             flags=re.I,
         )
         if not m:
-            m = re.search(r"(\d{1,2}:\d{2})\s*(?:uhr)?\s*[–-]\s*(?:show\s*start|showstart)", combined, flags=re.I)
+            m = re.search(
+                r"(\d{1,2})([:.])(\d{2})\s*(am|pm|uhr)?\s*[–-]\s*(?:show\s*start|showstart|beginn|start)",
+                combined,
+                flags=re.I,
+            )
         if m:
-            time_s = m.group(1)
+            time_s = _norm_hhmm(
+                m.group(1),
+                m.group(3),
+                m.group(4),
+                sep=m.group(2),
+                tail=combined[m.end() : m.end() + 6],
+            )
         else:
-            m2 = re.search(r"(\d{1,2}:\d{2})", combined)
+            # Generic fallback: only accept HH:MM (colon) to avoid dd.mm dates.
+            m2 = re.search(r"\b(\d{1,2}):(\d{2})\s*(am|pm)?\b", combined, flags=re.I)
             if m2:
-                time_s = m2.group(1)
+                time_s = _norm_hhmm(m2.group(1), m2.group(2), m2.group(3), sep=":", tail=combined[m2.end() : m2.end() + 6])
 
     return weekday, location, time_s
 
