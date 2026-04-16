@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-04-16T08:21:31.541511+00:00",
+  "generated_at": "2026-04-16T08:25:12.439553+00:00",
   "generated_from": "G:/My Drive/DATENPUNK/Open_Mics/data/processed/events_flat.csv",
-  "build_stamp": "2026-04-16T08:21:31Z",
+  "build_stamp": "2026-04-16T08:25:12Z",
   "listing_scraped_at": "2026-04-16T06:39:46.221332+00:00",
   "data_updated_display": "16/04/2026",
   "events_total": 15,
@@ -20,8 +20,8 @@
       "title": "Wednesday Open Mic Comedy, Zurich",
       "url": "https://eventfrog.ch/en/p/groups/wednesday-open-mic-comedy-zurich-7322872166394914763.html",
       "image_url": "https://eventfrog.ch/upload/rm/op/en/open-mic-new-F661R910.webp?_=1774463489000",
-      "lat": 47.3863888,
-      "lon": 8.5245004
+      "lat": 47.38478,
+      "lon": 8.5336683
     },
     {
       "weekday": "Tuesday",
@@ -132,8 +132,8 @@
       "title": "Funny Women Zurich - Comedy Open Mic",
       "url": "https://eventfrog.ch/en/p/groups/funny-women-zurich-comedy-open-mic-7256690401515381606.html",
       "image_url": "https://eventfrog.ch/upload/rm/zu/ri/zurich-1080x1080-1-2Z9F9DRZ.webp?_=1763579823000",
-      "lat": 47.3863888,
-      "lon": 8.5245004
+      "lat": 47.3863871,
+      "lon": 8.5245012
     },
     {
       "weekday": "Monday",

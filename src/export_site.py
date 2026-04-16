@@ -1577,32 +1577,68 @@ def main() -> int:
             except (TypeError, ValueError):
                 return None, None
 
-        entry = cache.get(loc)
-        if entry:
-            return _coords_from_entry(entry)
-
         # Fallback: the same venue may appear under slightly different `Location` strings
         # (e.g. neighborhood tokens, duplicated "8001 Zürich"). Reuse cached coords by
         # matching venue + ZIP/city in the cache keys.
         venue, _, _ = formatted_loc(loc)
         venue_q = (venue or "").strip().casefold()
+        # Allow slight naming differences between cache keys and cleaned venues.
+        # e.g. "Auer & Co. Courtyard" vs "Auer & Co., Zürich (CH)"
+        venue_variants: list[str] = []
+        if venue_q:
+            venue_variants.append(venue_q)
+            v2 = re.sub(r"\bcourtyard\b", "", venue_q, flags=re.I).strip()
+            if v2 and v2 not in venue_variants:
+                venue_variants.append(v2)
+            v3 = re.sub(r"[^a-z0-9]+", " ", venue_q).strip()
+            if v3 and v3 not in venue_variants:
+                venue_variants.append(v3)
+            v4 = " ".join(v3.split()[:2]).strip() if v3 else ""
+            if v4 and len(v4) >= 4 and v4 not in venue_variants:
+                venue_variants.append(v4)
         zip_m = re.search(r"\b(8\d{3})\b", loc or "")
         zip_q = zip_m.group(1) if zip_m else ""
 
         def _score_key(k: str) -> int:
             kk = (k or "").casefold()
-            if venue_q and venue_q not in kk:
-                return -1
+            if venue_variants:
+                if not any(v and len(v) >= 4 and v in kk for v in venue_variants):
+                    return -1
             score = 0
-            if venue_q:
+            # Avoid old scrape artefacts like "00 Uhr Venue, 8001 Zürich" which may have
+            # wrong coords in the cache.
+            if re.match(r"^\s*(?:uhr\s+)?(?:00|15|30|45)\b", kk):
+                score -= 25
+            if re.search(r"\b(?:00|15|30|45)\s*uhr\b", kk):
+                score -= 25
+            if venue_variants:
                 score += 10
             if zip_q and zip_q in kk:
                 score += 10
             if "zürich" in kk or "zurich" in kk:
                 score += 2
-            # Prefer more specific keys (street address tends to be longer).
-            score += min(len(k), 120) // 20
+            # Strongly prefer keys that look like real street addresses.
+            has_house_no = bool(re.search(r"\b\d+[a-z]?\b", kk))
+            has_street_token = bool(
+                re.search(
+                    r"\b(strasse|straße|gasse|platz|weg|allee|quai|promenade|ring|ufer|hof|berg|steig|bühl|rain|brücke|bruecke)\b",
+                    kk,
+                )
+            )
+            if has_street_token:
+                score += 8
+            if has_house_no:
+                score += 4
+            # Slightly prefer more specific keys (street address tends to be longer).
+            score += min(len(k), 120) // 30
             return score
+
+        # If there is an exact hit in the cache, still allow a better-scored key to override it.
+        # This avoids situations where a low-quality cached string (neighborhood-only or artefact)
+        # pins the venue to the wrong place.
+        exact_entry = cache.get(loc)
+        exact_score = _score_key(loc) if exact_entry else -1
+        exact_coords = _coords_from_entry(exact_entry) if exact_entry else (None, None)
 
         best_key = None
         best_score = -1
@@ -1616,8 +1652,10 @@ def main() -> int:
             best_key = k
             best_score = sc
 
-        if best_key:
+        if best_key and best_score >= max(0, exact_score + 2):
             return _coords_from_entry(cache[best_key])
+        if exact_entry:
+            return exact_coords
         return None, None
 
     def formatted_loc(loc: str) -> tuple[str, str, str]:
