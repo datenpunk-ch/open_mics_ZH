@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Karla:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,700;1,400;1,700&family=Karla:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <link
@@ -31,8 +31,9 @@
         --color-accent-hover: #2f5a6b;
 
         --font-display: "Spectral", "Georgia", serif;
-        --font-ui: "Karla", system-ui, sans-serif;
-        --font-mono: "JetBrains Mono", ui-monospace, monospace;
+        --font-ui: "Karla", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
 
         --space-1: 0.5rem;
         --space-2: 1rem;
@@ -52,6 +53,12 @@
         --lh-body: 1.65;
         --text-body: clamp(0.95rem, 0.15vw + 0.9rem, 1rem);
       }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
       body {
         margin: 0;
         background: var(--color-bg);
@@ -59,68 +66,103 @@
         font-family: var(--font-ui);
         font-size: var(--text-body);
         font-weight: 400;
-        line-height: var(--lh-body);
+        line-height: 1.75;
         letter-spacing: 0.005em;
         -webkit-font-smoothing: antialiased;
         text-rendering: optimizeLegibility;
-      }
-      /* Editorial measure: constrain overall chrome a bit */
-      .layout {
-        max-width: 1440px;
-        margin: 0 auto;
+        overflow-x: hidden;
       }
       a {
         color: var(--color-ink);
-        text-decoration: none;
-        transition: color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.18em;
+        transition: color 0.15s ease, text-decoration-color 0.15s ease, opacity 0.15s ease;
       }
       a:hover {
-        color: var(--color-accent);
+        color: var(--color-accent-hover);
       }
-      a:focus-visible {
+      :focus-visible {
         outline: 2px solid var(--color-accent);
-        outline-offset: 3px;
+        outline-offset: 2px;
       }
       .skip-link {
         position: absolute;
-        left: -9999px;
-        top: var(--space-2);
-        z-index: 200;
-        padding: var(--space-1) var(--space-3);
-        background: var(--color-ink);
-        color: var(--color-bg);
-        font-family: var(--font-ui);
-        font-size: 0.6875rem;
-        font-weight: 700;
-        letter-spacing: 0.12em;
+        left: 10px;
+        top: 10px;
+        padding: 8px 10px;
+        background: var(--color-bg);
+        border: 1px solid var(--color-rule);
+        color: var(--color-ink);
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.04em;
         text-transform: uppercase;
+        text-decoration: none;
+        transform: translateY(-120%);
+        transition: transform 0.15s ease;
+        z-index: 200;
       }
       .skip-link:focus {
-        left: var(--space-2);
+        transform: translateY(0);
       }
-      header {
-        position: sticky;
+      .progress-bar {
+        position: fixed;
         top: 0;
-        z-index: 50;
-        background: rgba(255, 255, 255, 0.96);
-        border-bottom: 1px solid var(--color-ink);
-        backdrop-filter: blur(8px);
-        padding: var(--space-3) var(--gutter-end) var(--space-3) var(--gutter-start);
+        left: 0;
+        height: 2px;
+        width: 0%;
+        background: var(--color-accent);
+        z-index: 100;
+        transition: width 0.1s;
       }
-      header h1 {
-        font-family: var(--font-display);
-        font-size: 42px;
-        line-height: var(--lh-head);
-        margin: 0 0 0.5rem 0;
-        letter-spacing: -0.02em;
-        color: var(--color-ink);
+      .hero {
+        padding: 4.5rem 0 3rem;
+        background: var(--color-bg);
       }
-      header .sub {
+      .hero .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 5vw;
+      }
+      .hero-tag {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.18em;
         color: var(--color-muted);
-        font-size: 14px;
-        max-width: 42rem;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+      }
+      .hero h1 {
+        font-family: var(--font-display);
+        font-size: clamp(2.4rem, 6vw, 4.5rem);
+        font-weight: 700;
+        line-height: var(--lh-tight);
+        color: var(--color-ink);
+        letter-spacing: -0.03em;
+        margin: 0 0 1rem;
+        max-width: 18ch;
+      }
+      .hero-sub {
+        font-size: 1.125rem;
+        color: var(--color-ink-body);
+        max-width: 62ch;
+        margin: 0 0 1.75rem;
+        line-height: 1.7;
+      }
+      .hero-byline {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--color-muted);
+        letter-spacing: 0.12em;
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        text-transform: uppercase;
       }
       .layout {
+        max-width: 1440px;
+        margin: 0 auto;
         display: grid;
         /* Match Streamlit layout: filters / map / events */
         grid-template-columns: minmax(260px, 320px) minmax(520px, 1fr) minmax(340px, 420px);
@@ -152,6 +194,9 @@
       }
       /* Leaflet/SVG "focus" styling can leave clicked markers looking selected. */
       .leaflet-container .leaflet-interactive:focus {
+        outline: none;
+      }
+      .leaflet-container .leaflet-interactive:focus-visible {
         outline: none;
       }
       .banner {
@@ -394,7 +439,6 @@
       }
       .item a {
         color: var(--color-ink);
-        text-decoration: none;
         font-family: var(--font-display);
         font-size: 18px;
         line-height: 1.25;
@@ -470,12 +514,21 @@
     </style>
   </head>
   <body>
-    <a class="skip-link" href="#list-top">Skip to list</a>
-    <header>
-      <h1>Open MicZH</h1>
-      <div class="sub">Recurring open mic comedy events in Züri.</div>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div class="progress-bar" id="progress"></div>
+    <header class="hero" aria-label="Open MicZH">
+      <div class="container">
+        <div class="hero-tag">Zürich · comedy · open mics</div>
+        <h1>Open MicZH</h1>
+        <p class="hero-sub">Recurring open mic comedy events in Züri.</p>
+        <div class="hero-byline">
+          <span>Weekday &amp; language filters</span>
+          <span>Map &amp; event list</span>
+        </div>
+      </div>
     </header>
 
+    <main id="main-content">
     <div class="layout">
       <div class="card">
         <div class="controls">
@@ -528,6 +581,7 @@
         </div>
       </div>
     </div>
+    </main>
 
     <footer class="site-footer">Data: 16/04/2026 (UTC) · Build 2026-04-16T08:25:12Z</footer>
 
@@ -1276,6 +1330,21 @@
         document.getElementById('mapNote').textContent = 'Failed to load event data';
         console.error(err);
       });
+    </script>
+    <script>
+      (function () {
+        const progress = document.getElementById("progress");
+        if (!progress) return;
+        function tick() {
+          const h = document.documentElement;
+          const sh = h.scrollHeight - h.clientHeight;
+          const pct = sh > 0 ? (h.scrollTop / sh) * 100 : 0;
+          progress.style.width = pct + "%";
+        }
+        window.addEventListener("scroll", tick, { passive: true });
+        window.addEventListener("resize", tick);
+        tick();
+      })();
     </script>
   </body>
 </html>
