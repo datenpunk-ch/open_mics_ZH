@@ -1,9 +1,7 @@
 {
-  "_comment": "Manually maintained events. This file is merged into data/events.json at runtime by docs/index.html.",
-  "data_tag": "",
-  "data_tag_note": "",
-  "updated_at": "",
-  "events": [
-  ]
+  "_comment": "Manual metadata + optional hand-added events. This file is merged into data/events.json at runtime by docs/index.html.",
+  "data_tag": "modified",
+  "data_tag_note": "Manual corrections applied directly in docs/data/events.json: Auer & Co. Courtyard -> Sihlquai 131; VIOR -> Löwenstrasse 2; ROBIN's -> Zähringerstrasse 33 (venue now ROBIN's Bar & Coffee); Gleis -> Zollstrasse 121; Stubä venue label cleaned.",
+  "updated_at": "2026-04-23",
+  "events": []
 }
-

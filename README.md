@@ -43,6 +43,9 @@ Interactive view with filters (weekday/language), event list, and map.
 For embedding/hosting (e.g. GitHub Pages) there is a **static** version under `docs/`.
 It loads `docs/data/events.json` and shows map + filters + event list (no server, no runtime geocoding).
 
+- **Project workflow (end-to-end)**: see `docs/WORKFLOW.md`
+- **Manual edits workflow**: see `docs/MANUAL_EDITS.md`
+
 - **Build-time geocoding (once / when new locations appear)**:
   - `pixi run geocode`
 - **Export the static site**:

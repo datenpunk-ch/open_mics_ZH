@@ -593,7 +593,6 @@
             const tag = dataTag.toLowerCase();
             const card = document.createElement("div");
             card.className = "stat-card is-alert";
-            if (dataTagNote) card.title = dataTagNote;
 
             const v = document.createElement("div");
             v.className = "v";
@@ -606,7 +605,7 @@
             const k = document.createElement("div");
             k.className = "k";
             k.textContent =
-              (tag === "incomplete") ? "Data incomplete" :
+              (tag === "incomplete") ? "Scrape incomplete" :
               (tag === "modified") ? "Manual edits" :
               (tag === "stale") ? "Possibly stale" :
               ("Data: " + dataTag);

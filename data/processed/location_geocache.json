@@ -478,5 +478,15 @@
     "lat": 47.3722329,
     "lon": 8.5423291,
     "display_name": "Altstadt, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "Stubä, Brauerstrasse 42, 8004 Zürich": {
+    "lat": 47.3779077,
+    "lon": 8.5270821,
+    "display_name": "Stubä, 42, Brauerstrasse, Langstrasse, Kreis 4, Zürich, Bezirk Zürich, Zürich, 8004, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "ROBIN's, Zürich (CH)": {
+    "lat": 47.3757594,
+    "lon": 8.5444649,
+    "display_name": "Robin's coffee, Zähringerstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8092, Schweiz/Suisse/Svizzera/Svizra"
   }
 }
