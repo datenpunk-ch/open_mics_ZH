@@ -809,6 +809,35 @@
         }
       }
 
+      function focusMarker(mk) {
+        if (!mk || !mk.marker) return;
+        // Explicit user intent: ensure the marker + tooltip is on screen.
+        if (gmap) {
+          try {
+            const pos = mk.marker.getPosition && mk.marker.getPosition();
+            if (pos) {
+              gmap.panTo(pos);
+              // Nudge up so the tooltip doesn't sit under the top chrome.
+              window.requestAnimationFrame(() => {
+                try { gmap.panBy(0, -140); } catch (e) {}
+              });
+            }
+          } catch (e) {}
+          return;
+        }
+        if (lmap) {
+          try {
+            const ll = mk.marker.getLatLng && mk.marker.getLatLng();
+            if (ll) {
+              lmap.panTo(ll, { animate: true });
+              window.requestAnimationFrame(() => {
+                try { lmap.panBy([0, -120], { animate: true }); } catch (e) {}
+              });
+            }
+          } catch (e) {}
+        }
+      }
+
       function render(events) {
         const weekdaySel = checkedValues('weekdayChecks');
         const langSel = checkedValues('languageChecks');
@@ -990,6 +1019,7 @@
               } catch (e) {}
               const mk = markerByKey.get(k);
               if (!mk) return;
+              focusMarker(mk);
               if (gmap) {
                 if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({ disableAutoPan: true });
                 gInfoWindow.setContent(mk.popupHtml || '');
@@ -1035,6 +1065,7 @@
             });
             marker.addListener('click', () => {
               setActive(firstEventId, { scroll: true });
+              focusMarker({ marker });
               if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({ disableAutoPan: true });
               gInfoWindow.setContent(popupHtml);
               gInfoWindow.open({ anchor: marker, map: gmap });
@@ -1059,6 +1090,8 @@
             });
             marker.on('click', () => {
               setActive(firstEventId, { scroll: true });
+              focusMarker({ marker });
+              try { marker.openPopup(); } catch (e) {}
             });
             marker.addTo(lMarkersLayer);
             markerByKey.set(g.key, { marker, popupHtml });
