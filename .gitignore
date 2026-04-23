@@ -10,3 +10,6 @@ data/raw/*.json
 
 # Generated intermediate outputs (scrape/enrich snapshots)
 data/processed/events_enriched_*.json
+
+# Editor settings (local)
+.vscode/settings.json
