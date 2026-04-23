@@ -137,6 +137,13 @@
         text-transform: uppercase;
         align-items: baseline;
       }
+      .hero-byline a {
+        text-decoration: none;
+        border-bottom: 1px solid rgba(58, 103, 122, 0.55);
+      }
+      .hero-byline a:hover {
+        border-bottom-color: rgba(47, 90, 107, 0.7);
+      }
 
       section { padding: 5.25rem 0; }
       section:nth-child(even) { background: var(--color-bg-soft); }
@@ -288,6 +295,7 @@
         <div class="hero-byline reveal">
           <span>Open MicZH</span>
           <span>Living document</span>
+          <span><a href="#interactive">TL;DR → interactive tool</a></span>
         </div>
       </div>
     </header>
@@ -344,7 +352,7 @@
         </div>
       </section>
 
-      <section>
+      <section id="interactive">
         <div class="container">
           <div class="section-label reveal">Interactive</div>
           <div class="sec-head reveal">
