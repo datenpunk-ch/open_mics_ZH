@@ -809,32 +809,73 @@
         }
       }
 
-      function focusMarker(mk) {
+      function focusMarker(mk, onDone) {
         if (!mk || !mk.marker) return;
-        // Explicit user intent: ensure the marker + tooltip is on screen.
+        const done = typeof onDone === 'function' ? onDone : null;
+        const MIN_ZOOM = 13;
+
+        // Explicit user intent: ensure the marker + tooltip is on screen, even after zooming.
         if (gmap) {
           try {
             const pos = mk.marker.getPosition && mk.marker.getPosition();
-            if (pos) {
-              gmap.panTo(pos);
-              // Nudge up so the tooltip doesn't sit under the top chrome.
-              window.requestAnimationFrame(() => {
-                try { gmap.panBy(0, -140); } catch (e) {}
-              });
+            if (!pos) { if (done) done(); return; }
+
+            const z = (typeof gmap.getZoom === 'function') ? gmap.getZoom() : null;
+            if (typeof z === 'number' && z < MIN_ZOOM && typeof gmap.setZoom === 'function') {
+              gmap.setZoom(MIN_ZOOM);
             }
-          } catch (e) {}
+
+            let fired = false;
+            const fireOnce = () => {
+              if (fired) return;
+              fired = true;
+              // Nudge up so the tooltip doesn't sit under the top chrome.
+              try { gmap.panBy(0, -140); } catch (e) {}
+              if (done) done();
+            };
+
+            // Wait for the map to finish any zoom/pan before opening tooltips.
+            try {
+              if (google && google.maps && google.maps.event && google.maps.event.addListenerOnce) {
+                google.maps.event.addListenerOnce(gmap, 'idle', fireOnce);
+              } else {
+                window.setTimeout(fireOnce, 220);
+              }
+            } catch (e) {
+              window.setTimeout(fireOnce, 220);
+            }
+
+            gmap.panTo(pos);
+          } catch (e) {
+            if (done) done();
+          }
           return;
         }
+
         if (lmap) {
           try {
             const ll = mk.marker.getLatLng && mk.marker.getLatLng();
-            if (ll) {
-              lmap.panTo(ll, { animate: true });
-              window.requestAnimationFrame(() => {
-                try { lmap.panBy([0, -120], { animate: true }); } catch (e) {}
-              });
+            if (!ll) { if (done) done(); return; }
+
+            const z = (typeof lmap.getZoom === 'function') ? lmap.getZoom() : null;
+            if (typeof z === 'number' && z < MIN_ZOOM && typeof lmap.setZoom === 'function') {
+              lmap.setZoom(MIN_ZOOM, { animate: true });
             }
-          } catch (e) {}
+
+            let fired = false;
+            const fireOnce = () => {
+              if (fired) return;
+              fired = true;
+              try { lmap.panBy([0, -120], { animate: true }); } catch (e) {}
+              window.requestAnimationFrame(() => { if (done) done(); });
+            };
+
+            // Wait for move end so we open the popup after the pan/zoom completes.
+            try { lmap.once('moveend', fireOnce); } catch (e) { window.setTimeout(fireOnce, 220); }
+            lmap.panTo(ll, { animate: true });
+          } catch (e) {
+            if (done) done();
+          }
         }
       }
 
@@ -1019,14 +1060,15 @@
               } catch (e) {}
               const mk = markerByKey.get(k);
               if (!mk) return;
-              focusMarker(mk);
-              if (gmap) {
-                if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({ disableAutoPan: true });
-                gInfoWindow.setContent(mk.popupHtml || '');
-                gInfoWindow.open({ anchor: mk.marker, map: gmap });
-              } else {
-                try { mk.marker.openPopup(); } catch (e) {}
-              }
+              focusMarker(mk, () => {
+                if (gmap) {
+                  if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({ disableAutoPan: true });
+                  gInfoWindow.setContent(mk.popupHtml || '');
+                  gInfoWindow.open({ anchor: mk.marker, map: gmap });
+                } else {
+                  try { mk.marker.openPopup(); } catch (e) {}
+                }
+              });
             });
           }
         }
@@ -1065,10 +1107,11 @@
             });
             marker.addListener('click', () => {
               setActive(firstEventId, { scroll: true });
-              focusMarker({ marker });
-              if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({ disableAutoPan: true });
-              gInfoWindow.setContent(popupHtml);
-              gInfoWindow.open({ anchor: marker, map: gmap });
+              focusMarker({ marker }, () => {
+                if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({ disableAutoPan: true });
+                gInfoWindow.setContent(popupHtml);
+                gInfoWindow.open({ anchor: marker, map: gmap });
+              });
             });
             gMarkers.push(marker);
             markerByKey.set(g.key, { marker, popupHtml });
@@ -1090,8 +1133,9 @@
             });
             marker.on('click', () => {
               setActive(firstEventId, { scroll: true });
-              focusMarker({ marker });
-              try { marker.openPopup(); } catch (e) {}
+              focusMarker({ marker }, () => {
+                try { marker.openPopup(); } catch (e) {}
+              });
             });
             marker.addTo(lMarkersLayer);
             markerByKey.set(g.key, { marker, popupHtml });
