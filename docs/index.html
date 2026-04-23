@@ -301,8 +301,8 @@
         position: absolute;
         top: 8px;
         right: 8px;
-        width: 18px;
-        height: 12px;
+        width: 26px;
+        height: 18px;
         border: 1px solid rgba(0,0,0,0.12);
         box-shadow: 0 1px 0 rgba(0,0,0,0.04);
         user-select: none;
@@ -319,6 +319,9 @@
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
+      }
+      .stat-card.is-manual .k {
+        white-space: pre-line;
       }
       .stat-card.is-loading {
         color: var(--color-muted);
@@ -658,10 +661,13 @@
           return "";
         }
 
-        function pushManualCard(container, { n, label, isAlert } = {}) {
+        function pushManualCard(container, { n, label, isAlert, isManual } = {}) {
           if (!container) return;
           const card = document.createElement("div");
-          card.className = "stat-card flip" + (isAlert ? " is-alert" : "");
+          card.className =
+            "stat-card flip" +
+            (isAlert ? " is-alert" : "") +
+            (isManual ? " is-manual" : "");
 
           const v = document.createElement("div");
           v.className = "v";
@@ -739,9 +745,9 @@
               }
             }
 
-            pushManualCard(manualCards, { n: addrEditKeys.size, label: "Edits: address" });
-            pushManualCard(manualCards, { n: nameEditKeys.size, label: "Edits: name" });
-            pushManualCard(manualCards, { n: Math.max(0, allEventKeys.size - affectedEventKeys.size), label: "No edit needed" });
+            pushManualCard(manualCards, { n: addrEditKeys.size, label: "Edits\nAddress", isManual: true });
+            pushManualCard(manualCards, { n: nameEditKeys.size, label: "Edits\nName", isManual: true });
+            pushManualCard(manualCards, { n: Math.max(0, allEventKeys.size - affectedEventKeys.size), label: "No edit\nneeded", isManual: true });
           }
 
           const counts = new Map();
