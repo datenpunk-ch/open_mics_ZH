@@ -233,6 +233,36 @@
         margin: 0;
         max-width: none;
       }
+      .stats {
+        border-top: 1px solid var(--color-rule);
+        border-bottom: 1px solid var(--color-rule);
+        padding: 1rem 0;
+        margin: 2rem 0;
+        max-width: 70ch;
+      }
+      .stats-label {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        color: var(--color-accent);
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 6px 14px;
+        align-items: baseline;
+        max-width: 42ch;
+      }
+      .stats-grid .k {
+        font-family: var(--font-ui);
+        color: var(--color-ink-body);
+      }
+      .stats-grid .v {
+        font-family: var(--font-mono);
+        color: var(--color-ink);
+      }
 
       .embed-frame {
         width: 100%;
@@ -323,6 +353,13 @@
                 Use the filters to pick a weekday/language, then click an event in the list — the map will jump
                 to that venue and show the tooltip.
               </p>
+            </div>
+            <div class="stats reveal" id="langStats" aria-live="polite">
+              <div class="stats-label">Shows by language</div>
+              <div class="stats-grid" id="langStatsGrid">
+                <div class="k" style="color: var(--color-muted); font-family: var(--font-mono);">Loading…</div>
+                <div class="v"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -440,6 +477,92 @@
         { threshold: 0.12 }
       );
       document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+    </script>
+    <script>
+      (async function () {
+        const grid = document.getElementById("langStatsGrid");
+        if (!grid) return;
+
+        function eventKey(e) {
+          const url = (e && e.url) ? String(e.url).trim() : "";
+          if (url) return "url:" + url;
+          const parts = [
+            (e && e.title) ? String(e.title).trim().toLowerCase() : "",
+            (e && e.venue) ? String(e.venue).trim().toLowerCase() : "",
+            (e && e.weekday) ? String(e.weekday).trim().toLowerCase() : "",
+            (e && e.time) ? String(e.time).trim().toLowerCase() : "",
+          ];
+          return "tvtwt:" + parts.join("|");
+        }
+
+        function mergeEvents(primary, extra) {
+          const out = [];
+          const seen = new Set();
+          function addAll(list) {
+            for (const e of (list || [])) {
+              if (!e) continue;
+              const k = eventKey(e);
+              if (seen.has(k)) continue;
+              seen.add(k);
+              out.push(e);
+            }
+          }
+          addAll(primary);
+          addAll(extra);
+          return out;
+        }
+
+        try {
+          const r1 = await fetch("./data/events.json", { cache: "no-cache" });
+          const p1 = await r1.json();
+          const primary = (p1 && p1.events) ? p1.events : [];
+
+          let manual = [];
+          try {
+            const r2 = await fetch("./data/events_manual.json", { cache: "no-cache" });
+            if (r2.ok) {
+              const p2 = await r2.json();
+              manual = (p2 && p2.events) ? p2.events : [];
+            }
+          } catch (e) {}
+
+          const events = mergeEvents(primary, manual);
+
+          const counts = new Map();
+          for (const e of events) {
+            const raw = (e && e.language) ? String(e.language) : "";
+            const parts = raw.split(/[;,]/).map(s => s.trim()).filter(Boolean);
+            const langs = parts.length ? parts : ["Unspecified"];
+            for (const lang of langs) {
+              counts.set(lang, (counts.get(lang) || 0) + 1);
+            }
+          }
+
+          const rows = Array.from(counts.entries())
+            .sort((a, b) => (b[1] - a[1]) || a[0].localeCompare(b[0]));
+
+          grid.innerHTML = "";
+          for (const [lang, n] of rows) {
+            const k = document.createElement("div");
+            k.className = "k";
+            k.textContent = lang;
+            const v = document.createElement("div");
+            v.className = "v";
+            v.textContent = String(n);
+            grid.appendChild(k);
+            grid.appendChild(v);
+          }
+        } catch (e) {
+          grid.innerHTML = "";
+          const k = document.createElement("div");
+          k.className = "k";
+          k.style.color = "var(--color-muted)";
+          k.style.fontFamily = "var(--font-mono)";
+          k.textContent = "Couldn’t load stats.";
+          grid.appendChild(k);
+          grid.appendChild(document.createElement("div"));
+        }
+      })();
     </script>
   </body>
 </html>
