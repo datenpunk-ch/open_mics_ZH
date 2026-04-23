@@ -703,26 +703,28 @@
               ? manualMeta.data_tag_note.trim()
               : ((p1 && typeof p1.data_tag_note === "string" && p1.data_tag_note.trim()) ? p1.data_tag_note.trim() : "");
 
-          // Manual status + edits (exactly 3 cards, deduped by key)
+          // Manual edits (exactly 3 cards, deduped by key)
           if (manualCards) {
             manualCards.innerHTML = "";
 
             const editsRaw = (manualMeta && Array.isArray(manualMeta.edits)) ? manualMeta.edits : [];
-            const doneKeys = new Set();
-            const neededKeys = new Set();
+            const addrEditKeys = new Set();
+            const nameEditKeys = new Set();
+            const allEditKeys = new Set();
             for (const it of editsRaw) {
               if (!it || typeof it !== "object") continue;
-              const state = (it.state || "").toString().trim().toLowerCase() || "done";
+              const type = (it.type || "").toString().trim().toLowerCase();
               const key = (it.key || "").toString().trim();
               if (!key) continue;
-              if (state === "needed") neededKeys.add(key);
-              else doneKeys.add(key);
+              allEditKeys.add(key);
+              if (type === "address") addrEditKeys.add(key);
+              if (type === "name") nameEditKeys.add(key);
             }
 
-            // Compute "unedited" as events not covered by any edit key.
+            // Compute "no edit needed" as events not covered by any edit key.
             const allEventKeys = new Set(events.map(eventKey));
             const affectedEventKeys = new Set();
-            for (const k of [...doneKeys, ...neededKeys]) {
+            for (const k of allEditKeys) {
               if (k.startsWith("url:")) {
                 affectedEventKeys.add(k);
                 continue;
@@ -737,9 +739,9 @@
               }
             }
 
-            pushManualCard(manualCards, { n: neededKeys.size, label: "Edits needed" });
-            pushManualCard(manualCards, { n: doneKeys.size, label: "Edits applied" });
-            pushManualCard(manualCards, { n: Math.max(0, allEventKeys.size - affectedEventKeys.size), label: "Unedited" });
+            pushManualCard(manualCards, { n: addrEditKeys.size, label: "Edits: address" });
+            pushManualCard(manualCards, { n: nameEditKeys.size, label: "Edits: name" });
+            pushManualCard(manualCards, { n: Math.max(0, allEventKeys.size - affectedEventKeys.size), label: "No edit needed" });
           }
 
           const counts = new Map();
