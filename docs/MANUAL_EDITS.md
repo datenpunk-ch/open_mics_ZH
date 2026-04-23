@@ -31,6 +31,30 @@ Supported `data_tag` values currently used by the article:
 - `modified` → shows **“Manual edits”**
 - `stale` → shows **“Possibly stale”**
 
+## Tracking manual edits (counts in the article)
+
+The article can also show a separate **Manual edits** block with counts like “Address edit”, “Name edit”, etc.
+These counts come from an optional `edits` list in `docs/data/events_manual.json`.
+
+Each entry should include:
+- `state`: `needed` or `done`
+- `type`: e.g. `address`, `name`, `time`, `url`, `language`
+- `key`: a stable de-dupe key (same change → same key). Recommended:
+  - `url:<EVENT_URL>` (best when a URL exists)
+  - `addr:<ADDRESS>` (useful when multiple events share one address)
+- `note`: optional human-readable explanation (not required)
+
+Example:
+
+```json
+{
+  "state": "needed",
+  "type": "address",
+  "key": "url:https://example.com/event/123",
+  "note": "Fix street number"
+}
+```
+
 ## Editing an address in `docs/data/events.json`
 
 For an existing event, update **all three** fields so UI/search stay consistent:

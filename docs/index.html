@@ -432,6 +432,13 @@
                 <div class="stat-card is-loading">Loading…</div>
               </div>
             </div>
+
+            <div class="stats reveal" id="manualStats" aria-live="polite">
+              <div class="stats-label">Data status &amp; manual edits</div>
+              <div class="stats-cards" id="manualStatsCards">
+                <div class="stat-card is-loading">Loading…</div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -553,6 +560,7 @@
       (async function () {
         const cards = document.getElementById("langStatsCards");
         if (!cards) return;
+        const manualCards = document.getElementById("manualStatsCards");
 
         function eventKey(e) {
           const url = (e && e.url) ? String(e.url).trim() : "";
@@ -595,6 +603,24 @@
           return "";
         }
 
+        function pushManualCard(container, { n, label, isAlert } = {}) {
+          if (!container) return;
+          const card = document.createElement("div");
+          card.className = "stat-card flip" + (isAlert ? " is-alert" : "");
+
+          const v = document.createElement("div");
+          v.className = "v";
+          v.textContent = String(n);
+
+          const k = document.createElement("div");
+          k.className = "k";
+          k.textContent = label || "";
+
+          card.appendChild(v);
+          card.appendChild(k);
+          container.appendChild(card);
+        }
+
         try {
           const r1 = await fetch("./data/events.json", { cache: "no-cache" });
           const p1 = await r1.json();
@@ -622,6 +648,83 @@
               ? manualMeta.data_tag_note.trim()
               : ((p1 && typeof p1.data_tag_note === "string" && p1.data_tag_note.trim()) ? p1.data_tag_note.trim() : "");
 
+          // Manual status + edits (separate section, not mixed with language cards)
+          if (manualCards) {
+            manualCards.innerHTML = "";
+
+            if (dataTag) {
+              const tag = dataTag.toLowerCase();
+              pushManualCard(manualCards, {
+                n:
+                  (tag === "incomplete") ? "!" :
+                  (tag === "modified") ? "EDIT" :
+                  (tag === "stale") ? "OLD" :
+                  dataTag.toUpperCase().slice(0, 4),
+                label:
+                  (tag === "incomplete") ? "Scrape incomplete" :
+                  (tag === "modified") ? "Manual edits" :
+                  (tag === "stale") ? "Possibly stale" :
+                  ("Data: " + dataTag),
+                isAlert: true,
+              });
+            }
+
+            const editsRaw = (manualMeta && Array.isArray(manualMeta.edits)) ? manualMeta.edits : [];
+            const byStateType = new Map(); // key => Set(keys)
+            for (const it of editsRaw) {
+              if (!it || typeof it !== "object") continue;
+              const state = (it.state || "").toString().trim().toLowerCase() || "done";
+              const type = (it.type || "").toString().trim().toLowerCase() || "edit";
+              const key = (it.key || "").toString().trim();
+              if (!key) continue;
+              const k = state + "::" + type;
+              if (!byStateType.has(k)) byStateType.set(k, new Set());
+              byStateType.get(k).add(key);
+            }
+
+            function labelForType(t) {
+              const x = (t || "").toString().trim().toLowerCase();
+              if (x === "address") return "Address edit";
+              if (x === "name") return "Name edit";
+              if (x === "time") return "Time edit";
+              if (x === "url") return "Link edit";
+              if (x === "language") return "Language edit";
+              return (t || "Edit").toString().trim() + " edit";
+            }
+
+            const order = ["needed", "done"];
+            const rows = [];
+            for (const [k, set] of byStateType.entries()) {
+              const [state, type] = k.split("::");
+              rows.push({ state, type, n: set.size });
+            }
+            rows.sort((a, b) => {
+              const sa = order.indexOf(a.state);
+              const sb = order.indexOf(b.state);
+              if (sa !== sb) return (sa < 0 ? 99 : sa) - (sb < 0 ? 99 : sb);
+              return (b.n - a.n) || a.type.localeCompare(b.type);
+            });
+
+            for (const r of rows) {
+              const prefix = (r.state === "needed") ? "Needs: " : (r.state === "done") ? "Done: " : "";
+              pushManualCard(manualCards, { n: r.n, label: prefix + labelForType(r.type) });
+            }
+
+            if (dataTagNote) {
+              const noteCard = document.createElement("div");
+              noteCard.className = "stat-card flip";
+              noteCard.style.width = "100%";
+              noteCard.style.height = "auto";
+              noteCard.style.gridTemplateRows = "auto";
+              const k = document.createElement("div");
+              k.className = "k";
+              k.style.webkitLineClamp = "6";
+              k.textContent = dataTagNote;
+              noteCard.appendChild(k);
+              manualCards.appendChild(noteCard);
+            }
+          }
+
           const counts = new Map();
           for (const e of events) {
             const raw = (e && e.language) ? String(e.language) : "";
@@ -637,39 +740,12 @@
 
           cards.innerHTML = "";
 
-          if (dataTag) {
-            const tag = dataTag.toLowerCase();
-            const card = document.createElement("div");
-            card.className = "stat-card is-alert flip";
-            card.style.animationDelay = "0ms";
-
-            const v = document.createElement("div");
-            v.className = "v";
-            v.textContent =
-              (tag === "incomplete") ? "!" :
-              (tag === "modified") ? "EDIT" :
-              (tag === "stale") ? "OLD" :
-              dataTag.toUpperCase().slice(0, 4);
-
-            const k = document.createElement("div");
-            k.className = "k";
-            k.textContent =
-              (tag === "incomplete") ? "Scrape incomplete" :
-              (tag === "modified") ? "Manual edits" :
-              (tag === "stale") ? "Possibly stale" :
-              ("Data: " + dataTag);
-
-            card.appendChild(v);
-            card.appendChild(k);
-            cards.appendChild(card);
-          }
-
           for (let i = 0; i < rows.length; i++) {
             const [lang, n] = rows[i];
             const card = document.createElement("div");
             card.className = "stat-card flip";
             // small stagger so it feels like a deck
-            card.style.animationDelay = (70 * (i + (dataTag ? 1 : 0))) + "ms";
+            card.style.animationDelay = (70 * i) + "ms";
 
             const flag = langFlag(lang);
             if (flag) {

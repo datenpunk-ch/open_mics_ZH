@@ -3,5 +3,37 @@
   "data_tag": "modified",
   "data_tag_note": "Manual corrections applied directly in docs/data/events.json: Auer & Co. Courtyard -> Sihlquai 131; VIOR -> Löwenstrasse 2; ROBIN's -> Zähringerstrasse 33 (venue now ROBIN's Bar & Coffee); Gleis -> Zollstrasse 121; Stubä venue label cleaned.",
   "updated_at": "2026-04-23",
+  "edits": [
+    {
+      "state": "done",
+      "type": "address",
+      "key": "url:https://eventfrog.ch/en/p/groups/wednesday-open-mic-comedy-zurich-7322872166394914763.html",
+      "note": "Auer & Co. Courtyard → Sihlquai 131, 8005 Zürich"
+    },
+    {
+      "state": "done",
+      "type": "address",
+      "key": "url:https://eventfrog.ch/en/p/groups/dini-muetter-comedy-open-mic-7402400053803883617.html",
+      "note": "VIOR → Löwenstrasse 2, 8001 Zürich"
+    },
+    {
+      "state": "done",
+      "type": "address",
+      "key": "addr:Zähringerstrasse 33, 8001 Zürich",
+      "note": "ROBIN's → Zähringerstrasse 33, 8001 Zürich"
+    },
+    {
+      "state": "done",
+      "type": "address",
+      "key": "url:https://eventfrog.ch/en/p/groups/funny-women-zurich-comedy-open-mic-7256690401515381606.html",
+      "note": "Gleis → Zollstrasse 121, 8005 Zürich"
+    },
+    {
+      "state": "done",
+      "type": "name",
+      "key": "url:https://www.milanski-comedy.ch/stubae-comedy",
+      "note": "Stubä venue label cleaned"
+    }
+  ],
   "events": []
 }
