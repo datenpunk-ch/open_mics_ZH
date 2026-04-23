@@ -952,7 +952,11 @@ def _write_index_html(
           : escapeHtml(venueLabel || venueText || '(venue)');
 
         // Header: venue name only (as Google Maps link when possible)
-        const header = `<strong>${{mapsLine}}</strong><br/>`;
+        const addrRaw = (first.address || '').toString().trim();
+        const addrFromLoc = (locText || '').split(',').slice(1).map(x => x.trim()).filter(Boolean).join(', ');
+        const addr = addrRaw || addrFromLoc;
+        const addrLine = addr ? `<span style="opacity:0.85;">${{escapeHtml(addr)}}</span><br/>` : '';
+        const header = `<strong>${{mapsLine}}</strong><br/>${{addrLine}}`;
 
         const rows = idxs.map(i => {{
           const e = filtered[i] || {{}};
