@@ -248,20 +248,56 @@
         text-transform: uppercase;
         margin-bottom: 0.5rem;
       }
-      .stats-grid {
+      .stats-cards {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 0.5rem;
+      }
+      .stat-card {
+        width: 108px;
+        height: 108px;
+        border: 1px solid var(--color-rule);
+        background: var(--color-bg-soft);
         display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 6px 14px;
-        align-items: baseline;
-        max-width: 42ch;
+        grid-template-rows: 1fr auto;
+        padding: 10px;
       }
-      .stats-grid .k {
-        font-family: var(--font-ui);
-        color: var(--color-ink-body);
-      }
-      .stats-grid .v {
-        font-family: var(--font-mono);
+      .stat-card .v {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 34px;
+        line-height: 1;
         color: var(--color-ink);
+        align-self: center;
+      }
+      .stat-card .k {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--color-muted);
+        line-height: 1.25;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+      .stat-card.is-loading {
+        color: var(--color-muted);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        display: grid;
+        place-items: center;
+      }
+      .stat-card.is-alert {
+        border-color: rgba(58, 103, 122, 0.55);
+        background: rgba(58, 103, 122, 0.08);
+      }
+      .stat-card.is-alert .k {
+        color: var(--color-accent);
       }
 
       .embed-frame {
@@ -356,9 +392,8 @@
             </div>
             <div class="stats reveal" id="langStats" aria-live="polite">
               <div class="stats-label">Shows by language</div>
-              <div class="stats-grid" id="langStatsGrid">
-                <div class="k" style="color: var(--color-muted); font-family: var(--font-mono);">Loading…</div>
-                <div class="v"></div>
+              <div class="stats-cards" id="langStatsCards">
+                <div class="stat-card is-loading">Loading…</div>
               </div>
             </div>
           </div>
@@ -480,8 +515,8 @@
     </script>
     <script>
       (async function () {
-        const grid = document.getElementById("langStatsGrid");
-        if (!grid) return;
+        const cards = document.getElementById("langStatsCards");
+        if (!cards) return;
 
         function eventKey(e) {
           const url = (e && e.url) ? String(e.url).trim() : "";
@@ -518,15 +553,26 @@
           const primary = (p1 && p1.events) ? p1.events : [];
 
           let manual = [];
+          let manualMeta = null;
           try {
             const r2 = await fetch("./data/events_manual.json", { cache: "no-cache" });
             if (r2.ok) {
               const p2 = await r2.json();
+              manualMeta = p2 || null;
               manual = (p2 && p2.events) ? p2.events : [];
             }
           } catch (e) {}
 
           const events = mergeEvents(primary, manual);
+
+          const dataTag =
+            (manualMeta && typeof manualMeta.data_tag === "string" && manualMeta.data_tag.trim())
+              ? manualMeta.data_tag.trim()
+              : ((p1 && typeof p1.data_tag === "string" && p1.data_tag.trim()) ? p1.data_tag.trim() : "");
+          const dataTagNote =
+            (manualMeta && typeof manualMeta.data_tag_note === "string" && manualMeta.data_tag_note.trim())
+              ? manualMeta.data_tag_note.trim()
+              : ((p1 && typeof p1.data_tag_note === "string" && p1.data_tag_note.trim()) ? p1.data_tag_note.trim() : "");
 
           const counts = new Map();
           for (const e of events) {
@@ -541,26 +587,57 @@
           const rows = Array.from(counts.entries())
             .sort((a, b) => (b[1] - a[1]) || a[0].localeCompare(b[0]));
 
-          grid.innerHTML = "";
-          for (const [lang, n] of rows) {
+          cards.innerHTML = "";
+
+          if (dataTag) {
+            const tag = dataTag.toLowerCase();
+            const card = document.createElement("div");
+            card.className = "stat-card is-alert";
+            if (dataTagNote) card.title = dataTagNote;
+
+            const v = document.createElement("div");
+            v.className = "v";
+            v.textContent =
+              (tag === "incomplete") ? "!" :
+              (tag === "modified") ? "EDIT" :
+              (tag === "stale") ? "OLD" :
+              dataTag.toUpperCase().slice(0, 4);
+
             const k = document.createElement("div");
             k.className = "k";
-            k.textContent = lang;
+            k.textContent =
+              (tag === "incomplete") ? "Data incomplete" :
+              (tag === "modified") ? "Manual edits" :
+              (tag === "stale") ? "Possibly stale" :
+              ("Data: " + dataTag);
+
+            card.appendChild(v);
+            card.appendChild(k);
+            cards.appendChild(card);
+          }
+
+          for (const [lang, n] of rows) {
+            const card = document.createElement("div");
+            card.className = "stat-card";
+
             const v = document.createElement("div");
             v.className = "v";
             v.textContent = String(n);
-            grid.appendChild(k);
-            grid.appendChild(v);
+
+            const k = document.createElement("div");
+            k.className = "k";
+            k.textContent = lang;
+
+            card.appendChild(v);
+            card.appendChild(k);
+            cards.appendChild(card);
           }
         } catch (e) {
-          grid.innerHTML = "";
-          const k = document.createElement("div");
-          k.className = "k";
-          k.style.color = "var(--color-muted)";
-          k.style.fontFamily = "var(--font-mono)";
-          k.textContent = "Couldn’t load stats.";
-          grid.appendChild(k);
-          grid.appendChild(document.createElement("div"));
+          cards.innerHTML = "";
+          const card = document.createElement("div");
+          card.className = "stat-card is-loading";
+          card.textContent = "Couldn’t load stats.";
+          cards.appendChild(card);
         }
       })();
     </script>
