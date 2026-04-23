@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Open MicZH — An article</title>
+    <meta name="description" content="An editorial overview of recurring open mic comedy events in Zurich, with an embedded interactive map and list." />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,700;1,400;1,700&family=Karla:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --color-bg: #ffffff;
+        --color-bg-soft: #f7f8f9;
+        --color-ink: #0f0f0f;
+        --color-ink-body: #171717;
+        --color-muted: #5f5f5f;
+        --color-rule: #d9dde1;
+        --color-accent: #3a677a;
+        --color-accent-hover: #2f5a6b;
+
+        --font-display: "Spectral", "Georgia", serif;
+        --font-ui: "Karla", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
+
+        --measure: 42rem;
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: var(--font-ui);
+        line-height: 1.75;
+        font-weight: 400;
+        color: var(--color-ink-body);
+        background: var(--color-bg);
+        overflow-x: hidden;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: var(--color-ink);
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.18em;
+      }
+      a:hover { color: var(--color-accent-hover); }
+      :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+      .skip-link {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        padding: 8px 10px;
+        background: var(--color-bg);
+        border: 1px solid var(--color-rule);
+        color: var(--color-ink);
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transform: translateY(-120%);
+        transition: transform 0.15s ease;
+        z-index: 200;
+      }
+      .skip-link:focus { transform: translateY(0); }
+
+      .progress-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 2px;
+        width: 0%;
+        background: var(--color-accent);
+        z-index: 100;
+        transition: width 0.1s;
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 5vw;
+      }
+      .measure { max-width: var(--measure); }
+
+      .hero {
+        padding: 6rem 0 3.75rem;
+        background: var(--color-bg);
+      }
+      .hero-tag {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        color: var(--color-muted);
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+      }
+      .hero h1 {
+        font-family: var(--font-display);
+        font-size: clamp(2.6rem, 6.5vw, 5.25rem);
+        font-weight: 700;
+        line-height: 1.02;
+        color: var(--color-ink);
+        letter-spacing: -0.03em;
+        margin: 0 0 1rem;
+        max-width: 20ch;
+      }
+      .hero-sub {
+        font-size: 1.125rem;
+        color: var(--color-ink-body);
+        max-width: 64ch;
+        margin: 0 0 2rem;
+        line-height: 1.7;
+      }
+      .hero-byline {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--color-muted);
+        letter-spacing: 0.12em;
+        display: flex;
+        gap: 1.25rem;
+        flex-wrap: wrap;
+        text-transform: uppercase;
+        align-items: baseline;
+      }
+
+      section { padding: 5.25rem 0; }
+      section:nth-child(even) { background: var(--color-bg-soft); }
+
+      .section-label {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        color: var(--color-muted);
+        text-transform: uppercase;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .section-label::after {
+        content: "";
+        display: block;
+        height: 1px;
+        width: 40px;
+        background: var(--color-rule);
+      }
+      .sec-head {
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--color-rule);
+        margin-bottom: 1.5rem;
+      }
+      .sec-num {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.22em;
+        color: var(--color-accent);
+        text-transform: uppercase;
+        flex: 0 0 auto;
+      }
+      h2 {
+        font-family: var(--font-display);
+        font-size: clamp(1.75rem, 3.2vw, 2.6rem);
+        font-weight: 700;
+        line-height: 1.2;
+        color: var(--color-ink);
+        margin: 0;
+      }
+      h3 {
+        font-family: var(--font-display);
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--color-ink);
+        margin: 2rem 0 0.75rem;
+      }
+      p {
+        font-size: 1.0625rem;
+        color: var(--color-ink-body);
+        margin: 0 0 1.25rem;
+        max-width: 70ch;
+      }
+      ul {
+        margin: 0 0 1.5rem 1.25rem;
+        padding: 0;
+        max-width: 70ch;
+        color: var(--color-ink-body);
+      }
+      li { margin-bottom: 0.5rem; }
+      code { font-family: var(--font-mono); font-size: 0.95em; }
+
+      .note-box {
+        border-top: 1px solid var(--color-rule);
+        border-bottom: 1px solid var(--color-rule);
+        padding: 1rem 0;
+        margin: 2rem 0;
+        max-width: 70ch;
+      }
+      .note-box-label {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        color: var(--color-accent);
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+      }
+      .note-box p {
+        font-size: 0.98rem;
+        color: var(--color-muted);
+        margin: 0;
+        max-width: none;
+      }
+
+      .embed-frame {
+        width: 100%;
+        overflow: hidden;
+        border: 1px solid var(--color-rule);
+        background: var(--color-bg);
+      }
+      .embed-frame iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        display: block;
+        background: transparent;
+      }
+      .wide-bleed {
+        width: 100vw;
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        padding-left: clamp(0.75rem, 3vw, 2rem);
+        padding-right: clamp(0.75rem, 3vw, 2rem);
+      }
+      .wide-bleed .embed-frame,
+      .wide-bleed .measure {
+        max-width: 1100px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .site-footer {
+        padding: 18px 5vw 30px;
+        color: var(--color-muted);
+        font-size: 12px;
+        font-family: var(--font-mono);
+        border-top: 1px solid var(--color-rule);
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#content">Skip to content</a>
+    <div class="progress-bar" id="progress"></div>
+
+    <header class="hero" aria-label="Open MicZH article hero">
+      <div class="container">
+        <div class="hero-tag">Field guide · Zurich · comedy</div>
+        <h1>An editorial guide to open mics in Zürich</h1>
+        <p class="hero-sub">
+          Open mics are the city’s weekly rehearsal rooms: short sets, low stakes, and the fastest way to
+          understand what a comedy scene actually sounds like. This page explains how to use the project
+          map, what “recurring” means in practice, and how to show up well.
+        </p>
+        <div class="hero-byline">
+          <span><a href="./">Back to map</a></span>
+          <span>Open MicZH</span>
+          <span>Living document</span>
+        </div>
+      </div>
+    </header>
+
+    <main id="content">
+      <section>
+        <div class="container">
+          <div class="section-label">Start here</div>
+          <div class="sec-head">
+            <div class="sec-num">01</div>
+            <h2>What this project is (and isn’t)</h2>
+          </div>
+          <div class="measure">
+            <p>
+              <strong>Open MicZH</strong> is a curated list of <strong>recurring</strong> open mic comedy events in
+              Zurich. “Recurring” means: if you go next week, there’s a good chance it’s happening again.
+            </p>
+            <p>
+              It’s not a full calendar of every one-off showcase. It’s not a review site. It’s meant to be
+              useful when you have a free evening and want an event you can trust is really there.
+            </p>
+            <div class="note-box">
+              <div class="note-box-label">Tip</div>
+              <p>
+                Use the filters to pick a weekday/language, then click an event in the list — the map will jump
+                to that venue and show the tooltip.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-label">How to use it</div>
+          <div class="sec-head">
+            <div class="sec-num">02</div>
+            <h2>From “I’m curious” to “I’m on the mic”</h2>
+          </div>
+          <div class="measure">
+            <h3>If you’re going to watch</h3>
+            <ul>
+              <li><strong>Arrive early</strong> for a seat and to avoid interrupting sets.</li>
+              <li><strong>Check the venue link</strong> (each entry links to the organizer/venue page when available).</li>
+              <li><strong>Respect the room</strong>: phones down, listening up.</li>
+            </ul>
+            <h3>If you’re going to perform</h3>
+            <ul>
+              <li><strong>Know the format</strong>: sign-up style and set length vary by event.</li>
+              <li><strong>Bring a tight 3–5</strong>: one clear premise is better than five half-jokes.</li>
+              <li><strong>Talk to the host</strong>: they control the flow, and they can answer practical questions fast.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-label">Interactive</div>
+          <div class="sec-head">
+            <div class="sec-num">03</div>
+            <h2>The map + list, embedded</h2>
+          </div>
+        </div>
+        <div class="wide-bleed">
+          <div class="embed-frame" style="height: min(92vh, 980px);">
+            <iframe
+              title="Open MicZH interactive map and list"
+              src="./map.html"
+              loading="lazy"
+              referrerpolicy="no-referrer"
+            ></iframe>
+          </div>
+          <div class="container">
+            <div class="measure">
+              <div class="note-box" style="margin-top: 1.5rem;">
+                <div class="note-box-label">Note</div>
+                <p>
+                  If the embed feels cramped on mobile, open the full map page instead:
+                  <a href="./">Open MicZH map</a>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-label">Contribute</div>
+          <div class="sec-head">
+            <div class="sec-num">04</div>
+            <h2>How to keep the list accurate</h2>
+          </div>
+          <div class="measure">
+            <p>
+              Scenes change quickly: venues close, formats rotate, organizers take breaks. If you spot an
+              issue, the fastest way to improve the site is to open a GitHub issue with the exact correction.
+            </p>
+            <ul>
+              <li><strong>Wrong location?</strong> Share the venue name + address.</li>
+              <li><strong>Time changed?</strong> Provide the updated start time and a source link.</li>
+              <li><strong>New recurring mic?</strong> Include weekday, language(s), and organizer link.</li>
+            </ul>
+            <p>
+              Project repo: <a href="https://github.com/datenpunk-ch/open_mics_ZH" target="_blank" rel="noreferrer">open_mics_ZH</a>.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      Open MicZH · Article page · <a href="./">Map</a> · <a href="article.html">Article</a>
+    </footer>
+
+    <script>
+      (function () {
+        const progress = document.getElementById("progress");
+        if (!progress) return;
+        function tick() {
+          const h = document.documentElement;
+          const sh = h.scrollHeight - h.clientHeight;
+          const pct = sh > 0 ? (h.scrollTop / sh) * 100 : 0;
+          progress.style.width = pct + "%";
+        }
+        window.addEventListener("scroll", tick, { passive: true });
+        window.addEventListener("resize", tick);
+        tick();
+      })();
+    </script>
+  </body>
+</html>
+
