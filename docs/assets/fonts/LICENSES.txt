@@ -1,0 +1,11 @@
+Fonts in this folder are downloaded from Google Fonts and redistributed here to avoid runtime downloads.
+
+Families:
+- Spectral
+- Karla
+- JetBrains Mono
+
+Licensing:
+- These families are published under the SIL Open Font License (OFL) 1.1.
+- Full license text: https://scripts.sil.org/OFL
+
