@@ -52,3 +52,27 @@ It loads `docs/data/events.json` and shows map + filters + event list (no server
   - `pixi run export-site`
 
 Then in GitHub under **Settings → Pages**, choose **“Deploy from a branch”** and set the folder to **`/docs`**.
+
+## Tech specs
+
+### Languages & runtimes
+- **Python**: primary language for scraping, processing, geocoding, and exporting the static site.
+- **Streamlit (Python)**: optional local interactive app (`src/open_mics_app.py`).
+- **Static web (HTML/CSS/JavaScript)**: GitHub Pages site under `docs/` (no backend).
+
+### Core components
+- **Listing scraper (Playwright + per-site extractors)**: discovers event URLs from configured listing pages (`scrapers/`).
+- **Detail-page enrich**: fetches each event page once and extracts metadata (LD+JSON + meta tags + visible text) into enriched JSON.
+- **Flatten step**: converts enriched JSON into `data/processed/events_flat.csv`.
+- **Geocoding (Nominatim + cache)**: resolves locations to coordinates at build time and stores results in `data/processed/location_geocache.json` (Zürich-bounded search).
+- **Static site export**: writes `docs/index.html`, `docs/map.html`, and datasets under `docs/data/`.
+
+### Data artifacts (inputs/outputs)
+- **Raw**: `data/raw/*listing*.json` (listing results), `data/raw/merged_listing_*.json` (merged listing run).
+- **Processed**: `data/processed/events_enriched_*.json`, `data/processed/events_flat.csv`, `data/processed/location_geocache.json`.
+- **Static site data**: `docs/data/events.json` (back-compat), plus `docs/data/venues.json` + `docs/data/occurrences.json` (deduped venue model).
+- **Manual sidecar**: `docs/data/events_manual.json` (optional annotations/extra events; merged at runtime by the static site).
+
+### Configuration
+- **Source definitions**: `docs/Quellenliste.md` (parsed from fenced ` ```source ``` ` blocks).
+- **Rules**: `config/rules.json` (geocoding preferences and other general rules; Zürich constraints are expected).

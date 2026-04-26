@@ -32,6 +32,11 @@ This runs: listing → enrich → flatten → geocode → export static site.
 pixi run rebuild-site
 ```
 
+#### Configuring sources
+
+Active listing sources are defined in `docs/Quellenliste.md` via fenced ` ```source``` ` blocks.
+The scraper reads that file at runtime (see `scrapers/sources.py`).
+
 Windows wrappers:
 
 ```powershell
@@ -51,7 +56,7 @@ To rebuild and then start the app:
 ### Option B: run steps manually (useful for debugging)
 
 ```powershell
-# 1) Scrape + process (all sources configured in the scraper CLI)
+# 1) Scrape + process (uses sources from docs/Quellenliste.md by default)
 pixi run collect
 
 # Or individual steps
@@ -73,6 +78,7 @@ pixi run export-site
 - `docs/index.html` (article landing page)
 - `docs/map.html` (interactive tool)
 - `docs/data/events.json` (event data for the tool)
+- `docs/data/venues.json` + `docs/data/occurrences.json` (deduped venue model; preferred by the map)
 - `docs/data/events_manual.json` (optional manual metadata + extra events; merged at runtime by the article)
 
 ### Preview locally

@@ -5,6 +5,14 @@ from pathlib import Path
 import subprocess
 import sys
 
+# Ensure repo root is on sys.path so top-level modules import correctly when
+# invoked as: python src/rebuild_site.py
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from scrapers.sources import LISTING_SOURCES  # noqa: E402
+
 
 def _run(args: list[str]) -> None:
     proc = subprocess.run(args)
@@ -32,6 +40,11 @@ def main() -> int:
                 p.unlink()
             except OSError:
                 pass
+
+    source_ids = sorted(LISTING_SOURCES.keys())
+    if not source_ids:
+        print("No listing sources configured (Quellenliste.md has no ```source``` blocks).", file=sys.stderr)
+        return 2
     _run(
         [
             "pixi",
@@ -43,7 +56,7 @@ def main() -> int:
             "--timeout-ms",
             "180000",
             "--source",
-            "eventfrog_de",
+            *source_ids,
         ]
     )
     _run(["pixi", "run", "geocode"])

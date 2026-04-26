@@ -251,7 +251,7 @@ def _format_address_from_display_name(*, venue_hint: str, display_name: str) -> 
     return venue, address, location_display
 
 
-def _write_index_html(
+def _write_map_html(
     path: Path, *, build_stamp: str, site_data_date_display: str, placeholder_data_url: str = ""
 ) -> None:
     # Static page with optional Google Maps basemap (keyed) and free OSM fallback (Leaflet).
@@ -1868,15 +1868,8 @@ def main() -> int:
     except OSError:
         placeholder_data_url = ""
 
-    _write_index_html(
-        DOCS_DIR / "index.html",
-        build_stamp=build_stamp,
-        site_data_date_display=site_data_date_display,
-        placeholder_data_url=placeholder_data_url,
-    )
     (DOCS_DIR / ".nojekyll").write_text("", encoding="utf-8")
 
-    print(f"[export-site] Wrote {DOCS_DIR / 'index.html'}")
     print(f"[export-site] Wrote {DOCS_EVENTS_JSON} ({len(events)} events; missing coords: {missing_coords})")
     return 0
 

@@ -1,0 +1,65 @@
+{
+  "generated_at": "2026-04-26T15:16:27.671767+00:00",
+  "build_stamp": "2026-04-26T15:16:27Z",
+  "listing_scraped_at": "2026-04-26T15:03:54.960273+00:00",
+  "data_updated_display": "26/04/2026",
+  "venues_total": 7,
+  "venues": [
+    {
+      "venue_id": "v_4dfcd49fd8ad",
+      "venue": "Auer & Co.",
+      "address": "Sihlquai 131, 8005 Zürich",
+      "location_display": "Auer & Co., Sihlquai 131, 8005 Zürich",
+      "lat": 47.384919,
+      "lon": 8.5338231
+    },
+    {
+      "venue_id": "v_48c6d8324089",
+      "venue": "Mama Shelter",
+      "address": "Schulstrasse 44, 8050 Zürich",
+      "location_display": "Mama Shelter, Schulstrasse 44, 8050 Zürich",
+      "lat": 47.410819,
+      "lon": 8.5439538
+    },
+    {
+      "venue_id": "v_4bc6945243f2",
+      "venue": "Vior",
+      "address": "Löwenstrasse 2, 8001 Zürich",
+      "location_display": "Vior, Löwenstrasse 2, 8001 Zürich",
+      "lat": 47.3730762,
+      "lon": 8.5346637
+    },
+    {
+      "venue_id": "v_9d656d8a502e",
+      "venue": "ROBIN's Coffee",
+      "address": "8092 Zürich",
+      "location_display": "ROBIN's Coffee, 8092 Zürich",
+      "lat": 47.3757594,
+      "lon": 8.5444649
+    },
+    {
+      "venue_id": "v_f4595377dda5",
+      "venue": "Regenbogen Bar",
+      "address": "Rosengasse 6, 8001 Zürich",
+      "location_display": "Regenbogen Bar, Rosengasse 6, 8001 Zürich",
+      "lat": 47.3730958,
+      "lon": 8.5432094
+    },
+    {
+      "venue_id": "v_247064c0f8a2",
+      "venue": "KON-TIKI",
+      "address": "Niederdorfstrasse 24, 8001 Zürich",
+      "location_display": "KON-TIKI, Niederdorfstrasse 24, 8001 Zürich",
+      "lat": 47.3738276,
+      "lon": 8.5437708
+    },
+    {
+      "venue_id": "v_27710420b34f",
+      "venue": "stubä comedy",
+      "address": "Zürich",
+      "location_display": "stubä comedy, Zürich",
+      "lat": 47.3779051,
+      "lon": 8.5271003
+    }
+  ]
+}

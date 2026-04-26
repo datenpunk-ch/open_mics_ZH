@@ -72,7 +72,13 @@ listing_behavior: eventfrog
 | **Nutzen** | Alternative Quelle neben Eventfrog; kann andere Veranstalter/Venues enthalten |
 | **Hinweise** | Technisch wird eine **Guidle Microsite** eingebettet und per API befüllt. Für Scraping besser die Guidle-API nutzen (stabiler als DOM-Scraping). Begriffe wie “open mic” können auch Musik/Jam-Sessions meinen → Filter nötig. |
 
-**Im Scraper konfiguriert als:** `zuerich_com_event_finder` (siehe `scrapers/sources.py`).
+```source
+id: zuerich_com_event_finder
+label: Zürich Tourismus (Guidle microsite search)
+start_url: https://microsite.guidle.com/api/rest/2.0/portals/search-offers/658578869?portalName=microsite&pageOfferId=1172134252&sectionId=1096&currentPageNumber=1&micrositeCrId=e8X87y&language=de&search=open+mic+standup+comedy
+extractor: guidle_microsite
+listing_behavior: none
+```
 
 ---
 
@@ -87,7 +93,13 @@ listing_behavior: eventfrog
 | **Nutzen** | Deckt ein grosses deutschsprachiges Comedy Open Mic ab (Stubä). |
 | **Hinweise** | Instagram ist oft unzuverlässig zu scrapen; bevorzugt die Website als kanonische Quelle. |
 
-**Im Scraper konfiguriert als:** `stubae_comedy` (siehe `scrapers/sources.py`).
+```source
+id: stubae_comedy
+label: Stubä Comedy (Milanski Comedy)
+start_url: https://www.milanski-comedy.ch/stubae-comedy
+extractor: single_page
+listing_behavior: none
+```
 
 ---
 

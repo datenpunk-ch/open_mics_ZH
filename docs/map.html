@@ -3,11 +3,16 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Open MicZH — Map</title>
+    <title>Open MicZH</title>
     <meta http-equiv="Cache-Control" content="no-store, max-age=0" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <link rel="stylesheet" href="./assets/fonts.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Karla:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -26,9 +31,8 @@
         --color-accent-hover: #2f5a6b;
 
         --font-display: "Spectral", "Georgia", serif;
-        --font-ui: "Karla", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-        --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-          "Liberation Mono", "Courier New", monospace;
+        --font-ui: "Karla", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
         --space-1: 0.5rem;
         --space-2: 1rem;
@@ -48,8 +52,6 @@
         --lh-body: 1.65;
         --text-body: clamp(0.95rem, 0.15vw + 0.9rem, 1rem);
       }
-      * { box-sizing: border-box; }
-      html { scroll-behavior: smooth; }
       body {
         margin: 0;
         background: var(--color-bg);
@@ -57,57 +59,101 @@
         font-family: var(--font-ui);
         font-size: var(--text-body);
         font-weight: 400;
-        line-height: 1.75;
+        line-height: var(--lh-body);
         letter-spacing: 0.005em;
         -webkit-font-smoothing: antialiased;
         text-rendering: optimizeLegibility;
-        overflow-x: hidden;
       }
-      a {
-        color: var(--color-ink);
-        text-decoration: underline;
-        text-decoration-thickness: 1px;
-        text-underline-offset: 0.18em;
-        transition: color 0.15s ease, text-decoration-color 0.15s ease, opacity 0.15s ease;
-      }
-      a:hover { color: var(--color-accent-hover); }
-      :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
-
-      .skip-link {
-        position: absolute;
-        left: 10px;
-        top: 10px;
-        padding: 8px 10px;
-        background: var(--color-bg);
-        border: 1px solid var(--color-rule);
-        color: var(--color-ink);
-        font-family: var(--font-mono);
-        font-size: 12px;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        text-decoration: none;
-        transform: translateY(-120%);
-        transition: transform 0.15s ease;
-        z-index: 200;
-      }
-      .skip-link:focus { transform: translateY(0); }
-
+      /* Editorial measure: constrain overall chrome a bit */
       .layout {
         max-width: 1440px;
         margin: 0 auto;
+      }
+      a {
+        color: var(--color-ink);
+        text-decoration: none;
+        transition: color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+      }
+      a:hover {
+        color: var(--color-accent);
+      }
+      a:focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 3px;
+      }
+      .skip-link {
+        position: absolute;
+        left: -9999px;
+        top: var(--space-2);
+        z-index: 200;
+        padding: var(--space-1) var(--space-3);
+        background: var(--color-ink);
+        color: var(--color-bg);
+        font-family: var(--font-ui);
+        font-size: 0.6875rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .skip-link:focus {
+        left: var(--space-2);
+      }
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(255, 255, 255, 0.96);
+        border-bottom: 1px solid var(--color-ink);
+        backdrop-filter: blur(8px);
+        padding: var(--space-3) var(--gutter-end) var(--space-3) var(--gutter-start);
+      }
+      header h1 {
+        font-family: var(--font-display);
+        font-size: 42px;
+        line-height: var(--lh-head);
+        margin: 0 0 0.5rem 0;
+        letter-spacing: -0.02em;
+        color: var(--color-ink);
+      }
+      header .sub {
+        color: var(--color-muted);
+        font-size: 14px;
+        max-width: 42rem;
+      }
+      .layout {
         display: grid;
+        /* Match Streamlit layout: filters / map / events */
         grid-template-columns: minmax(260px, 320px) minmax(520px, 1fr) minmax(340px, 420px);
         gap: var(--space-3);
         padding: var(--space-3) var(--gutter-end) var(--space-4) var(--gutter-start);
       }
-      .card { background: transparent; border: none; min-height: 200px; }
+      .card {
+        background: transparent;
+        border: none;
+        min-height: 200px;
+      }
+      .panel-title {
+        margin: 0 0 10px 0;
+        padding-bottom: 6px;
+        border-bottom: 1px solid var(--color-rule);
+        /* Match event title styling in sidebar list */
+        font-family: var(--font-display);
+        font-size: 18px;
+        line-height: 1.25;
+        font-weight: 400;
+        color: var(--color-ink);
+        letter-spacing: 0;
+      }
       #map {
-        height: var(--panel-h, clamp(520px, calc(100vh - 140px), 820px));
-        min-height: 520px;
+        /* Slightly shorter, editorial feel */
+        height: var(--panel-h, clamp(420px, calc(100vh - 240px), 560px));
+        min-height: 420px;
         border: 1px solid var(--color-rule);
       }
-      .leaflet-container .leaflet-interactive:focus,
-      .leaflet-container .leaflet-interactive:focus-visible { outline: none; }
+      /* Leaflet/SVG "focus" styling can leave clicked markers looking selected. */
+      .leaflet-container .leaflet-interactive:focus {
+        outline: none;
+      }
       .banner {
         position: absolute;
         left: 0;
@@ -121,8 +167,10 @@
         z-index: 5;
         backdrop-filter: blur(6px);
       }
-      .banner code { color: var(--color-ink); font-family: var(--font-mono); }
-
+      .banner code {
+        color: var(--color-ink);
+        font-family: var(--font-mono);
+      }
       .controls {
         padding: 0 0 14px 0;
         border-bottom: 1px solid var(--color-rule);
@@ -137,9 +185,11 @@
         line-height: 1.25;
         font-weight: 400;
         color: var(--color-ink);
+        text-transform: none;
+        letter-spacing: 0;
         margin-bottom: 6px;
       }
-      .controls input {
+      .controls select, .controls input {
         width: 100%;
         padding: 10px 10px;
         border-radius: 0;
@@ -149,9 +199,15 @@
         color: var(--color-ink);
         outline: none;
         font-family: var(--font-ui);
+        appearance: none;
+        -webkit-appearance: none;
       }
-
-      .filter-row { display: grid; grid-template-columns: 1fr; gap: 6px; }
+      /* Compact multiselect popovers (keeps filters small) */
+      .filter-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
       .filter-button {
         width: 100%;
         text-align: left;
@@ -167,7 +223,16 @@
         justify-content: space-between;
         gap: 10px;
       }
-      .filter-button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+      .filter-button .left {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 8px;
+        min-width: 0;
+      }
+      .filter-button:focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 2px;
+      }
       .filter-button .meta {
         font-family: var(--font-mono);
         font-size: 11px;
@@ -176,10 +241,20 @@
         color: var(--color-muted);
         white-space: nowrap;
       }
-      .filter-button .caret { font-family: var(--font-mono); font-size: 11px; color: var(--color-muted); }
-      .filter-button[data-open="1"] { background: #ffffff; border-color: var(--color-accent); }
+      .filter-button .caret {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--color-muted);
+        margin-left: 4px;
+      }
+      .filter-button[data-open="1"] {
+        background: #ffffff;
+        border-color: var(--color-accent);
+      }
       .filter-button[data-open="1"] .meta,
-      .filter-button[data-open="1"] .caret { color: var(--color-accent); }
+      .filter-button[data-open="1"] .caret {
+        color: var(--color-accent);
+      }
       .filter-popover {
         position: absolute;
         left: 0;
@@ -192,7 +267,13 @@
         box-shadow: 0 8px 20px rgba(0,0,0,0.08);
       }
       .filter-popover[hidden] { display: none; }
-      .checklist { display: block; padding: 0; margin: 0; max-height: 220px; overflow: auto; }
+      .checklist {
+        display: block;
+        padding: 0;
+        margin: 0;
+        max-height: 220px;
+        overflow: auto;
+      }
       .check {
         display: flex;
         align-items: center;
@@ -210,11 +291,28 @@
         border-bottom: 1px solid rgba(0,0,0,0.10);
         z-index: 2;
       }
-      .check:hover { background: var(--color-bg-soft); }
-      .check input { margin: 0; position: absolute; opacity: 0; width: 1px; height: 1px; }
-      .check .label { font-family: var(--font-ui); line-height: 1.2; }
-      .check[data-on="1"] .label { font-weight: 650; color: var(--color-ink); }
-      .check[data-on="0"] .label { font-weight: 400; color: var(--color-ink-body); }
+      .check:hover {
+        background: var(--color-bg-soft);
+      }
+      .check input {
+        margin: 0;
+        position: absolute;
+        opacity: 0;
+        width: 1px;
+        height: 1px;
+      }
+      .check .label {
+        font-family: var(--font-ui);
+        line-height: 1.2;
+      }
+      .check[data-on="1"] .label {
+        font-weight: 650;
+        color: var(--color-ink);
+      }
+      .check[data-on="0"] .label {
+        font-weight: 400;
+        color: var(--color-ink-body);
+      }
       .check.select-all .label {
         font-family: var(--font-ui);
         font-size: 11px;
@@ -222,15 +320,57 @@
         letter-spacing: 0.12em;
         color: var(--color-muted);
       }
-
+      .controls select:focus, .controls select:focus-visible,
+      .controls input:focus, .controls input:focus-visible {
+        border-color: var(--color-accent);
+        outline: none;
+      }
+      .controls option {
+        background: var(--color-bg);
+        color: var(--color-ink);
+      }
       .list {
         padding: 10px 0 12px 0;
-        height: var(--panel-h, clamp(520px, calc(100vh - 140px), 820px));
-        min-height: 520px;
+        height: var(--panel-h, clamp(420px, calc(100vh - 240px), 560px));
+        min-height: 420px;
         overflow: auto;
       }
-      .item { padding: 10px 0; border-bottom: 1px solid var(--color-rule); }
-      .item-inner { display: grid; grid-template-columns: 116px 1fr; gap: 12px; align-items: start; }
+      .list-heading {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding-bottom: 6px;
+        border-bottom: 1px solid var(--color-rule);
+        margin-bottom: 6px;
+      }
+      .list-heading-title {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--color-ink);
+        letter-spacing: -0.02em;
+      }
+      .list-heading-updated {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--color-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        white-space: nowrap;
+      }
+      .item {
+        padding: 10px 0;
+        border-bottom: 1px solid var(--color-rule);
+      }
+      .item-inner {
+        display: grid;
+        grid-template-columns: 116px 1fr;
+        gap: 12px;
+        align-items: start;
+      }
       .thumb {
         width: 116px;
         height: 76px;
@@ -238,13 +378,37 @@
         border: 1px solid var(--color-rule);
         background: var(--color-bg-soft);
       }
+      @media (max-width: 980px) {
+        .item-inner {
+          grid-template-columns: 1fr;
+        }
+        .thumb {
+          width: 100%;
+          height: 160px;
+        }
+      }
       .item.active {
         background: rgba(58, 103, 122, 0.08);
         outline: 2px solid rgba(58, 103, 122, 0.30);
         outline-offset: 3px;
       }
-      .meta { color: var(--color-muted); font-size: 12px; margin-top: 4px; line-height: 1.35; font-family: var(--font-mono); }
-      .meta-strong { color: var(--color-ink); font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.02em; margin-top: 6px; font-weight: 600; }
+      .item a {
+        color: var(--color-ink);
+        text-decoration: none;
+        font-family: var(--font-display);
+        font-size: 18px;
+        line-height: 1.25;
+      }
+      .item a:hover {
+        color: var(--color-accent-hover);
+      }
+      .meta {
+        color: var(--color-muted);
+        font-size: 12px;
+        margin-top: 4px;
+        line-height: 1.35;
+        font-family: var(--font-mono);
+      }
       .meta.venue a {
         color: var(--color-ink);
         font-family: var(--font-display);
@@ -254,11 +418,23 @@
         text-decoration-color: rgba(58, 103, 122, 0.55);
         text-underline-offset: 3px;
       }
-      .meta.venue a:hover { color: var(--color-accent-hover); text-decoration-color: rgba(47, 90, 107, 0.7); }
+      .meta.venue a:hover {
+        color: var(--color-accent-hover);
+        text-decoration-color: rgba(47, 90, 107, 0.7);
+      }
+      .meta-strong {
+        color: var(--color-ink);
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.02em;
+        margin-top: 6px;
+        font-weight: 600;
+      }
       .pill {
         display: inline-block;
         font-size: 11px;
         border: 1px solid var(--color-rule);
+        border-radius: 0;
         padding: 2px 6px;
         color: var(--color-muted);
         margin-right: 6px;
@@ -274,16 +450,32 @@
         border-top: 1px solid var(--color-rule);
         font-family: var(--font-mono);
       }
+      .site-footer {
+        padding: 10px 28px 18px 28px;
+        color: var(--color-muted);
+        font-size: 12px;
+        font-family: var(--font-mono);
+        border-top: 1px solid var(--color-rule);
+        text-align: center;
+      }
       @media (max-width: 980px) {
-        .layout { grid-template-columns: 1fr; }
-        #map, .list { height: 620px; min-height: 620px; }
-        .item-inner { grid-template-columns: 1fr; }
-        .thumb { width: 100%; height: 160px; }
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        #map, .list {
+          height: 520px;
+          min-height: 520px;
+        }
       }
     </style>
   </head>
   <body>
     <a class="skip-link" href="#list-top">Skip to list</a>
+    <header>
+      <h1>Open Mics Zurich</h1>
+      <div class="sub">Recurring open mic events in and around Zürich.</div>
+    </header>
+
     <div class="layout">
       <div class="card">
         <div class="controls">
@@ -329,10 +521,15 @@
 
       <div class="card">
         <div class="list" id="list-top">
+          <div class="list-heading">
+            <h2 class="list-heading-title" style="display:none;">Events</h2>
+          </div>
           <div id="items"></div>
         </div>
       </div>
     </div>
+
+    <footer class="site-footer">Data: 26/04/2026 (UTC) · Build 2026-04-26T15:16:27Z</footer>
 
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -340,52 +537,8 @@
       crossorigin=""
     ></script>
     <script>
-      const BUILD_STAMP = "2026-04-16T08:25:12Z";
-      const PLACEHOLDER_THUMB =
-        "data:image/svg+xml;utf8," +
-        encodeURIComponent(`
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0b0c10"/>
-      <stop offset="1" stop-color="#12141b"/>
-    </linearGradient>
-    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="6" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-  </defs>
-
-  <rect x="0" y="0" width="1200" height="675" rx="36" fill="url(#bg)"/>
-  <rect x="24" y="24" width="1152" height="627" rx="28" fill="none" stroke="rgba(255,255,255,0.16)" stroke-width="2"/>
-
-  <g transform="translate(600 290)" filter="url(#glow)">
-    <g fill="none" stroke="#4da3ff" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.95">
-      <path d="M0-150c-58 0-106 46-106 104v82c0 58 48 104 106 104s106-46 106-104v-82c0-58-48-104-106-104z"/>
-      <path d="M-160 50c0 88 72 160 160 160s160-72 160-160"/>
-      <path d="M0 210v70"/>
-      <path d="M-88 280h176"/>
-    </g>
-  </g>
-
-  <text x="600" y="560" text-anchor="middle"
-        font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif"
-        font-size="54" font-weight="800"
-        fill="rgba(233,238,251,0.94)"
-        letter-spacing="3">
-    DATENPUNK
-  </text>
-  <text x="600" y="610" text-anchor="middle"
-        font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif"
-        font-size="26"
-        fill="rgba(168,178,199,0.92)">
-    No image available
-  </text>
-</svg>
-        `.trim());
+      const BUILD_STAMP = "2026-04-26T15:16:27Z";
+      const PLACEHOLDER_THUMB = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjY3NSIgdmlld0JveD0iMCAwIDEyMDAgNjc1Ij4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMGIwYzEwIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzEyMTQxYiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9Imdsb3ciIHg9Ii00MCUiIHk9Ii00MCUiIHdpZHRoPSIxODAlIiBoZWlnaHQ9IjE4MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSI2IiByZXN1bHQ9ImJsdXIiLz4KICAgICAgPGZlTWVyZ2U+CiAgICAgICAgPGZlTWVyZ2VOb2RlIGluPSJibHVyIi8+CiAgICAgICAgPGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+CiAgICAgIDwvZmVNZXJnZT4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KCiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEyMDAiIGhlaWdodD0iNjc1IiByeD0iMzYiIGZpbGw9InVybCgjYmcpIi8+CiAgPHJlY3QgeD0iMjQiIHk9IjI0IiB3aWR0aD0iMTE1MiIgaGVpZ2h0PSI2MjciIHJ4PSIyOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMTYpIiBzdHJva2Utd2lkdGg9IjIiLz4KCiAgPCEtLSBtaWNyb3Bob25lIC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDYwMCAyOTApIiBmaWx0ZXI9InVybCgjZ2xvdykiPgogICAgPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGRhM2ZmIiBzdHJva2Utd2lkdGg9IjE4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIG9wYWNpdHk9IjAuOTUiPgogICAgICA8cGF0aCBkPSJNMC0xNTBjLTU4IDAtMTA2IDQ2LTEwNiAxMDR2ODJjMCA1OCA0OCAxMDQgMTA2IDEwNHMxMDYtNDYgMTA2LTEwNHYtODJjMC01OC00OC0xMDQtMTA2LTEwNHoiLz4KICAgICAgPHBhdGggZD0iTS0xNjAgNTBjMCA4OCA3MiAxNjAgMTYwIDE2MHMxNjAtNzIgMTYwLTE2MCIvPgogICAgICA8cGF0aCBkPSJNMCAyMTB2NzAiLz4KICAgICAgPHBhdGggZD0iTS04OCAyODBoMTc2Ii8+CiAgICA8L2c+CiAgPC9nPgoKICA8dGV4dCB4PSI2MDAiIHk9IjU2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIKICAgICAgICBmb250LWZhbWlseT0ic3lzdGVtLXVpLC1hcHBsZS1zeXN0ZW0sU2Vnb2UgVUksUm9ib3RvLEhlbHZldGljYSxBcmlhbCxzYW5zLXNlcmlmIgogICAgICAgIGZvbnQtc2l6ZT0iNTQiIGZvbnQtd2VpZ2h0PSI4MDAiCiAgICAgICAgZmlsbD0icmdiYSgyMzMsMjM4LDI1MSwwLjk0KSIKICAgICAgICBsZXR0ZXItc3BhY2luZz0iMyI+CiAgICBEQVRFTlBVTksKICA8L3RleHQ+CiAgPHRleHQgeD0iNjAwIiB5PSI2MTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiCiAgICAgICAgZm9udC1mYW1pbHk9InN5c3RlbS11aSwtYXBwbGUtc3lzdGVtLFNlZ29lIFVJLFJvYm90byxIZWx2ZXRpY2EsQXJpYWwsc2Fucy1zZXJpZiIKICAgICAgICBmb250LXNpemU9IjI2IgogICAgICAgIGZpbGw9InJnYmEoMTY4LDE3OCwxOTksMC45MikiPgogICAgTm8gaW1hZ2UgYXZhaWxhYmxlCiAgPC90ZXh0Pgo8L3N2Zz4KCg==";
       let gmap = null;
       let gInfoWindow = null;
       let gMarkers = [];
@@ -395,7 +548,9 @@
 
       let _lastActiveId = null;
 
-      function norm(s) { return (s || '').toString().trim().toLowerCase(); }
+      function norm(s) {
+        return (s || '').toString().trim().toLowerCase();
+      }
 
       function checkedValues(containerId) {
         const root = document.getElementById(containerId);
@@ -418,12 +573,14 @@
         const selected = (selectedList || []).map(x => (x || '').toString().trim()).filter(Boolean);
         if (!selected.length) return true;
         const parts = (cell || '').split(/[;,]/).map(x => x.trim()).filter(Boolean);
+        // Any language overlap is a match.
         return parts.some(p => selected.includes(p));
       }
 
       function formatLocation(loc) {
         const s = (loc || '').toString().trim();
         if (!s) return '';
+        // Normalise comma-separated parts and remove obvious duplicates / venue echoes.
         const parts = s.split(',').map(x => x.trim()).filter(Boolean);
         if (!parts.length) return s;
         const out = [];
@@ -433,6 +590,7 @@
           const p = parts[i];
           const pl = p.toLowerCase();
           if (seen.has(pl)) continue;
+          // Drop patterns like "Venue, Venue 131, 8005 Zürich" (venue echoed as "street").
           if (i === 1 && venue && pl.startsWith(venue + ' ') && /\b\d+[a-z]?\b/i.test(p.slice(venue.length))) {
             continue;
           }
@@ -443,6 +601,8 @@
       }
 
       function cleanVenueLabel(venueText) {
+        // Remove trailing "comedy" from venue labels like "stubä comedy",
+        // but keep names like "ComedyHaus" intact.
         const v = (venueText || '').toString().trim();
         return v.replace(/\s+comedy$/i, '').trim();
       }
@@ -451,7 +611,10 @@
         const v = (s || '').toString();
         if (!v) return v;
         const c0 = v[0];
-        if (c0 !== c0.toUpperCase()) return c0.toUpperCase() + v.slice(1);
+        // Only adjust if the first char is a lowercase letter (covers ü/ä/ö too).
+        if (c0 !== c0.toUpperCase()) {
+          return c0.toUpperCase() + v.slice(1);
+        }
         return v;
       }
 
@@ -460,41 +623,6 @@
 
       function escapeHtml(s) {
         return (s || '').toString().replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
-      }
-
-      function titleCardThumbDataUrl(title) {
-        const t = (title || '').toString().trim() || 'Open mic';
-        const safe = escapeHtml(t);
-        const brand = 'DATENPUNK';
-        const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0b0c10"/>
-      <stop offset="1" stop-color="#12141b"/>
-    </linearGradient>
-  </defs>
-  <rect x="0" y="0" width="1200" height="675" rx="36" fill="url(#bg)"/>
-  <rect x="24" y="24" width="1152" height="627" rx="28" fill="none" stroke="rgba(255,255,255,0.16)" stroke-width="2"/>
-  <text x="600" y="170" text-anchor="middle"
-        font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif"
-        font-size="40" font-weight="800"
-        fill="rgba(233,238,251,0.94)"
-        letter-spacing="4">${brand}</text>
-  <foreignObject x="120" y="230" width="960" height="300">
-    <div xmlns="http://www.w3.org/1999/xhtml"
-         style="color: rgba(233,238,251,0.94); font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-                font-weight: 750; font-size: 56px; line-height: 1.1; text-align: center;">
-      ${safe}
-    </div>
-  </foreignObject>
-  <text x="600" y="610" text-anchor="middle"
-        font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif"
-        font-size="22"
-        fill="rgba(168,178,199,0.92)">No image available</text>
-</svg>
-        `.trim();
-        return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
       }
 
       function weekdayAbbr(d) {
@@ -509,10 +637,25 @@
         return (d || '').toString().trim();
       }
 
+      function venueGroupKey(e) {
+        const venueText = (e.venue || (e.location_display || e.location || '').split(',')[0] || '').toString().trim();
+        let k = norm(cleanVenueLabel(venueText));
+        if (!k) k = norm(venueText);
+        if (!k) k = 'unknown';
+        return k;
+      }
+
+      // One pin per location (rounded coordinates). This keeps multiple events at the same
+      // place on a single pin even if venue labels vary slightly.
       function pinGroupsForFiltered(filtered) {
         const groups = new Map();
         const eventToKey = filtered.map(() => '');
-        function coordKey(lat, lon) { return `${lat.toFixed(4)},${lon.toFixed(4)}`; }
+        function coordKey(lat, lon) {
+          // Round to avoid tiny float differences creating multiple pins.
+          // Use ~1e-4 degrees (~11m lat) to tolerate cache/key differences while
+          // still keeping distinct venues separate in practice.
+          return `${lat.toFixed(4)},${lon.toFixed(4)}`;
+        }
         for (let i = 0; i < filtered.length; i++) {
           const e = filtered[i];
           const lat = Number(e.lat);
@@ -522,7 +665,9 @@
           eventToKey[i] = k;
           if (!groups.has(k)) groups.set(k, { idxs: [], lats: [], lons: [] });
           const g = groups.get(k);
-          g.idxs.push(i); g.lats.push(lat); g.lons.push(lon);
+          g.idxs.push(i);
+          g.lats.push(lat);
+          g.lons.push(lon);
         }
         function medianNums(arr) {
           if (!arr.length) return NaN;
@@ -532,7 +677,12 @@
         }
         const out = [];
         for (const [k, g] of groups.entries()) {
-          out.push({ key: k, lat: medianNums(g.lats), lon: medianNums(g.lons), idxs: g.idxs });
+          out.push({
+            key: k,
+            lat: medianNums(g.lats),
+            lon: medianNums(g.lons),
+            idxs: g.idxs,
+          });
         }
         return { groups: out, eventToKey };
       }
@@ -546,11 +696,14 @@
         const mapsLine = locQuery
           ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locQuery)}" target="_blank" rel="noreferrer">${escapeHtml(venueLabel || venueText || locQuery)}</a>`
           : escapeHtml(venueLabel || venueText || '(venue)');
+
+        // Header: venue name only (as Google Maps link when possible)
         const addrRaw = (first.address || '').toString().trim();
         const addrFromLoc = (locText || '').split(',').slice(1).map(x => x.trim()).filter(Boolean).join(', ');
         const addr = addrRaw || addrFromLoc;
         const addrLine = addr ? `<span style="opacity:0.85;">${escapeHtml(addr)}</span><br/>` : '';
         const header = `<strong>${mapsLine}</strong><br/>${addrLine}`;
+
         const rows = idxs.map(i => {
           const e = filtered[i] || {};
           const t = escapeHtml(e.title || '(untitled)');
@@ -564,13 +717,19 @@
       }
 
       function clearActive() {
-        try { document.querySelectorAll('.item.active').forEach(el => el.classList.remove('active')); } catch (e) {}
+        // Clear any stuck highlights (do not rely only on _lastActiveId).
+        try {
+          document.querySelectorAll('.item.active').forEach(el => el.classList.remove('active'));
+        } catch (e) {}
         _lastActiveId = null;
       }
 
       function setActive(eventId, opts) {
         const scroll = opts && Object.prototype.hasOwnProperty.call(opts, 'scroll') ? !!opts.scroll : false;
-        try { document.querySelectorAll('.item.active').forEach(el => el.classList.remove('active')); } catch (e) {}
+        // Ensure only one active item, even if something else applied `.active`.
+        try {
+          document.querySelectorAll('.item.active').forEach(el => el.classList.remove('active'));
+        } catch (e) {}
         _lastActiveId = eventId;
         const el = document.getElementById(eventId);
         if (el) {
@@ -591,36 +750,12 @@
       }
 
       function clearMarkers() {
-        for (const m of gMarkers) m.setMap(null);
-        gMarkers = [];
-        if (lMarkersLayer) lMarkersLayer.clearLayers();
-      }
-
-      function focusMarker(mk, onDone) {
-        if (!mk || !mk.marker) return;
-        const done = typeof onDone === 'function' ? onDone : null;
-        if (gmap) {
-          try {
-            const pos = mk.marker.getPosition && mk.marker.getPosition();
-            if (!pos) { if (done) done(); return; }
-            if (typeof gmap.setCenter === 'function') gmap.setCenter(pos);
-            else gmap.panTo(pos);
-            window.requestAnimationFrame(() => { try { gmap.panBy(0, -140); } catch (e) {} if (done) done(); });
-          } catch (e) { if (done) done(); }
-          return;
+        for (const m of gMarkers) {
+          m.setMap(null);
         }
-        if (lmap) {
-          try {
-            const ll = mk.marker.getLatLng && mk.marker.getLatLng();
-            if (!ll) { if (done) done(); return; }
-            const z = (typeof lmap.getZoom === 'function') ? lmap.getZoom() : undefined;
-            if (typeof lmap.setView === 'function') lmap.setView(ll, z, { animate: false });
-            else lmap.panTo(ll, { animate: false });
-            window.requestAnimationFrame(() => {
-              try { lmap.panBy([0, -120], { animate: false }); } catch (e) {}
-              window.requestAnimationFrame(() => { if (done) done(); });
-            });
-          } catch (e) { if (done) done(); }
+        gMarkers = [];
+        if (lMarkersLayer) {
+          lMarkersLayer.clearLayers();
         }
       }
 
@@ -639,6 +774,7 @@
           return true;
         });
 
+        // Sort by weekday (Mon..Sun), then time, then venue/title.
         const WD = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
         function wdIndex(cell) {
           const parts = (cell || '').toString().split(',').map(x => x.trim()).filter(Boolean);
@@ -676,14 +812,18 @@
         const markerByKey = new Map();
 
         document.getElementById('count').textContent = `${filtered.length} event(s)`;
+
         const items = document.getElementById('items');
         items.innerHTML = '';
         clearMarkers();
         clearActive();
 
+        // When leaving the list area, clear the hover selection.
         try {
           const listEl = document.querySelector('.list');
-          if (listEl) listEl.onmouseleave = () => clearActive();
+          if (listEl) {
+            listEl.onmouseleave = () => clearActive();
+          }
         } catch (e) {}
 
         for (let idx = 0; idx < filtered.length; idx++) {
@@ -696,9 +836,9 @@
           const inner = document.createElement('div');
           inner.className = 'item-inner';
 
+          // Thumbnail (use placeholder when missing)
           const imgUrl = (e.image_url || '').toString().trim();
-          const thumbFallback = titleCardThumbDataUrl(e.title || '');
-          const thumbUrl = imgUrl || thumbFallback || (PLACEHOLDER_THUMB || '');
+          const thumbUrl = imgUrl || (PLACEHOLDER_THUMB || '');
           if (thumbUrl) {
             const img = document.createElement('img');
             img.className = 'thumb';
@@ -706,8 +846,11 @@
             img.alt = '';
             img.src = thumbUrl;
             img.addEventListener('error', () => {
-              if (imgUrl && thumbFallback) { img.src = thumbFallback; return; }
-              if (imgUrl && PLACEHOLDER_THUMB) { img.src = PLACEHOLDER_THUMB; return; }
+              // If the real image fails and we have a placeholder, swap to it.
+              if (imgUrl && PLACEHOLDER_THUMB) {
+                img.src = PLACEHOLDER_THUMB;
+                return;
+              }
               try { img.remove(); } catch (e) {}
             });
             inner.appendChild(img);
@@ -732,6 +875,7 @@
           ml.className = 'meta venue';
           const venueText = (e.venue || (e.location_display || e.location || '').split(',')[0] || '').toString().trim();
           const venueLabel = capFirst(cleanVenueLabel(venueText));
+          // Keep the Maps query as specific as possible; only clean the visible label.
           const locQuery = formatLocation(e.location_display || e.location || venueText);
           const mapsA = document.createElement('a');
           mapsA.href = locQuery ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locQuery)}` : '#';
@@ -750,15 +894,23 @@
           }
           textCol.appendChild(pills);
 
-          if (!thumbUrl) inner.style.gridTemplateColumns = '1fr';
+          // If there is no image, let text span full width.
+          if (!thumbUrl) {
+            inner.style.gridTemplateColumns = '1fr';
+          }
           inner.appendChild(textCol);
           div.appendChild(inner);
+
           items.appendChild(div);
 
-          div.addEventListener('mouseenter', () => setActive(eventId, { scroll: false }));
+          // Hovering in the sidebar should be the only active selection.
+          div.addEventListener('mouseenter', () => {
+            setActive(eventId, { scroll: false });
+          });
 
           const k = eventToKey[idx];
           if (k) {
+            // Show venue tooltip on hover (without auto-panning the map).
             div.addEventListener('mouseenter', () => {
               const mk = markerByKey.get(k);
               if (!mk) return;
@@ -773,59 +925,90 @@
             div.addEventListener('mouseleave', () => {
               const mk = markerByKey.get(k);
               if (!mk) return;
-              if (gmap) { if (gInfoWindow) gInfoWindow.close(); }
-              else { try { mk.marker.closePopup(); } catch (e) {} }
+              if (gmap) {
+                if (gInfoWindow) gInfoWindow.close();
+              } else {
+                try { mk.marker.closePopup(); } catch (e) {}
+              }
             });
+
+            // Also open the popup when the user explicitly clicks an item.
             div.addEventListener('click', (ev) => {
-              try { const t = ev && ev.target; if (t && typeof t.closest === 'function' && t.closest('a')) return; } catch (e) {}
+              try {
+                const t = ev && ev.target;
+                if (t && typeof t.closest === 'function' && t.closest('a')) return;
+              } catch (e) {}
               const mk = markerByKey.get(k);
               if (!mk) return;
-              focusMarker(mk, () => {
-                if (gmap) {
-                  if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({ disableAutoPan: true });
-                  gInfoWindow.setContent(mk.popupHtml || '');
-                  gInfoWindow.open({ anchor: mk.marker, map: gmap });
-                } else {
-                  try { mk.marker.openPopup(); } catch (e) {}
-                }
-              });
+              if (gmap) {
+                if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({ disableAutoPan: true });
+                gInfoWindow.setContent(mk.popupHtml || '');
+                gInfoWindow.open({ anchor: mk.marker, map: gmap });
+              } else {
+                try { mk.marker.openPopup(); } catch (e) {}
+              }
             });
           }
         }
 
+        // Add one marker per venue group.
         for (const g of pinGroups) {
           const popupHtml = groupPopupHtml(filtered, g.idxs);
           const firstEventId = `event-${g.idxs[0]}`;
           if (gmap) {
+            const first = filtered[g.idxs[0]] || {};
+            const venueText = (first.venue || (first.location_display || first.location || '').split(',')[0] || '').toString().trim();
+            const venueLabel = capFirst(cleanVenueLabel(venueText));
             const marker = new google.maps.Marker({
               position: { lat: g.lat, lng: g.lon },
               map: gmap,
-              icon: { path: google.maps.SymbolPath.CIRCLE, scale: 7, fillColor: PIN_FILL, fillOpacity: 1, strokeColor: PIN_STROKE, strokeWeight: 1, strokeOpacity: 1 },
+              // Use venue name for the native hover title (not just the first event).
+              title: venueLabel || venueText || '(venue)',
+              icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 7,
+                fillColor: PIN_FILL,
+                fillOpacity: 1,
+                strokeColor: PIN_STROKE,
+                strokeWeight: 1,
+                strokeOpacity: 1,
+              },
             });
+            // Show popup on hover (no auto-pan), hide on rollout.
             marker.addListener('mouseover', () => {
               if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({ disableAutoPan: true });
               gInfoWindow.setContent(popupHtml);
               gInfoWindow.open({ anchor: marker, map: gmap });
             });
-            marker.addListener('mouseout', () => { if (gInfoWindow) gInfoWindow.close(); });
+            marker.addListener('mouseout', () => {
+              if (gInfoWindow) gInfoWindow.close();
+            });
             marker.addListener('click', () => {
               setActive(firstEventId, { scroll: true });
-              focusMarker({ marker }, () => {
-                if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({ disableAutoPan: true });
-                gInfoWindow.setContent(popupHtml);
-                gInfoWindow.open({ anchor: marker, map: gmap });
-              });
+              if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({ disableAutoPan: true });
+              gInfoWindow.setContent(popupHtml);
+              gInfoWindow.open({ anchor: marker, map: gmap });
             });
             gMarkers.push(marker);
             markerByKey.set(g.key, { marker, popupHtml });
           } else if (lmap && lMarkersLayer) {
-            const marker = L.circleMarker([g.lat, g.lon], { radius: 7, color: PIN_STROKE, weight: 1, opacity: 1, fillColor: PIN_FILL, fillOpacity: 1 });
+            const marker = L.circleMarker([g.lat, g.lon], {
+              radius: 7,
+              color: PIN_STROKE,
+              weight: 1,
+              opacity: 1,
+              fillColor: PIN_FILL,
+              fillOpacity: 1,
+            });
             marker.bindPopup(popupHtml, { autoPan: false });
-            marker.on('mouseover', () => { try { marker.openPopup(); } catch (e) {} });
-            marker.on('mouseout', () => { try { marker.closePopup(); } catch (e) {} });
+            marker.on('mouseover', () => {
+              try { marker.openPopup(); } catch (e) {}
+            });
+            marker.on('mouseout', () => {
+              try { marker.closePopup(); } catch (e) {}
+            });
             marker.on('click', () => {
               setActive(firstEventId, { scroll: true });
-              focusMarker({ marker }, () => { try { marker.openPopup(); } catch (e) {} });
             });
             marker.addTo(lMarkersLayer);
             markerByKey.set(g.key, { marker, popupHtml });
@@ -833,14 +1016,19 @@
         }
 
         const pinned = pinGroups.length;
-        document.getElementById('mapNote').textContent = `Venues: ${pinned} · ${filtered.length} event(s)`;
+        document.getElementById('mapNote').textContent =
+          `Venues: ${pinned} · ${filtered.length} event(s)`;
       }
 
       function getGoogleMapsKey() {
         const params = new URLSearchParams(window.location.search);
         const fromQuery = params.get('gmaps_key');
         if (fromQuery) return fromQuery;
-        try { return window.localStorage.getItem('open_mics_gmaps_key') || ''; } catch (e) { return ''; }
+        try {
+          return window.localStorage.getItem('open_mics_gmaps_key') || '';
+        } catch (e) {
+          return '';
+        }
       }
 
       function showBanner(html) {
@@ -849,121 +1037,41 @@
         b.innerHTML = html;
       }
 
-      function eventKey(e) {
-        const url = (e && e.url) ? String(e.url).trim() : '';
-        if (url) {
-          const wd = (e && e.weekday) ? String(e.weekday).trim().toLowerCase() : '';
-          const tm = (e && e.time) ? String(e.time).trim().toLowerCase() : '';
-          const extra = [wd, tm].filter(Boolean).join('|');
-          return extra ? `url:${url}|${extra}` : `url:${url}`;
-        }
-        const parts = [
-          (e && e.title) ? String(e.title).trim().toLowerCase() : '',
-          (e && e.venue) ? String(e.venue).trim().toLowerCase() : '',
-          (e && e.weekday) ? String(e.weekday).trim().toLowerCase() : '',
-          (e && e.time) ? String(e.time).trim().toLowerCase() : '',
-        ];
-        return `tvtwt:${parts.join('|')}`;
-      }
-
-      function mergeEvents(primary, extra) {
-        const out = [];
-        const seen = new Set();
-        function addAll(list) {
-          for (const e of (list || [])) {
-            if (!e) continue;
-            const key = eventKey(e);
-            if (seen.has(key)) continue;
-            seen.add(key);
-            out.push(e);
-          }
-        }
-        addAll(primary);
-        addAll(extra);
-        return out;
-      }
-
       async function boot() {
+        // Dynamically size map + list to viewport, with safe bounds.
         function updatePanelHeight() {
-          const minH = 520;
-          const maxH = 820;
-          const reserve = 110;
+          const minH = 420;
+          const maxH = 560;
+          const header = document.querySelector('header');
+          const headerH = header ? header.getBoundingClientRect().height : 120;
+          // Reserve space for header + gutters + footer
+          const reserve = headerH + 190;
           const h = Math.max(minH, Math.min(maxH, Math.floor(window.innerHeight - reserve)));
           document.documentElement.style.setProperty('--panel-h', `${h}px`);
         }
         updatePanelHeight();
         window.addEventListener('resize', updatePanelHeight, { passive: true });
 
-        // New (preferred) data model: venues + occurrences (no duplicated location edits).
-        // Back-compat: fall back to events.json if the new files don't exist yet.
-        let venuesById = new Map();
-        let occurrencesPrimary = null;
-        try {
-          const [rv, ro] = await Promise.all([
-            fetch(`./data/venues.json?v=${encodeURIComponent(BUILD_STAMP)}`, { cache: 'no-cache' }),
-            fetch(`./data/occurrences.json?v=${encodeURIComponent(BUILD_STAMP)}`, { cache: 'no-cache' }),
-          ]);
-          if (rv.ok && ro.ok) {
-            const pv = await rv.json();
-            const po = await ro.json();
-            const venues = pv.venues || [];
-            for (const v of venues) {
-              if (v && v.venue_id) venuesById.set(v.venue_id, v);
-            }
-            occurrencesPrimary = po.occurrences || [];
-          }
-        } catch (e) {}
+        const resp = await fetch(`./data/events.json?v=${encodeURIComponent(BUILD_STAMP)}`, { cache: 'no-cache' });
+        const payload = await resp.json();
+        const events = payload.events || [];
 
-        let eventsPrimary = [];
-        if (occurrencesPrimary) {
-          eventsPrimary = occurrencesPrimary.map(o => {
-            const v = (o && o.venue_id) ? venuesById.get(o.venue_id) : null;
-            return {
-              weekday: o.weekday,
-              venue: v ? v.venue : '',
-              address: v ? v.address : '',
-              location_display: v ? (v.location_display || '') : '',
-              location: v ? (v.location_display || '') : '',
-              time: o.time,
-              cost: o.cost,
-              language: o.language,
-              regularity: o.regularity,
-              title: o.title,
-              url: o.url,
-              image_url: o.image_url,
-              lat: v ? v.lat : null,
-              lon: v ? v.lon : null,
-            };
-          });
-        } else {
-          const resp = await fetch(`./data/events.json?v=${encodeURIComponent(BUILD_STAMP)}`, { cache: 'no-cache' });
-          const payload = await resp.json();
-          eventsPrimary = payload.events || [];
-        }
-
-        let eventsManual = [];
-        try {
-          const r2 = await fetch(`./data/events_manual.json?v=${encodeURIComponent(BUILD_STAMP)}`, { cache: 'no-cache' });
-          if (r2.ok) {
-            const p2 = await r2.json();
-            eventsManual = (p2 && p2.events) ? p2.events : [];
-          }
-        } catch (e) {}
-
-        const events = mergeEvents(eventsPrimary, eventsManual);
-
+        // Build Streamlit-like checkbox filters (all checked by default).
         function mountChecks(containerId, values, metaId) {
           const root = document.getElementById(containerId);
           if (!root) return;
           root.innerHTML = '';
+
           function updateRowStates() {
             for (const lab of Array.from(root.querySelectorAll('label.check'))) {
               const cb = lab.querySelector('input[type="checkbox"]');
               if (!cb) continue;
+              // Do not set state for the "select all" row here.
               if (cb.getAttribute('data-select-all') === '1') continue;
               lab.setAttribute('data-on', cb.checked ? '1' : '0');
             }
           }
+
           function updateSelectAll() {
             const selAll = root.querySelector('input[type="checkbox"][data-select-all="1"]');
             const boxes = Array.from(root.querySelectorAll('input[type="checkbox"][data-value]'));
@@ -971,13 +1079,19 @@
             const checkedN = boxes.filter(b => b.checked).length;
             selAll.indeterminate = checkedN > 0 && checkedN < boxes.length;
             selAll.checked = checkedN === boxes.length;
+
             const selAllLabel = root.querySelector('[data-select-all-label="1"]');
-            if (selAllLabel) selAllLabel.textContent = (checkedN === boxes.length) ? 'Select none' : 'Select all';
+            if (selAllLabel) {
+              selAllLabel.textContent = (checkedN === boxes.length) ? 'Select none' : 'Select all';
+            }
+
             const metaEl = metaId ? document.getElementById(metaId) : null;
             if (metaEl) {
-              if (checkedN === boxes.length) metaEl.textContent = 'All';
-              else if (checkedN === 0) metaEl.textContent = 'None';
-              else {
+              if (checkedN === boxes.length) {
+                metaEl.textContent = 'All';
+              } else if (checkedN === 0) {
+                metaEl.textContent = 'None';
+              } else {
                 const checkedSet = new Set(boxes.filter(b => b.checked).map(b => b.getAttribute('data-value')));
                 const ordered = values.filter(v => checkedSet.has(v));
                 const maxNames = 3;
@@ -988,6 +1102,8 @@
               }
             }
           }
+
+          // "Select all" row
           const allLab = document.createElement('label');
           allLab.className = 'check select-all';
           const allCb = document.createElement('input');
@@ -998,14 +1114,18 @@
             const boxes = Array.from(root.querySelectorAll('input[type="checkbox"][data-value]'));
             for (const b of boxes) b.checked = allCb.checked;
             allCb.indeterminate = false;
-            updateRowStates(); updateSelectAll(); render(events);
+            updateRowStates();
+            updateSelectAll();
+            render(events);
           });
           const allSpan = document.createElement('span');
           allSpan.textContent = 'Select all';
           allSpan.className = 'label';
           allSpan.setAttribute('data-select-all-label', '1');
-          allLab.appendChild(allCb); allLab.appendChild(allSpan);
+          allLab.appendChild(allCb);
+          allLab.appendChild(allSpan);
           root.appendChild(allLab);
+
           for (const v of values) {
             const lab = document.createElement('label');
             lab.className = 'check';
@@ -1013,17 +1133,25 @@
             cb.type = 'checkbox';
             cb.checked = true;
             cb.setAttribute('data-value', v);
-            cb.addEventListener('change', () => { updateRowStates(); updateSelectAll(); render(events); });
+            cb.addEventListener('change', () => {
+              updateRowStates();
+              updateSelectAll();
+              render(events);
+            });
             const span = document.createElement('span');
             span.textContent = v;
             span.className = 'label';
-            lab.appendChild(cb); lab.appendChild(span);
+            lab.appendChild(cb);
+            lab.appendChild(span);
             root.appendChild(lab);
           }
-          updateRowStates(); updateSelectAll();
+
+          updateRowStates();
+          updateSelectAll();
         }
 
         mountChecks('weekdayChecks', ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], 'weekdayMeta');
+
         const langSet = new Set();
         for (const e of events) {
           const parts = (e.language || '').toString().split(/[;,]/).map(x => x.trim()).filter(Boolean);
@@ -1036,10 +1164,22 @@
           const btn = document.getElementById(btnId);
           const pop = document.getElementById(popId);
           if (!btn || !pop) return;
-          if (open) { pop.removeAttribute('hidden'); btn.setAttribute('data-open', '1'); btn.setAttribute('aria-expanded', 'true'); }
-          else { pop.setAttribute('hidden',''); btn.setAttribute('data-open', '0'); btn.setAttribute('aria-expanded', 'false'); }
+          if (open) {
+            pop.removeAttribute('hidden');
+            btn.setAttribute('data-open', '1');
+            btn.setAttribute('aria-expanded', 'true');
+          } else {
+            pop.setAttribute('hidden','');
+            btn.setAttribute('data-open', '0');
+            btn.setAttribute('aria-expanded', 'false');
+          }
         }
-        function closeAllPops() { setOpen('weekdayBtn', 'weekdayPop', false); setOpen('languageBtn', 'languagePop', false); }
+
+        function closeAllPops() {
+          setOpen('weekdayBtn', 'weekdayPop', false);
+          setOpen('languageBtn', 'languagePop', false);
+        }
+
         function togglePop(btnId, popId) {
           const btn = document.getElementById(btnId);
           const pop = document.getElementById(popId);
@@ -1053,6 +1193,7 @@
         }
         togglePop('weekdayBtn', 'weekdayPop');
         togglePop('languageBtn', 'languagePop');
+
         document.addEventListener('click', (ev) => {
           const t = ev.target;
           const wp = document.getElementById('weekdayPop');
@@ -1060,25 +1201,49 @@
           const wb = document.getElementById('weekdayBtn');
           const lb = document.getElementById('languageBtn');
           const inside = (el) => el && (el === t || (t && el.contains && el.contains(t)));
-          if (!inside(wp) && !inside(lp) && !inside(wb) && !inside(lb)) closeAllPops();
+          if (!inside(wp) && !inside(lp) && !inside(wb) && !inside(lb)) {
+            closeAllPops();
+          }
         });
-        document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') closeAllPops(); });
+
+        document.addEventListener('keydown', (ev) => {
+          if (ev.key === 'Escape') {
+            closeAllPops();
+          }
+        });
 
         const key = getGoogleMapsKey();
         if (!key) {
-          const ZURICH_BOUNDS = L.latLngBounds(L.latLng(47.30, 8.45), L.latLng(47.45, 8.65));
+          // OSM fallback map
+          const ZURICH_BOUNDS = L.latLngBounds(
+            L.latLng(47.30, 8.45),   // SW
+            L.latLng(47.45, 8.65)    // NE
+          );
           const ZURICH_MIN_ZOOM = 12;
-          lmap = L.map('map', { zoomControl: true, minZoom: ZURICH_MIN_ZOOM, maxBounds: ZURICH_BOUNDS, maxBoundsViscosity: 1.0 })
-            .setView([47.3769, 8.5417], ZURICH_MIN_ZOOM);
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }).addTo(lmap);
+
+          lmap = L.map('map', {
+            zoomControl: true,
+            minZoom: ZURICH_MIN_ZOOM,
+            maxBounds: ZURICH_BOUNDS,
+            maxBoundsViscosity: 1.0,
+          }).setView([47.3769, 8.5417], ZURICH_MIN_ZOOM);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+          }).addTo(lmap);
           lmap.setMaxBounds(ZURICH_BOUNDS);
           lMarkersLayer = L.layerGroup().addTo(lmap);
-          showBanner(`Using OpenStreetMap (no Google key). To enable Google basemap add <code>?gmaps_key=YOUR_KEY</code> or set <code>localStorage.setItem('open_mics_gmaps_key','YOUR_KEY')</code>.`);
+
+          showBanner(
+            `Using OpenStreetMap (no Google key). To enable Google basemap add <code>?gmaps_key=YOUR_KEY</code> ` +
+            `or set <code>localStorage.setItem('open_mics_gmaps_key','YOUR_KEY')</code>.`
+          );
           document.getElementById('q').addEventListener('input', () => render(events));
           render(events);
           return;
         }
 
+        // Load Google Maps JS API dynamically.
         await new Promise((resolve, reject) => {
           const s = document.createElement('script');
           s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&v=weekly`;
@@ -1094,7 +1259,12 @@
           minZoom: 12,
           maxZoom: 19,
           restriction: {
-            latLngBounds: { south: 47.30, west: 8.45, north: 47.45, east: 8.65 },
+            latLngBounds: {
+              south: 47.30,
+              west: 8.45,
+              north: 47.45,
+              east: 8.65,
+            },
             strictBounds: true,
           },
           mapTypeControl: false,
@@ -1113,4 +1283,3 @@
     </script>
   </body>
 </html>
-
