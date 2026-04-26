@@ -79,8 +79,7 @@ pixi run export-site
 - `docs/map.html` (interactive tool)
 - `docs/data/events.json` (event data for the tool)
 - `docs/data/venues.json` + `docs/data/occurrences.json` (deduped venue model; preferred by the map)
-- `docs/data/events_manual.json` (optional manual metadata + extra events; merged at runtime by the article)
-- `docs/data/venues_manual.json` (manual venue overrides; merged by export-site into venues.json)
+- `docs/data/venues_manual.json` (manual venue overrides + optional `data_tag` for the article; merged by export-site into venues.json)
 
 ### Preview locally
 
@@ -103,7 +102,7 @@ Manual editing workflow is documented in:
 - `docs/MANUAL_EDITS.md`
 
 This includes:
-- where to store a persistent “scrape incomplete / modified” flag (`docs/data/events_manual.json`)
+- where to store a persistent “scrape incomplete / modified” flag (`docs/data/venues_manual.json` → `data_tag`)
 - how to correct addresses in `docs/data/events.json`
 - how to recompute coordinates (`src/update_docs_event_coords.py`)
 

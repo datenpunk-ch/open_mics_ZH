@@ -1,7 +1,6 @@
-# Manual edits (events + coordinates)
+# Manual edits (venues + coordinates)
 
-This repo has a generated dataset (`docs/data/events.json`) and an optional manual sidecar (`docs/data/events_manual.json`).
-It also has a manual venue override layer (`docs/data/venues_manual.json`) for persistent venue name/address fixes.
+This repo has a generated dataset (`docs/data/events.json`) and a manual venue layer (`docs/data/venues_manual.json`) for persistent venue name/address fixes and for the article’s **data status** row.
 
 ## When to edit which file
 
@@ -9,13 +8,12 @@ It also has a manual venue override layer (`docs/data/venues_manual.json`) for p
   - Good for: one-off corrections right now.
   - Risk: a future `pixi run export-site` will regenerate `docs/data/events.json` and may overwrite manual fixes.
 
-- **Persistent “status flag” for the article**: edit `docs/data/events_manual.json`
-  - Use this to record that the scrape/export is incomplete or that manual changes were applied.
-  - The article reads `data_tag` from `events_manual.json` and shows it as a **status card** (no hover needed).
-
-- **Persistent venue corrections (recommended for venue name/address)**: edit `docs/data/venues_manual.json`
+- **Persistent venue corrections + article status (recommended)**: edit `docs/data/venues_manual.json`
   - Use this to fix a venue once (name/address/display), and have it apply everywhere after each rebuild.
   - This file is merged into `docs/data/venues.json` by `src/export_site.py` on every export.
+  - Optional top-level **`data_tag`** / **`data_tag_note`**: `data_tag` of `incomplete` or `stale` highlights the address-fixes card on the article; **`data_tag_note`** (if set) is shown as a short note under the stats.
+  - If you set **`address`** or **`location_display`** and omit **`lat`** / **`lon`**, export runs a forward geocode (Nominatim), updates the shared cache at `data/processed/location_geocache.json`, and copies the resolved coords plus venue text onto matching rows in **`docs/data/events.json`** (about one second between network calls per venue).
+  - To pin coordinates yourself, set **`lat`** and **`lon`** in the manual block; export will not geocode that venue.
 
 ## Editing venues persistently (`docs/data/venues_manual.json`)
 
@@ -24,6 +22,8 @@ Format:
 ```json
 {
   "updated_at": "2026-04-26",
+  "data_tag": "",
+  "data_tag_note": "",
   "venues": {
     "v_970c36d42823": {
       "venue": "Monroe",
@@ -46,15 +46,14 @@ Optional: merge two venue IDs when the exporter created duplicates:
 
 ## Flagging scrape completeness in the article
 
-In `docs/data/events_manual.json` set:
+In **`docs/data/venues_manual.json`** set **`data_tag`** / **`data_tag_note`** next to your venue overrides (you can leave **`venues`** unchanged if you only want a status message):
 
 ```json
 {
-  "_comment": "Manual metadata + optional hand-added events. This file is merged into data/events.json at runtime by docs/index.html.",
-  "data_tag": "incomplete",
-  "data_tag_note": "",
   "updated_at": "2026-04-23",
-  "events": []
+  "data_tag": "incomplete",
+  "data_tag_note": "Eventfrog search missed at least one known series.",
+  "venues": {}
 }
 ```
 
@@ -63,29 +62,7 @@ Supported `data_tag` values currently used by the article:
 - `modified` → shows **“Manual edits”**
 - `stale` → shows **“Possibly stale”**
 
-## Tracking manual edits (counts in the article)
-
-The article can also show a separate **Manual edits** block with counts like “Address edit”, “Name edit”, etc.
-These counts come from an optional `edits` list in `docs/data/events_manual.json`.
-
-Each entry should include:
-- `state`: `needed` or `done`
-- `type`: e.g. `address`, `name`, `time`, `url`, `language`
-- `key`: a stable de-dupe key (same change → same key). Recommended:
-  - `url:<EVENT_URL>` (best when a URL exists)
-  - `addr:<ADDRESS>` (useful when multiple events share one address)
-- `note`: optional human-readable explanation (not required)
-
-Example:
-
-```json
-{
-  "state": "needed",
-  "type": "address",
-  "key": "url:https://example.com/event/123",
-  "note": "Fix street number"
-}
-```
+The article’s **“Data status & venue overrides”** row reads **`venues_manual.json`** plus **`venues.json`**: it shows **how many exported venues have an address/location_display patch**, and **how many exported venues had no manual row** (“fine”). Optional **`data_tag_note`** appears as text under those two cards.
 
 ## Editing an address in `docs/data/events.json`
 

@@ -30,7 +30,7 @@ PLACEHOLDER_SVG = ROOT / "assets" / "open_mic_placeholder.svg"
 WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 _WEEKDAY_INDEX = {d: i for i, d in enumerate(WEEKDAYS)}
 
-_RE_OPEN_MIC = re.compile(r"\bopen[\s-]*mic\b", re.I)
+_RE_OPEN_MIC = re.compile(r"\bopen[\s-]*mic(?=[^\w]|$)", re.I)
 _RE_MUSIC_JAM = re.compile(
     r"(?:\bjam\s*session\b|\bjam\b).*?(?:\bmusik\b|\bmusic\b|\bband\b|\bkonzert\b|\bconcert\b|\bmusizieren\b|\bhouse-?band\b)"
     r"|(?:\bmusik\b|\bmusic\b|\bband\b|\bkonzert\b|\bconcert\b|\bmusizieren\b|\bhouse-?band\b).*?(?:\bjam\s*session\b|\bjam\b)",

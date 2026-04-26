@@ -1,8 +1,0 @@
-{
-  "_comment": "Manual metadata + optional hand-added events. This file is merged into data/events.json at runtime by docs/index.html.",
-  "data_tag": "",
-  "data_tag_note": "",
-  "updated_at": "2026-04-26",
-  "edits": [],
-  "events": []
-}

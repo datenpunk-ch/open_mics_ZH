@@ -28,7 +28,7 @@ def run_extractor(extractor_id: str, listing_url: str, html: str) -> list[dict]:
 
 # z. B. /en/events/zuerich.html oder /en/events/zuerich/comedy-cabaret.html (keine Event-Detailseite)
 _LISTING_PATH_RE = re.compile(
-    r"^/(en|de|fr)/events/(?:[^/]+/)*[^/]+\.html$",
+    r"^/(en|de|fr|es)/events/(?:[^/]+/)*[^/]+\.html$",
     re.IGNORECASE,
 )
 
@@ -110,7 +110,7 @@ def extract_eventfrog_listing(listing_url: str, html: str) -> list[dict]:
         _ef_add_event(out, seen, abs_url, title)
 
     href_re = re.compile(
-        r"https?://(?:www\.)?eventfrog\.ch/(?:en|de|fr)/p/[^\"'\s<>]+\.html",
+        r"https?://(?:www\.)?eventfrog\.ch/(?:en|de|fr|es)/p/[^\"'\s<>]+\.html",
         re.IGNORECASE,
     )
     for m in href_re.findall(html):

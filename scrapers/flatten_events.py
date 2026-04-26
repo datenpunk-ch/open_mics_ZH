@@ -822,8 +822,9 @@ def _recurrence_from_listing(path: str, title: str, url: str) -> str | None:
     t = (title or "").strip()
     tl = t.lower()
 
-    # Structural: a dedicated "group" path (common on some listing sites).
-    if "/p/gruppen/" in p or "/p/gruppen/" in u:
+    # Structural: a dedicated "group" path (Eventfrog DE: gruppen; EN: groups; FR: groupes).
+    combined = f"{p} {u}".lower()
+    if any(seg in combined for seg in ("/p/gruppen/", "/p/groups/", "/p/groupes/")):
         return "recurring"
 
     # Structural: explicit multi-event count in listing title (e.g. "13 Events").
@@ -837,6 +838,19 @@ def _recurrence_from_listing(path: str, title: str, url: str) -> str | None:
     return None
 
 
+def _recurrence_from_multi_dates_preview(blob: str) -> str | None:
+    """
+    Eventfrog (and similar) often expose one schema.org Event while the HTML lists several dates
+    (tours, multi-city). Two+ distinct d.m.yyyy dates in visible copy → treat as a series page.
+    """
+    if not blob or len(blob) < 24:
+        return None
+    dm = re.findall(r"\b\d{1,2}\.\d{1,2}\.\d{4}\b", blob)
+    if len(set(dm)) >= 2:
+        return "recurring"
+    return None
+
+
 def _recurrence_label(
     *,
     ld_blocks: list[Any] | None,
@@ -844,11 +858,15 @@ def _recurrence_label(
     title: str,
     url: str,
     has_event_node: bool,
+    detail: dict | None = None,
 ) -> str:
     r = _recurrence_from_listing(path, title, url) or _recurrence_from_ld(ld_blocks)
     if r == "recurring":
         return "recurring"
     if has_event_node:
+        if isinstance(detail, dict) and isinstance(detail.get("text_preview"), str):
+            if _recurrence_from_multi_dates_preview(detail["text_preview"]) == "recurring":
+                return "recurring"
         return "one-off"
     return "unknown"
 
@@ -1290,6 +1308,7 @@ def _flatten_row_and_key(event: dict) -> tuple[dict[str, str], str]:
         title=title,
         url=url,
         has_event_node=node is not None,
+        detail=detail,
     )
     if regularity == "unknown" and detail and isinstance(detail.get("text_preview"), str):
         # Generic fallback: recurring wording in visible copy, even when no EventSeries schema exists.
@@ -1330,9 +1349,10 @@ def _norm_slot_field(s: str) -> str:
 
 # Generic "open mic" detection across common site languages.
 # Note: we still exclude music jam sessions via _RE_MUSIC_JAM below.
+# Use (?=[^\w]|$) after "mic" so Spanish "open mic de comedia" matches (no \b between mic+de).
 _RE_OPEN_MIC = re.compile(
     r"("
-    r"\bopen[\s-]*mic\b"  # EN/DE/FR/IT/ES often still use this
+    r"\bopen[\s-]*mic(?=[^\w]|$)"  # EN/DE/FR/IT/ES; allows "open mic de comedia"
     r"|\boffene[\s-]*bühne\b|\boffene[\s-]*buehne\b"  # DE
     r"|\bscène[\s-]*ouverte\b|\bscene[\s-]*ouverte\b"  # FR
     r"|\bmicrofono[\s-]*aperto\b|\bmicròfono[\s-]*aperto\b"  # IT

@@ -1,5 +1,23 @@
 {
-  "_comment": "Manual venue overrides. This file is merged into docs/data/venues.json by src/export_site.py on every export.",
+  "_comment": "Manual venue overrides. This file is merged into docs/data/venues.json by src/export_site.py on every export. Optional data_tag / data_tag_note are read by docs/index.html for the article status row.",
   "updated_at": "2026-04-26",
-  "venues": {}
+  "data_tag": "",
+  "data_tag_note": "",
+  "venues": {
+    "v_2d0c324000d2": {
+      "venue": "ROBIN'S Bar & Coffee",
+      "address": "Zähringerstrasse 33, 8001 Zürich",
+      "location_display": "ROBIN'S Bar & Coffee, Zähringerstrasse 33, 8001 Zürich"
+    },
+    "v_077de7c52e0d": {
+      "venue": "Stubä",
+      "address": "Brauerstrasse 42, 8004 Zürich",
+      "location_display": "Stubä, Brauerstrasse 42, 8004 Zürich"
+    },
+    "v_bc220a65bf4f": {
+      "venue": "Gleis",
+      "address": "Zollstrasse 121, 8005 Zürich",
+      "location_display": "Gleis, Zollstrasse 121, 8005 Zürich"
+    }
+  }
 }

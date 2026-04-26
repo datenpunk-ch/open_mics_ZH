@@ -71,7 +71,7 @@ Then in GitHub under **Settings → Pages**, choose **“Deploy from a branch”
 - **Raw**: `data/raw/*listing*.json` (listing results), `data/raw/merged_listing_*.json` (merged listing run).
 - **Processed**: `data/processed/events_enriched_*.json`, `data/processed/events_flat.csv`, `data/processed/location_geocache.json`.
 - **Static site data**: `docs/data/events.json` (back-compat), plus `docs/data/venues.json` + `docs/data/occurrences.json` (deduped venue model).
-- **Manual sidecar**: `docs/data/events_manual.json` (optional annotations/extra events; merged at runtime by the static site).
+- **Manual venues + article status**: `docs/data/venues_manual.json` (venue overrides; optional `data_tag` / `data_tag_note` for the article; merged at export into `venues.json` / synced coords on events where applicable).
 
 ### Configuration
 - **Source definitions**: `docs/Quellenliste.md` (parsed from fenced ` ```source ``` ` blocks).

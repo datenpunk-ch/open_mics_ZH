@@ -478,5 +478,20 @@
     "lat": 47.3757594,
     "lon": 8.5444649,
     "display_name": "Robin's coffee, Zähringerstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8092, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "zähringerstrasse 33, 8001 zürich": {
+    "lat": 47.3757479,
+    "lon": 8.544501,
+    "display_name": "33, Zähringerstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "brauerstrasse 42, 8004 zürich": {
+    "lat": 47.3779051,
+    "lon": 8.5271003,
+    "display_name": "42, Brauerstrasse, Langstrasse, Kreis 4, Zürich, Bezirk Zürich, Zürich, 8004, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "zollstrasse 121, 8005 zürich": {
+    "lat": 47.3815641,
+    "lon": 8.5296555,
+    "display_name": "Zollhaus, 121, Zollstrasse, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005, Schweiz/Suisse/Svizzera/Svizra"
   }
 }

@@ -37,7 +37,7 @@
     ]
   },
   "content_filters": {
-    "open_mic_regex": "\\bopen[\\s-]*mic\\b",
+    "open_mic_regex": "\\bopen[\\s-]*mic(?=[^\\w]|$)",
     "exclude_open_mic_when": {
       "all_of_any_order": [
         {

@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-04-26T15:16:27.671767+00:00",
-  "build_stamp": "2026-04-26T15:16:27Z",
-  "listing_scraped_at": "2026-04-26T15:03:54.960273+00:00",
+  "generated_at": "2026-04-26T16:57:21.615992+00:00",
+  "build_stamp": "2026-04-26T16:57:21Z",
+  "listing_scraped_at": "2026-04-26T16:51:04.036512+00:00",
   "data_updated_display": "26/04/2026",
-  "occurrences_total": 8,
+  "occurrences_total": 12,
   "occurrences": [
     {
       "show_id": "s_ba5a0e4658bb",
-      "venue_id": "v_4dfcd49fd8ad",
+      "venue_id": "v_61e961c9d78a",
       "weekday": "Wednesday",
       "time": "19:30",
       "cost": "",
@@ -19,7 +19,7 @@
     },
     {
       "show_id": "s_f6013279c5b1",
-      "venue_id": "v_48c6d8324089",
+      "venue_id": "v_b980130eddc6",
       "weekday": "Tuesday",
       "time": "20:00",
       "cost": "",
@@ -31,7 +31,7 @@
     },
     {
       "show_id": "s_7729f3ec7935",
-      "venue_id": "v_4bc6945243f2",
+      "venue_id": "v_2998b8d5acd1",
       "weekday": "Sunday",
       "time": "18:00",
       "cost": "",
@@ -43,7 +43,7 @@
     },
     {
       "show_id": "s_adca915266c7",
-      "venue_id": "v_9d656d8a502e",
+      "venue_id": "v_2d0c324000d2",
       "weekday": "Sunday",
       "time": "19:00",
       "cost": "",
@@ -55,7 +55,7 @@
     },
     {
       "show_id": "s_31a5c7cb90a9",
-      "venue_id": "v_9d656d8a502e",
+      "venue_id": "v_2d0c324000d2",
       "weekday": "Thursday",
       "time": "19:30",
       "cost": "",
@@ -66,8 +66,20 @@
       "image_url": "https://eventfrog.ch/upload/rm/co/me/comedy-brew-eventfrog-JUS94OAP.png?_=1750329611000"
     },
     {
+      "show_id": "s_9377df566d32",
+      "venue_id": "v_bc220a65bf4f",
+      "weekday": "Tuesday",
+      "time": "19:30",
+      "cost": "",
+      "language": "English",
+      "regularity": "recurring",
+      "title": "Funny Women Zurich - Comedy Open Mic",
+      "url": "https://eventfrog.ch/de/p/gruppen/funny-women-zurich-comedy-open-mic-7256690401515381606.html",
+      "image_url": "https://eventfrog.ch/upload/rm/zu/ri/zurich-1080x1080-1-2Z9F9DRZ.webp?_=1763579823000"
+    },
+    {
       "show_id": "s_dc5f0f6f1d82",
-      "venue_id": "v_f4595377dda5",
+      "venue_id": "v_69bdeeb95c1c",
       "weekday": "Monday",
       "time": "20:00",
       "cost": "CHF 5.0 / CHF 8.0",
@@ -78,8 +90,44 @@
       "image_url": "https://eventfrog.ch/upload/rm/fl/ye/flyer-teal-ROIC9YVC.webp?_=1773780196000"
     },
     {
+      "show_id": "s_2fbd07e01dc9",
+      "venue_id": "v_e72c2d794d43",
+      "weekday": "Thursday",
+      "time": "20:30",
+      "cost": "",
+      "language": "Spanish",
+      "regularity": "recurring",
+      "title": "La Tarima - Comedia en Español",
+      "url": "https://eventfrog.ch/de/p/gruppen/la-tarima-comedia-en-espanol-7415721905318030787.html",
+      "image_url": "https://eventfrog.ch/upload/rm/co/py/copy-of-red-and-beige-collage-aesthe-FTFWR7HF.webp?_=1768395655000"
+    },
+    {
+      "show_id": "s_2fbd07e01dc9",
+      "venue_id": "v_e72c2d794d43",
+      "weekday": "Saturday",
+      "time": "20:30",
+      "cost": "",
+      "language": "Spanish",
+      "regularity": "recurring",
+      "title": "La Tarima - Comedia en Español",
+      "url": "https://eventfrog.ch/de/p/gruppen/la-tarima-comedia-en-espanol-7415721905318030787.html",
+      "image_url": "https://eventfrog.ch/upload/rm/co/py/copy-of-red-and-beige-collage-aesthe-FTFWR7HF.webp?_=1768395655000"
+    },
+    {
+      "show_id": "s_7b46f41b0817",
+      "venue_id": "v_2d0c324000d2",
+      "weekday": "Tuesday",
+      "time": "19:30",
+      "cost": "",
+      "language": "English",
+      "regularity": "recurring",
+      "title": "Jokes, Jokes, Jokes - English Stand-up comedy show",
+      "url": "https://eventfrog.ch/de/p/gruppen/jokes-jokes-jokes-english-stand-up-comedy-show-7413564801610218198.html",
+      "image_url": "https://res.eventfrog.net/production_res_public/jokes-jokes-jokes-eventfrog-FN55B1LQ.png?_=1776704537000"
+    },
+    {
       "show_id": "s_db870c524e22",
-      "venue_id": "v_247064c0f8a2",
+      "venue_id": "v_5c2ba6051238",
       "weekday": "Tuesday",
       "time": "19:30",
       "cost": "CHF 15.0",
@@ -91,7 +139,7 @@
     },
     {
       "show_id": "s_bd3f0d2a823b",
-      "venue_id": "v_27710420b34f",
+      "venue_id": "v_077de7c52e0d",
       "weekday": "Tuesday",
       "time": "20:15",
       "cost": "",

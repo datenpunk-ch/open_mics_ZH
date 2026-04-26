@@ -11,6 +11,7 @@ import pandas as pd
 
 import pipeline_meta
 import base64
+import geocode_locations
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -30,7 +31,7 @@ PLACEHOLDER_SVG = ROOT / "assets" / "open_mic_placeholder.svg"
 WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 _DEFAULT_RULES = {
     "content_filters": {
-        "open_mic_regex": r"\bopen[\s-]*mic\b",
+        "open_mic_regex": r"\bopen[\s-]*mic(?=[^\w]|$)",
         "exclude_open_mic_when": {
             "all_of_any_order": [
                 {
@@ -143,6 +144,29 @@ def _geocache_key(loc: str) -> str:
 
 def _norm(s: str) -> str:
     return " ".join(str(s or "").split()).strip()
+
+
+def _final_venue_id_after_merges(v0: str, merges: dict[str, str]) -> str:
+    v = v0
+    seen: set[str] = set()
+    while isinstance(v, str) and v in merges and v not in seen:
+        seen.add(v)
+        v = merges[v]
+    return v if isinstance(v, str) else v0
+
+
+def _manual_geocode_query(v: dict) -> str:
+    """Build a Nominatim query from a venue row (after manual text overrides)."""
+    addr = _norm(str(v.get("address") or ""))
+    if addr:
+        if re.search(r"zürich|zurich|switzerland|schweiz", addr, flags=re.I):
+            return addr
+        return f"{addr}, Switzerland"
+    ld = _norm(str(v.get("location_display") or ""))
+    if ld:
+        return ld
+    ven = _norm(str(v.get("venue") or ""))
+    return f"{ven}, Zürich, Switzerland" if ven else ""
 
 
 def _clean_display_name(display_name: str) -> str:
@@ -1752,7 +1776,6 @@ def main() -> int:
         return (venue, address, location_display)
 
     events = []
-    missing_coords = 0
     for _, row in df.iterrows():
         loc_raw = _norm(row.get("Location", ""))
         lat, lon = coord_for(loc_raw)
@@ -1761,8 +1784,6 @@ def main() -> int:
         if not weekdays:
             weekdays = [""]
         for wd in weekdays:
-            if lat is None or lon is None:
-                missing_coords += 1
             events.append(
                 {
                     "weekday": _norm(wd),
@@ -1864,6 +1885,7 @@ def main() -> int:
 
     venues_by_id: dict[str, dict] = {}
     occurrences: list[dict] = []
+    event_vids: list[str] = []
     for e in events:
         vid = _venue_id(venue=e.get("venue", ""), address=e.get("address", ""), lat=e.get("lat"), lon=e.get("lon"))
         if vid not in venues_by_id:
@@ -1876,6 +1898,7 @@ def main() -> int:
             )
             if merged:
                 vid = merged
+        event_vids.append(vid)
         if vid not in venues_by_id:
             venues_by_id[vid] = {
                 "venue_id": vid,
@@ -1909,11 +1932,12 @@ def main() -> int:
     #     "v_abc...": { "venue": "...", "address": "...", "location_display": "...", "merge_into": "v_def..." }
     #   }
     # }
+    merges: dict[str, str] = {}
+    manual_edit_keys: set[str] = set()
     manual = _load_venues_manual(DOCS_VENUES_MANUAL_JSON)
     manual_venues = manual.get("venues") if isinstance(manual, dict) else None
     if isinstance(manual_venues, dict) and manual_venues:
         # First apply requested merges (old_id -> new_id).
-        merges: dict[str, str] = {}
         for vid, patch in manual_venues.items():
             if not isinstance(vid, str) or not vid.startswith("v_"):
                 continue
@@ -1937,9 +1961,11 @@ def main() -> int:
         for vid, patch in manual_venues.items():
             if not isinstance(vid, str) or not vid.startswith("v_"):
                 continue
-            if vid not in venues_by_id:
-                continue
             if not isinstance(patch, dict):
+                continue
+            if any(k in patch for k in ("venue", "address", "location_display", "lat", "lon")):
+                manual_edit_keys.add(vid)
+            if vid not in venues_by_id:
                 continue
             v = venues_by_id[vid]
             for k in allowed_fields:
@@ -1959,6 +1985,60 @@ def main() -> int:
                     v["lon"] = float(v["lon"])
             except Exception:
                 pass
+
+        # Auto-geocode manual rows that add/change address or location_display but omit lat/lon.
+        for vid, patch in manual_venues.items():
+            if not isinstance(vid, str) or not vid.startswith("v_"):
+                continue
+            if not isinstance(patch, dict):
+                continue
+            if vid not in venues_by_id:
+                continue
+            explicit_ll = "lat" in patch and "lon" in patch
+            wants_geo = (not explicit_ll) and ("address" in patch or "location_display" in patch)
+            if not wants_geo:
+                continue
+            v = venues_by_id[vid]
+            q = _manual_geocode_query(v)
+            if not q:
+                continue
+            try:
+                la, lo = geocode_locations.lookup_forward(
+                    q, cache, geocache_path=GEOCACHE_PATH, pause_s=1.0
+                )
+            except Exception as ex:
+                print(f"[export-site] manual venue geocode failed for {vid}: {ex}")
+                la, lo = None, None
+            if la is not None and lo is not None:
+                v["lat"], v["lon"] = la, lo
+                print(f"[export-site] manual venue geocode OK {vid} ({q[:80]}{'…' if len(q) > 80 else ''})")
+
+    if manual_edit_keys and len(event_vids) == len(events):
+        for i, e in enumerate(events):
+            v0 = event_vids[i]
+            vf = _final_venue_id_after_merges(v0, merges)
+            if v0 not in manual_edit_keys:
+                continue
+            vv = venues_by_id.get(vf)
+            if not isinstance(vv, dict):
+                continue
+            e["venue"] = _norm(str(vv.get("venue") or ""))
+            e["address"] = _norm(str(vv.get("address") or ""))
+            ld = _norm(str(vv.get("location_display") or ""))
+            e["location_display"] = ld
+            e["location"] = ld or _norm(str(e.get("location") or ""))
+            try:
+                if vv.get("lat") is not None and vv.get("lon") is not None:
+                    e["lat"] = float(vv["lat"])
+                    e["lon"] = float(vv["lon"])
+            except (TypeError, ValueError):
+                pass
+
+    missing_coords = sum(
+        1
+        for e in events
+        if not isinstance(e.get("lat"), (int, float)) or not isinstance(e.get("lon"), (int, float))
+    )
 
     DOCS_VENUES_JSON.write_text(
         json.dumps(

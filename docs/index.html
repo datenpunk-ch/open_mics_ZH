@@ -439,7 +439,7 @@
             </div>
 
             <div class="stats reveal" id="manualStats" aria-live="polite">
-              <div class="stats-label">Data status &amp; manual edits</div>
+              <div class="stats-label">Data status &amp; venue overrides</div>
               <div class="stats-cards" id="manualStatsCards">
                 <div class="stat-card is-loading">Loading…</div>
               </div>
@@ -687,67 +687,82 @@
           const p1 = await r1.json();
           const primary = (p1 && p1.events) ? p1.events : [];
 
-          let manual = [];
-          let manualMeta = null;
+          let venuesManualMeta = null;
           try {
-            const r2 = await fetch("./data/events_manual.json", { cache: "no-cache" });
-            if (r2.ok) {
-              const p2 = await r2.json();
-              manualMeta = p2 || null;
-              manual = (p2 && p2.events) ? p2.events : [];
+            const rV = await fetch("./data/venues_manual.json", { cache: "no-cache" });
+            if (rV.ok) {
+              venuesManualMeta = await rV.json();
             }
           } catch (e) {}
 
-          const events = mergeEvents(primary, manual);
+          let venuesPayload = null;
+          try {
+            const rVen = await fetch("./data/venues.json", { cache: "no-cache" });
+            if (rVen.ok) {
+              venuesPayload = await rVen.json();
+            }
+          } catch (e) {}
+
+          const events = mergeEvents(primary, []);
 
           const dataTag =
-            (manualMeta && typeof manualMeta.data_tag === "string" && manualMeta.data_tag.trim())
-              ? manualMeta.data_tag.trim()
-              : ((p1 && typeof p1.data_tag === "string" && p1.data_tag.trim()) ? p1.data_tag.trim() : "");
+            (venuesManualMeta && typeof venuesManualMeta.data_tag === "string" && venuesManualMeta.data_tag.trim())
+              ? venuesManualMeta.data_tag.trim().toLowerCase()
+              : "";
           const dataTagNote =
-            (manualMeta && typeof manualMeta.data_tag_note === "string" && manualMeta.data_tag_note.trim())
-              ? manualMeta.data_tag_note.trim()
+            (venuesManualMeta && typeof venuesManualMeta.data_tag_note === "string" && venuesManualMeta.data_tag_note.trim())
+              ? venuesManualMeta.data_tag_note.trim()
               : ((p1 && typeof p1.data_tag_note === "string" && p1.data_tag_note.trim()) ? p1.data_tag_note.trim() : "");
 
-          // Manual edits (exactly 3 cards, deduped by key)
+          // Manual stats: address/location fixes from venues_manual vs venues that had no override.
           if (manualCards) {
             manualCards.innerHTML = "";
 
-            const editsRaw = (manualMeta && Array.isArray(manualMeta.edits)) ? manualMeta.edits : [];
-            const addrEditKeys = new Set();
-            const nameEditKeys = new Set();
-            const allEditKeys = new Set();
-            for (const it of editsRaw) {
-              if (!it || typeof it !== "object") continue;
-              const type = (it.type || "").toString().trim().toLowerCase();
-              const key = (it.key || "").toString().trim();
-              if (!key) continue;
-              allEditKeys.add(key);
-              if (type === "address") addrEditKeys.add(key);
-              if (type === "name") nameEditKeys.add(key);
-            }
+            const um = venuesManualMeta && typeof venuesManualMeta === "object" ? venuesManualMeta : {};
+            const vvenues = um.venues && typeof um.venues === "object" ? um.venues : {};
 
-            // Compute "no edit needed" as events not covered by any edit key.
-            const allEventKeys = new Set(events.map(eventKey));
-            const affectedEventKeys = new Set();
-            for (const k of allEditKeys) {
-              if (k.startsWith("url:")) {
-                affectedEventKeys.add(k);
-                continue;
-              }
-              if (k.startsWith("addr:")) {
-                const addr = k.slice("addr:".length).trim();
-                if (!addr) continue;
-                for (const e of events) {
-                  const ea = (e && e.address) ? String(e.address).trim() : "";
-                  if (ea && ea === addr) affectedEventKeys.add(eventKey(e));
-                }
+            const venueList = (venuesPayload && Array.isArray(venuesPayload.venues)) ? venuesPayload.venues : [];
+            const venueIdSet = new Set(
+              venueList.map((v) => (v && v.venue_id ? String(v.venue_id).trim() : "")).filter(Boolean)
+            );
+
+            let addressFixCount = 0;
+            const touchedVenueIds = new Set();
+            for (const [vid, patch] of Object.entries(vvenues)) {
+              if (!vid || !String(vid).startsWith("v_")) continue;
+              if (!patch || typeof patch !== "object") continue;
+              if (!venueIdSet.has(vid)) continue;
+              const pkeys = Object.keys(patch).filter((k) => !String(k).startsWith("_"));
+              if (!pkeys.length) continue;
+              if (pkeys.length === 1 && pkeys[0] === "merge_into") continue;
+              touchedVenueIds.add(vid);
+              if (Object.prototype.hasOwnProperty.call(patch, "address") || Object.prototype.hasOwnProperty.call(patch, "location_display")) {
+                addressFixCount += 1;
               }
             }
 
-            pushManualCard(manualCards, { n: addrEditKeys.size, label: "Edits\nAddress", isManual: true });
-            pushManualCard(manualCards, { n: nameEditKeys.size, label: "Edits\nName", isManual: true });
-            pushManualCard(manualCards, { n: Math.max(0, allEventKeys.size - affectedEventKeys.size), label: "No edit\nneeded", isManual: true });
+            const totalVenues = venueList.length;
+            const fineVenues = totalVenues > 0 ? Math.max(0, totalVenues - touchedVenueIds.size) : 0;
+
+            pushManualCard(manualCards, {
+              n: addressFixCount,
+              label: "Address\nfixes",
+              isAlert: dataTag === "incomplete" || dataTag === "stale",
+              isManual: true,
+            });
+            pushManualCard(manualCards, {
+              n: fineVenues,
+              label: totalVenues > 0 ? "Venues\nfine" : "Venues\nfine (n/a)",
+              isManual: true,
+            });
+
+            if (dataTagNote) {
+              const note = document.createElement("p");
+              note.className = "stats-note";
+              note.style.cssText = "grid-column: 1 / -1; margin: 0.6rem 0 0; font-size: 0.9rem; color: var(--color-muted);";
+              note.textContent = dataTagNote;
+              manualCards.appendChild(note);
+            }
           }
 
           const counts = new Map();

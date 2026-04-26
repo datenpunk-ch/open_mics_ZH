@@ -263,6 +263,71 @@ def _nominatim_reverse(lat: float, lon: float, *, timeout_s: int = 20) -> dict |
     return {"lat": float(lat), "lon": float(lon), "display_name": dn}
 
 
+def lookup_forward(
+    query: str,
+    cache: dict[str, dict],
+    *,
+    geocache_path: Path,
+    pause_s: float = 1.0,
+) -> tuple[float | None, float | None]:
+    """
+    Resolve a free-text address to lat/lon using the shared geocache, then Nominatim.
+    Persists new hits to ``geocache_path``. Intended for small batches (e.g. manual venue fixes).
+    """
+    query = (query or "").strip()
+    if not query:
+        return None, None
+
+    ck = _cache_key(query)
+    if ck:
+        hit = cache.get(ck)
+        if isinstance(hit, dict):
+            try:
+                return float(hit["lat"]), float(hit["lon"])
+            except (KeyError, TypeError, ValueError):
+                pass
+
+    candidates: list[str] = [query]
+    if "," in query:
+        tail = query.split(",", 1)[1].strip()
+        if tail and tail not in candidates:
+            candidates.append(tail)
+    head = query.split(",", 1)[0].strip()
+    if _expects_zurich(query) and head and len(head) >= 2:
+        h2 = f"{head}, Zürich"
+        if h2 not in candidates:
+            candidates.append(h2)
+
+    seen: set[str] = set()
+    candidates = [c for c in candidates if c.strip() and not (c in seen or seen.add(c))]
+
+    res = None
+    for i, cand in enumerate(candidates):
+        try:
+            res = _nominatim_geocode(cand)
+        except Exception:
+            res = None
+        if res:
+            break
+        if i + 1 < len(candidates):
+            time.sleep(pause_s)
+
+    if res and ck:
+        entry: dict = {"lat": res["lat"], "lon": res["lon"]}
+        if isinstance(res.get("display_name"), str):
+            entry["display_name"] = res["display_name"]
+        cache[ck] = entry
+        _save_geocache(geocache_path, cache)
+        time.sleep(pause_s)
+        try:
+            return float(res["lat"]), float(res["lon"])
+        except (TypeError, ValueError):
+            return None, None
+
+    time.sleep(pause_s)
+    return None, None
+
+
 def main() -> int:
     if not DEFAULT_CSV.is_file():
         print(f"[geocode] Missing CSV: {DEFAULT_CSV}")
