@@ -1293,7 +1293,18 @@ def _norm_slot_field(s: str) -> str:
     return re.sub(r"\s+", " ", (s or "").strip().lower())
 
 
-_RE_OPEN_MIC = re.compile(r"\bopen[\s-]*mic\b", re.I)
+# Generic "open mic" detection across common site languages.
+# Note: we still exclude music jam sessions via _RE_MUSIC_JAM below.
+_RE_OPEN_MIC = re.compile(
+    r"("
+    r"\bopen[\s-]*mic\b"  # EN/DE/FR/IT/ES often still use this
+    r"|\boffene[\s-]*bühne\b|\boffene[\s-]*buehne\b"  # DE
+    r"|\bscène[\s-]*ouverte\b|\bscene[\s-]*ouverte\b"  # FR
+    r"|\bmicrofono[\s-]*aperto\b|\bmicròfono[\s-]*aperto\b"  # IT
+    r"|\bmicrófono[\s-]*abierto\b|\bmicrofono[\s-]*abierto\b"  # ES
+    r")",
+    re.I,
+)
 _RE_MUSIC_JAM = re.compile(
     r"(?:\bjam\s*session\b|\bjam\b).*?(?:\bmusik\b|\bmusic\b|\bband\b|\bkonzert\b|\bconcert\b|\bmusizieren\b|\bhouse-?band\b)"
     r"|(?:\bmusik\b|\bmusic\b|\bband\b|\bkonzert\b|\bconcert\b|\bmusizieren\b|\bhouse-?band\b).*?(?:\bjam\s*session\b|\bjam\b)",
