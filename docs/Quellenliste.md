@@ -3,9 +3,22 @@
 Übersicht der Datenquellen für Comedy- und Open-Mic-Events in und um Zürich.  
 Einträge nach Priorität oder Startreihenfolge; später ergänzen.
 
-**Wichtig:** Diese Datei ist die **menschliche Doku** (Ideen, Prioritäten, Hinweise).  
-Die **technisch aktivierten** Quellen stehen in `scrapers/sources.py` (inkl. `id`, Start-URL, Extractor).  
-Wenn du hier eine neue Quelle ergänzt, musst du sie danach in `scrapers/sources.py` eintragen (und ggf. einen neuen Extractor implementieren).
+**Wichtig:** Diese Datei ist die **Single Source of Truth** für die technisch aktivierten Quellen.  
+Der Scraper liest die Quellen-Definitionen direkt aus dieser Datei (siehe `scrapers/sources.py`).
+
+### Maschinenlesbarer Block (vom Scraper gelesen)
+
+Für jede aktive Quelle muss es einen Block der Form geben:
+
+```source
+id: eventfrog_de
+label: Eventfrog (DE, Zürich Comedy & Kabarett / Open Mic)
+start_url: https://eventfrog.ch/de/events/zuerich/comedy-cabaret.html?searchTerm=open+mic&geoRadius=10
+extractor: eventfrog
+listing_behavior: eventfrog
+```
+
+Nur diese Keys werden gelesen: `id`, `label`, `start_url`, `extractor`, `listing_behavior`.
 
 ---
 
@@ -32,6 +45,14 @@ Wenn du hier eine neue Quelle ergänzt, musst du sie danach in `scrapers/sources
 | **Abdeckung** | Zürich + Umland (`geoRadius=10`); Kategorie `comedy-cabaret` + `searchTerm` (z. B. `open+mic`) wie in der Eventfrog-UI. |
 | **Nutzen** | Viele Comedy- und Open-Mic-Reihen (inkl. Event-Gruppen mit mehreren Terminen), Venue, Datum/Uhrzeit, oft Ticketpreis sichtbar. |
 | **Hinweise** | Inhalte können per JavaScript nachgeladen werden — Scraper ggf. mit Playwright o. Ä.; [AGB/Datenschutz](https://eventfrog.ch) beachten; freundliche Abrufintervalle. |
+
+```source
+id: eventfrog_de
+label: Eventfrog (DE, Zürich Comedy & Kabarett / Open Mic)
+start_url: https://eventfrog.ch/de/events/zuerich/comedy-cabaret.html?searchTerm=open+mic&geoRadius=10
+extractor: eventfrog
+listing_behavior: eventfrog
+```
 
 **Varianten der gleichen Basis:**
 
