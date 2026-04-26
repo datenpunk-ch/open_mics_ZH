@@ -3,12 +3,22 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Open MicZH — An article</title>
-    <meta
-      name="description"
-      content="An editorial overview of recurring open mic comedy events in Zurich, with an embedded interactive map and list."
+    <title>Open MicZH</title>
+    <meta http-equiv="Cache-Control" content="no-store, max-age=0" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Karla:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
     />
-    <link rel="stylesheet" href="./assets/fonts.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
     <style>
       :root {
         --color-bg: #ffffff;
@@ -21,788 +31,1255 @@
         --color-accent-hover: #2f5a6b;
 
         --font-display: "Spectral", "Georgia", serif;
-        --font-ui: "Karla", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-        --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-          "Liberation Mono", "Courier New", monospace;
+        --font-ui: "Karla", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+        --space-1: 0.5rem;
+        --space-2: 1rem;
+        --space-3: 1.5rem;
+        --space-4: 2.25rem;
+        --space-5: 3.5rem;
+        --space-6: 5rem;
 
         --measure: 42rem;
-      }
+        --page-max: 74rem;
+        --gutter-start: clamp(1.25rem, 4vw, 2.5rem);
+        --gutter-end: clamp(1.5rem, 8vw, 5rem);
 
-      * { box-sizing: border-box; }
-      html { scroll-behavior: smooth; }
+        --lh-tight: 1.02;
+        --lh-head: 1.08;
+        --lh-snug: 1.2;
+        --lh-body: 1.65;
+        --text-body: clamp(0.95rem, 0.15vw + 0.9rem, 1rem);
+      }
       body {
         margin: 0;
-        font-family: var(--font-ui);
-        line-height: 1.75;
-        font-weight: 400;
-        color: var(--color-ink-body);
         background: var(--color-bg);
-        overflow-x: hidden;
-        text-rendering: optimizeLegibility;
+        color: var(--color-ink-body);
+        font-family: var(--font-ui);
+        font-size: var(--text-body);
+        font-weight: 400;
+        line-height: var(--lh-body);
+        letter-spacing: 0.005em;
         -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+      /* Editorial measure: constrain overall chrome a bit */
+      .layout {
+        max-width: 1440px;
+        margin: 0 auto;
       }
       a {
         color: var(--color-ink);
-        text-decoration: underline;
-        text-decoration-thickness: 1px;
-        text-underline-offset: 0.18em;
+        text-decoration: none;
+        transition: color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
       }
-      a:hover { color: var(--color-accent-hover); }
-      :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
-
+      a:hover {
+        color: var(--color-accent);
+      }
+      a:focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 3px;
+      }
       .skip-link {
         position: absolute;
-        left: 10px;
-        top: 10px;
-        padding: 8px 10px;
-        background: var(--color-bg);
-        border: 1px solid var(--color-rule);
-        color: var(--color-ink);
-        font-family: var(--font-mono);
-        font-size: 12px;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        text-decoration: none;
-        transform: translateY(-120%);
-        transition: transform 0.15s ease;
+        left: -9999px;
+        top: var(--space-2);
         z-index: 200;
-      }
-      .skip-link:focus { transform: translateY(0); }
-
-      .progress-bar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 2px;
-        width: 0%;
-        background: var(--color-accent);
-        z-index: 100;
-        transition: width 0.1s;
-      }
-
-      .reveal{
-        opacity:0;
-        transform:translateY(24px);
-        transition:opacity 0.7s ease, transform 0.7s ease;
-      }
-      .reveal.visible{
-        opacity:1;
-        transform:none;
-      }
-
-      .container {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 0 5vw;
-      }
-      .measure { max-width: var(--measure); }
-
-      .hero {
-        padding: 6rem 0 3.75rem;
-        background: var(--color-bg);
-      }
-      .hero-tag {
-        font-family: var(--font-mono);
-        font-size: 11px;
-        letter-spacing: 0.18em;
-        color: var(--color-muted);
-        text-transform: uppercase;
-        margin-bottom: 1rem;
-      }
-      .hero h1 {
-        font-family: var(--font-display);
-        font-size: clamp(2.6rem, 6.5vw, 5.25rem);
+        padding: var(--space-1) var(--space-3);
+        background: var(--color-ink);
+        color: var(--color-bg);
+        font-family: var(--font-ui);
+        font-size: 0.6875rem;
         font-weight: 700;
-        line-height: 1.02;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .skip-link:focus {
+        left: var(--space-2);
+      }
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(255, 255, 255, 0.96);
+        border-bottom: 1px solid var(--color-ink);
+        backdrop-filter: blur(8px);
+        padding: var(--space-3) var(--gutter-end) var(--space-3) var(--gutter-start);
+      }
+      header h1 {
+        font-family: var(--font-display);
+        font-size: 42px;
+        line-height: var(--lh-head);
+        margin: 0 0 0.5rem 0;
+        letter-spacing: -0.02em;
         color: var(--color-ink);
-        letter-spacing: -0.03em;
-        margin: 0 0 1rem;
-        max-width: 20ch;
       }
-      .hero-sub {
-        font-size: 1.125rem;
-        color: var(--color-ink-body);
-        max-width: 64ch;
-        margin: 0 0 2rem;
-        line-height: 1.7;
+      header .sub {
+        color: var(--color-muted);
+        font-size: 14px;
+        max-width: 42rem;
       }
-      .hero-byline {
+      .layout {
+        display: grid;
+        /* Match Streamlit layout: filters / map / events */
+        grid-template-columns: minmax(260px, 320px) minmax(520px, 1fr) minmax(340px, 420px);
+        gap: var(--space-3);
+        padding: var(--space-3) var(--gutter-end) var(--space-4) var(--gutter-start);
+      }
+      .card {
+        background: transparent;
+        border: none;
+        min-height: 200px;
+      }
+      .panel-title {
+        margin: 0 0 10px 0;
+        padding-bottom: 6px;
+        border-bottom: 1px solid var(--color-rule);
+        /* Match event title styling in sidebar list */
+        font-family: var(--font-display);
+        font-size: 18px;
+        line-height: 1.25;
+        font-weight: 400;
+        color: var(--color-ink);
+        letter-spacing: 0;
+      }
+      #map {
+        /* Slightly shorter, editorial feel */
+        height: var(--panel-h, clamp(420px, calc(100vh - 240px), 560px));
+        min-height: 420px;
+        border: 1px solid var(--color-rule);
+      }
+      /* Leaflet/SVG "focus" styling can leave clicked markers looking selected. */
+      .leaflet-container .leaflet-interactive:focus {
+        outline: none;
+      }
+      .banner {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        padding: 10px 12px;
+        background: rgba(255,255,255,0.92);
+        color: var(--color-ink);
+        font-size: 12px;
+        border-bottom: 1px solid var(--color-rule);
+        z-index: 5;
+        backdrop-filter: blur(6px);
+      }
+      .banner code {
+        color: var(--color-ink);
+        font-family: var(--font-mono);
+      }
+      .controls {
+        padding: 0 0 14px 0;
+        border-bottom: 1px solid var(--color-rule);
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .controls label {
+        display: block;
+        font-family: var(--font-display);
+        font-size: 18px;
+        line-height: 1.25;
+        font-weight: 400;
+        color: var(--color-ink);
+        text-transform: none;
+        letter-spacing: 0;
+        margin-bottom: 6px;
+      }
+      .controls select, .controls input {
+        width: 100%;
+        padding: 10px 10px;
+        border-radius: 0;
+        box-sizing: border-box;
+        border: 1px solid var(--color-rule);
+        background: var(--color-bg-soft);
+        color: var(--color-ink);
+        outline: none;
+        font-family: var(--font-ui);
+        appearance: none;
+        -webkit-appearance: none;
+      }
+      /* Compact multiselect popovers (keeps filters small) */
+      .filter-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+      .filter-button {
+        width: 100%;
+        text-align: left;
+        padding: 10px 10px;
+        border: 1px solid var(--color-rule);
+        background: var(--color-bg-soft);
+        color: var(--color-ink);
+        font-family: var(--font-ui);
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .filter-button .left {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 8px;
+        min-width: 0;
+      }
+      .filter-button:focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 2px;
+      }
+      .filter-button .meta {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--color-muted);
+        white-space: nowrap;
+      }
+      .filter-button .caret {
         font-family: var(--font-mono);
         font-size: 11px;
         color: var(--color-muted);
-        letter-spacing: 0.12em;
-        display: flex;
-        gap: 1.25rem;
-        flex-wrap: wrap;
-        text-transform: uppercase;
-        align-items: baseline;
+        margin-left: 4px;
       }
-      .hero-byline a {
-        text-decoration: none;
-        border-bottom: 1px solid rgba(58, 103, 122, 0.55);
+      .filter-button[data-open="1"] {
+        background: #ffffff;
+        border-color: var(--color-accent);
       }
-      .hero-byline a:hover {
-        border-bottom-color: rgba(47, 90, 107, 0.7);
+      .filter-button[data-open="1"] .meta,
+      .filter-button[data-open="1"] .caret {
+        color: var(--color-accent);
       }
-
-      section { padding: 5.25rem 0; }
-      section:nth-child(even) { background: var(--color-bg-soft); }
-
-      .section-label {
-        font-family: var(--font-mono);
-        font-size: 10px;
-        letter-spacing: 0.22em;
-        color: var(--color-muted);
-        text-transform: uppercase;
-        margin-bottom: 1.25rem;
+      .filter-popover {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: calc(100% + 6px);
+        border: 1px solid var(--color-rule);
+        background: var(--color-bg);
+        padding: 8px;
+        z-index: 20;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      }
+      .filter-popover[hidden] { display: none; }
+      .checklist {
+        display: block;
+        padding: 0;
+        margin: 0;
+        max-height: 220px;
+        overflow: auto;
+      }
+      .check {
         display: flex;
         align-items: center;
         gap: 10px;
+        padding: 4px 6px;
+        border-bottom: 1px solid rgba(0,0,0,0.06);
+        font-size: 12.5px;
+        user-select: none;
+        cursor: pointer;
       }
-      .section-label::after {
-        content: "";
-        display: block;
+      .check.select-all {
+        position: sticky;
+        top: 0;
+        background: var(--color-bg-soft);
+        border-bottom: 1px solid rgba(0,0,0,0.10);
+        z-index: 2;
+      }
+      .check:hover {
+        background: var(--color-bg-soft);
+      }
+      .check input {
+        margin: 0;
+        position: absolute;
+        opacity: 0;
+        width: 1px;
         height: 1px;
-        width: 40px;
-        background: var(--color-rule);
       }
-      .sec-head {
+      .check .label {
+        font-family: var(--font-ui);
+        line-height: 1.2;
+      }
+      .check[data-on="1"] .label {
+        font-weight: 650;
+        color: var(--color-ink);
+      }
+      .check[data-on="0"] .label {
+        font-weight: 400;
+        color: var(--color-ink-body);
+      }
+      .check.select-all .label {
+        font-family: var(--font-ui);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--color-muted);
+      }
+      .controls select:focus, .controls select:focus-visible,
+      .controls input:focus, .controls input:focus-visible {
+        border-color: var(--color-accent);
+        outline: none;
+      }
+      .controls option {
+        background: var(--color-bg);
+        color: var(--color-ink);
+      }
+      .list {
+        padding: 10px 0 12px 0;
+        height: var(--panel-h, clamp(420px, calc(100vh - 240px), 560px));
+        min-height: 420px;
+        overflow: auto;
+      }
+      .list-heading {
         display: flex;
         align-items: baseline;
-        gap: 14px;
-        padding-bottom: 0.75rem;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding-bottom: 6px;
         border-bottom: 1px solid var(--color-rule);
-        margin-bottom: 1.5rem;
+        margin-bottom: 6px;
       }
-      .sec-num {
+      .list-heading-title {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--color-ink);
+        letter-spacing: -0.02em;
+      }
+      .list-heading-updated {
         font-family: var(--font-mono);
         font-size: 11px;
-        letter-spacing: 0.22em;
-        color: var(--color-accent);
-        text-transform: uppercase;
-        flex: 0 0 auto;
-      }
-      h2 {
-        font-family: var(--font-display);
-        font-size: clamp(1.75rem, 3.2vw, 2.6rem);
-        font-weight: 700;
-        line-height: 1.2;
-        color: var(--color-ink);
-        margin: 0;
-      }
-      h3 {
-        font-family: var(--font-display);
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: var(--color-ink);
-        margin: 2rem 0 0.75rem;
-      }
-      p {
-        font-size: 1.0625rem;
-        color: var(--color-ink-body);
-        margin: 0 0 1.25rem;
-        max-width: 70ch;
-      }
-      ul {
-        margin: 0 0 1.5rem 1.25rem;
-        padding: 0;
-        max-width: 70ch;
-        color: var(--color-ink-body);
-      }
-      li { margin-bottom: 0.5rem; }
-      code { font-family: var(--font-mono); font-size: 0.95em; }
-
-      .note-box {
-        border-top: 1px solid var(--color-rule);
-        border-bottom: 1px solid var(--color-rule);
-        padding: 1rem 0;
-        margin: 2rem 0;
-        max-width: 70ch;
-      }
-      .note-box-label {
-        font-family: var(--font-mono);
-        font-size: 10px;
-        letter-spacing: 0.22em;
-        color: var(--color-accent);
-        text-transform: uppercase;
-        margin-bottom: 0.5rem;
-      }
-      .note-box p {
-        font-size: 0.98rem;
         color: var(--color-muted);
-        margin: 0;
-        max-width: none;
-      }
-      .stats {
-        border-top: 1px solid var(--color-rule);
-        border-bottom: 1px solid var(--color-rule);
-        padding: 1rem 0;
-        margin: 2rem 0;
-        max-width: 70ch;
-      }
-      .stats-label {
-        font-family: var(--font-mono);
-        font-size: 10px;
-        letter-spacing: 0.22em;
-        color: var(--color-accent);
         text-transform: uppercase;
-        margin-bottom: 0.5rem;
+        letter-spacing: 0.1em;
+        white-space: nowrap;
       }
-      .stats-cards {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 0.5rem;
-        perspective: 900px;
+      .item {
+        padding: 10px 0;
+        border-bottom: 1px solid var(--color-rule);
       }
-      .stat-card {
-        width: 108px;
-        height: 108px;
+      .item-inner {
+        display: grid;
+        grid-template-columns: 116px 1fr;
+        gap: 12px;
+        align-items: start;
+      }
+      .thumb {
+        width: 116px;
+        height: 76px;
+        object-fit: cover;
         border: 1px solid var(--color-rule);
         background: var(--color-bg-soft);
-        display: grid;
-        grid-template-rows: 1fr auto;
-        padding: 10px;
-        position: relative;
       }
-      .stat-card.flip {
-        opacity: 0;
-        transform: translateY(18px) rotateX(-18deg) rotateY(88deg);
-        transform-style: preserve-3d;
-        transform-origin: left center;
-        will-change: transform, opacity;
-      }
-      .reveal.visible .stat-card.flip {
-        animation: cardFlipIn 700ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
-      }
-      @keyframes cardFlipIn {
-        from {
-          opacity: 0;
-          transform: translateY(18px) rotateX(-18deg) rotateY(88deg);
+      @media (max-width: 980px) {
+        .item-inner {
+          grid-template-columns: 1fr;
         }
-        55% {
-          opacity: 1;
-          transform: translateY(0) rotateX(0deg) rotateY(-8deg);
-        }
-        to {
-          opacity: 1;
-          transform: none;
+        .thumb {
+          width: 100%;
+          height: 160px;
         }
       }
-      .stat-card .v {
-        font-family: var(--font-display);
-        font-weight: 700;
-        font-size: 34px;
-        line-height: 1;
-        color: var(--color-ink);
-        align-self: center;
-      }
-      .stat-card .flag {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        width: 26px;
-        height: 18px;
-        border: 1px solid rgba(0,0,0,0.12);
-        box-shadow: 0 1px 0 rgba(0,0,0,0.04);
-        user-select: none;
-        object-fit: cover;
-      }
-      .stat-card .k {
-        font-family: var(--font-mono);
-        font-size: 10px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--color-muted);
-        line-height: 1.25;
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-      }
-      .stat-card.is-manual .k {
-        white-space: pre-line;
-      }
-      .stat-card.is-loading {
-        color: var(--color-muted);
-        font-family: var(--font-mono);
-        font-size: 11px;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        display: grid;
-        place-items: center;
-      }
-      .stat-card.is-alert {
-        border-color: rgba(58, 103, 122, 0.55);
+      .item.active {
         background: rgba(58, 103, 122, 0.08);
+        outline: 2px solid rgba(58, 103, 122, 0.30);
+        outline-offset: 3px;
       }
-      .stat-card.is-alert .k {
-        color: var(--color-accent);
+      .item a {
+        color: var(--color-ink);
+        text-decoration: none;
+        font-family: var(--font-display);
+        font-size: 18px;
+        line-height: 1.25;
       }
-
-      .embed-frame {
-        width: 100%;
-        /* Avoid clipping the embedded page's side gutters */
-        overflow: visible;
+      .item a:hover {
+        color: var(--color-accent-hover);
+      }
+      .meta {
+        color: var(--color-muted);
+        font-size: 12px;
+        margin-top: 4px;
+        line-height: 1.35;
+        font-family: var(--font-mono);
+      }
+      .meta.venue a {
+        color: var(--color-ink);
+        font-family: var(--font-display);
+        font-size: 15px;
+        line-height: 1.25;
+        text-decoration: underline;
+        text-decoration-color: rgba(58, 103, 122, 0.55);
+        text-underline-offset: 3px;
+      }
+      .meta.venue a:hover {
+        color: var(--color-accent-hover);
+        text-decoration-color: rgba(47, 90, 107, 0.7);
+      }
+      .meta-strong {
+        color: var(--color-ink);
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.02em;
+        margin-top: 6px;
+        font-weight: 600;
+      }
+      .pill {
+        display: inline-block;
+        font-size: 11px;
         border: 1px solid var(--color-rule);
-        background: var(--color-bg);
+        border-radius: 0;
+        padding: 2px 6px;
+        color: var(--color-muted);
+        margin-right: 6px;
+        margin-top: 6px;
+        font-family: var(--font-mono);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
       }
-      .embed-frame iframe {
-        width: 100%;
-        height: 100%;
-        border: 0;
-        display: block;
-        background: transparent;
+      .footer-note {
+        padding: 10px 12px;
+        color: var(--color-muted);
+        font-size: 12px;
+        border-top: 1px solid var(--color-rule);
+        font-family: var(--font-mono);
       }
-      .wide-bleed {
-        width: 100vw;
-        margin-left: calc(50% - 50vw);
-        margin-right: calc(50% - 50vw);
-        padding-left: clamp(0.75rem, 3vw, 2rem);
-        padding-right: clamp(0.75rem, 3vw, 2rem);
-      }
-      .wide-bleed .embed-frame,
-      .wide-bleed .measure {
-        /* Let the embedded map use its intended wide layout */
-        max-width: 1440px;
-        margin-left: auto;
-        margin-right: auto;
-      }
-
       .site-footer {
-        padding: 18px 5vw 30px;
+        padding: 10px 28px 18px 28px;
         color: var(--color-muted);
         font-size: 12px;
         font-family: var(--font-mono);
         border-top: 1px solid var(--color-rule);
         text-align: center;
       }
-
-      @media (prefers-reduced-motion: reduce){
-        html{ scroll-behavior:auto; }
-        .reveal{ opacity:1; transform:none; transition:none; }
-        .progress-bar{ transition:none; }
-        .stat-card.flip{ opacity:1; transform:none; animation:none; }
+      @media (max-width: 980px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        #map, .list {
+          height: 520px;
+          min-height: 520px;
+        }
       }
     </style>
   </head>
   <body>
-    <a class="skip-link" href="#content">Skip to content</a>
-    <div class="progress-bar" id="progress"></div>
-
-    <header class="hero" aria-label="Open MicZH article hero">
-      <div class="container">
-        <div class="hero-tag reveal">Field guide · Zurich · comedy</div>
-        <h1 class="reveal">An editorial guide to open mics in Zürich</h1>
-        <p class="hero-sub reveal">
-          Open mics are the city’s weekly rehearsal rooms: short sets, low stakes, and the fastest way to
-          understand what a comedy scene actually sounds like. This page explains how to use the project
-          map, what “recurring” means in practice, and how to show up well.
-        </p>
-        <div class="hero-byline reveal">
-          <span>Open MicZH</span>
-          <span>Living document</span>
-          <span><a href="#interactive">TL;DR → interactive tool</a></span>
-        </div>
-      </div>
+    <a class="skip-link" href="#list-top">Skip to list</a>
+    <header>
+      <h1>Open Mics Zurich</h1>
+      <div class="sub">Recurring open mic events in and around Zürich.</div>
     </header>
 
-    <main id="content">
-      <section>
-        <div class="container">
-          <div class="section-label reveal">Start here</div>
-          <div class="sec-head reveal">
-            <div class="sec-num">01</div>
-            <h2>What this project is (and isn’t)</h2>
-          </div>
-          <div class="measure">
-            <p class="reveal">
-              <strong>Open MicZH</strong> is a curated list of <strong>recurring</strong> open mic comedy events in
-              Zurich. “Recurring” means: if you go next week, there’s a good chance it’s happening again.
-            </p>
-            <p class="reveal">
-              It’s not a full calendar of every one-off showcase. It’s not a review site. It’s meant to be
-              useful when you have a free evening and want an event you can trust is really there.
-            </p>
-            <div class="note-box reveal">
-              <div class="note-box-label">Tip</div>
-              <p>
-                Use the filters to pick a weekday/language, then click an event in the list — the map will jump
-                to that venue and show the tooltip.
-              </p>
-            </div>
-            <div class="stats reveal" id="langStats" aria-live="polite">
-              <div class="stats-label">Shows by language</div>
-              <div class="stats-cards" id="langStatsCards">
-                <div class="stat-card is-loading">Loading…</div>
-              </div>
-            </div>
-
-            <div class="stats reveal" id="manualStats" aria-live="polite">
-              <div class="stats-label">Data status &amp; manual edits</div>
-              <div class="stats-cards" id="manualStatsCards">
-                <div class="stat-card is-loading">Loading…</div>
+    <div class="layout">
+      <div class="card">
+        <div class="controls">
+          <div>
+            <label for="weekday">Weekday</label>
+            <div class="filter-row" style="position:relative;">
+              <button class="filter-button" id="weekdayBtn" type="button" aria-expanded="false" data-open="0">
+                <span class="meta" id="weekdayMeta">All</span>
+                <span class="caret">▾</span>
+              </button>
+              <div class="filter-popover" id="weekdayPop" hidden>
+                <div class="checklist" id="weekdayChecks"></div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section>
-        <div class="container">
-          <div class="section-label reveal">How to use it</div>
-          <div class="sec-head reveal">
-            <div class="sec-num">02</div>
-            <h2>From “I’m curious” to “I’m on the mic”</h2>
-          </div>
-          <div class="measure">
-            <h3 class="reveal">If you’re going to watch</h3>
-            <ul class="reveal">
-              <li><strong>Arrive early</strong> for a seat and to avoid interrupting sets.</li>
-              <li><strong>Check the venue link</strong> (each entry links to the organizer/venue page when available).</li>
-              <li><strong>Respect the room</strong>: phones down, listening up.</li>
-            </ul>
-            <h3 class="reveal">If you’re going to perform</h3>
-            <ul class="reveal">
-              <li><strong>Know the format</strong>: sign-up style and set length vary by event.</li>
-              <li><strong>Bring a tight 3–5</strong>: one clear premise is better than five half-jokes.</li>
-              <li><strong>Talk to the host</strong>: they control the flow, and they can answer practical questions fast.</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section id="interactive">
-        <div class="container">
-          <div class="section-label reveal">Interactive</div>
-          <div class="sec-head reveal">
-            <div class="sec-num">03</div>
-            <h2>The map + list, embedded</h2>
-          </div>
-        </div>
-        <div class="wide-bleed">
-          <div class="embed-frame reveal" style="height: min(96vh, 1280px);">
-            <iframe
-              title="Open MicZH interactive map and list"
-              src="./map.html"
-              loading="lazy"
-              referrerpolicy="no-referrer"
-            ></iframe>
-          </div>
-          <div class="container">
-            <div class="measure">
-              <div class="note-box reveal" style="margin-top: 1.5rem;">
-                <div class="note-box-label">Note</div>
-                <p>
-                  If the embed feels cramped on mobile, open the full map page instead:
-                  <a href="./map.html">Open MicZH map</a>.
-                </p>
+          <div>
+            <label for="language">Comedy language</label>
+            <div class="filter-row" style="position:relative;">
+              <button class="filter-button" id="languageBtn" type="button" aria-expanded="false" data-open="0">
+                <span class="meta" id="languageMeta">All</span>
+                <span class="caret">▾</span>
+              </button>
+              <div class="filter-popover" id="languagePop" hidden>
+                <div class="checklist" id="languageChecks"></div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section>
-        <div class="container">
-          <div class="section-label reveal">Contribute</div>
-          <div class="sec-head reveal">
-            <div class="sec-num">04</div>
-            <h2>How to keep the list accurate</h2>
-          </div>
-          <div class="measure">
-            <p class="reveal">
-              Scenes change quickly: venues close, formats rotate, organizers take breaks. If you spot an
-              issue, the fastest way to improve the site is to open a GitHub issue with the exact correction.
-            </p>
-            <ul class="reveal">
-              <li><strong>Wrong location?</strong> Share the venue name + address.</li>
-              <li><strong>Time changed?</strong> Provide the updated start time and a source link.</li>
-              <li><strong>New recurring mic?</strong> Include weekday, language(s), and organizer link.</li>
-            </ul>
-            <p class="reveal">
-              Project repo: <a href="https://github.com/datenpunk-ch/open_mics_ZH" target="_blank" rel="noreferrer">open_mics_ZH</a>.
-            </p>
+          <div>
+            <label for="q">Search</label>
+            <input id="q" placeholder="title or location" />
           </div>
         </div>
-      </section>
-    </main>
+        <div class="meta" id="count" style="padding-top:10px;"></div>
+      </div>
 
-    <footer class="site-footer reveal">
-      Open MicZH · Article page · <a href="./map.html">Map / interactive</a>
-    </footer>
+      <div class="card">
+        <div style="position: relative;">
+          <div class="banner" id="banner" style="display:none;"></div>
+          <div id="map"></div>
+        </div>
+        <div class="footer-note" id="mapNote"></div>
+      </div>
 
+      <div class="card">
+        <div class="list" id="list-top">
+          <div class="list-heading">
+            <h2 class="list-heading-title" style="display:none;">Events</h2>
+          </div>
+          <div id="items"></div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">Data: 26/04/2026 (UTC) · Build 2026-04-26T14:13:46Z</footer>
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
     <script>
-      (function () {
-        const progress = document.getElementById("progress");
-        if (!progress) return;
-        function tick() {
-          const h = document.documentElement;
-          const sh = h.scrollHeight - h.clientHeight;
-          const pct = sh > 0 ? (h.scrollTop / sh) * 100 : 0;
-          progress.style.width = pct + "%";
+      const BUILD_STAMP = "2026-04-26T14:13:46Z";
+      const PLACEHOLDER_THUMB = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjY3NSIgdmlld0JveD0iMCAwIDEyMDAgNjc1Ij4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMGIwYzEwIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzEyMTQxYiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9Imdsb3ciIHg9Ii00MCUiIHk9Ii00MCUiIHdpZHRoPSIxODAlIiBoZWlnaHQ9IjE4MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSI2IiByZXN1bHQ9ImJsdXIiLz4KICAgICAgPGZlTWVyZ2U+CiAgICAgICAgPGZlTWVyZ2VOb2RlIGluPSJibHVyIi8+CiAgICAgICAgPGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+CiAgICAgIDwvZmVNZXJnZT4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KCiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEyMDAiIGhlaWdodD0iNjc1IiByeD0iMzYiIGZpbGw9InVybCgjYmcpIi8+CiAgPHJlY3QgeD0iMjQiIHk9IjI0IiB3aWR0aD0iMTE1MiIgaGVpZ2h0PSI2MjciIHJ4PSIyOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMTYpIiBzdHJva2Utd2lkdGg9IjIiLz4KCiAgPCEtLSBtaWNyb3Bob25lIC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDYwMCAyOTApIiBmaWx0ZXI9InVybCgjZ2xvdykiPgogICAgPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGRhM2ZmIiBzdHJva2Utd2lkdGg9IjE4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIG9wYWNpdHk9IjAuOTUiPgogICAgICA8cGF0aCBkPSJNMC0xNTBjLTU4IDAtMTA2IDQ2LTEwNiAxMDR2ODJjMCA1OCA0OCAxMDQgMTA2IDEwNHMxMDYtNDYgMTA2LTEwNHYtODJjMC01OC00OC0xMDQtMTA2LTEwNHoiLz4KICAgICAgPHBhdGggZD0iTS0xNjAgNTBjMCA4OCA3MiAxNjAgMTYwIDE2MHMxNjAtNzIgMTYwLTE2MCIvPgogICAgICA8cGF0aCBkPSJNMCAyMTB2NzAiLz4KICAgICAgPHBhdGggZD0iTS04OCAyODBoMTc2Ii8+CiAgICA8L2c+CiAgPC9nPgoKICA8dGV4dCB4PSI2MDAiIHk9IjU2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIKICAgICAgICBmb250LWZhbWlseT0ic3lzdGVtLXVpLC1hcHBsZS1zeXN0ZW0sU2Vnb2UgVUksUm9ib3RvLEhlbHZldGljYSxBcmlhbCxzYW5zLXNlcmlmIgogICAgICAgIGZvbnQtc2l6ZT0iNTQiIGZvbnQtd2VpZ2h0PSI4MDAiCiAgICAgICAgZmlsbD0icmdiYSgyMzMsMjM4LDI1MSwwLjk0KSIKICAgICAgICBsZXR0ZXItc3BhY2luZz0iMyI+CiAgICBEQVRFTlBVTksKICA8L3RleHQ+CiAgPHRleHQgeD0iNjAwIiB5PSI2MTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiCiAgICAgICAgZm9udC1mYW1pbHk9InN5c3RlbS11aSwtYXBwbGUtc3lzdGVtLFNlZ29lIFVJLFJvYm90byxIZWx2ZXRpY2EsQXJpYWwsc2Fucy1zZXJpZiIKICAgICAgICBmb250LXNpemU9IjI2IgogICAgICAgIGZpbGw9InJnYmEoMTY4LDE3OCwxOTksMC45MikiPgogICAgTm8gaW1hZ2UgYXZhaWxhYmxlCiAgPC90ZXh0Pgo8L3N2Zz4KCg==";
+      let gmap = null;
+      let gInfoWindow = null;
+      let gMarkers = [];
+
+      let lmap = null;
+      let lMarkersLayer = null;
+
+      let _lastActiveId = null;
+
+      function norm(s) {
+        return (s || '').toString().trim().toLowerCase();
+      }
+
+      function checkedValues(containerId) {
+        const root = document.getElementById(containerId);
+        if (!root) return [];
+        const out = [];
+        for (const el of Array.from(root.querySelectorAll('input[type="checkbox"][data-value]'))) {
+          if (el && el.checked) out.push(el.getAttribute('data-value'));
         }
-        window.addEventListener("scroll", tick, { passive: true });
-        window.addEventListener("resize", tick);
-        tick();
-      })();
-    </script>
-    <script>
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((e) => {
-            if (e.isIntersecting) {
-              e.target.classList.add("visible");
-              observer.unobserve(e.target);
-            }
+        return out;
+      }
+
+      function weekdayMatches(cell, selectedList) {
+        const selected = (selectedList || []).map(x => (x || '').toString().trim()).filter(Boolean);
+        if (!selected.length) return true;
+        const parts = (cell || '').split(',').map(x => x.trim()).filter(Boolean);
+        return parts.some(p => selected.includes(p));
+      }
+
+      function languageMatches(cell, selectedList) {
+        const selected = (selectedList || []).map(x => (x || '').toString().trim()).filter(Boolean);
+        if (!selected.length) return true;
+        const parts = (cell || '').split(/[;,]/).map(x => x.trim()).filter(Boolean);
+        // Any language overlap is a match.
+        return parts.some(p => selected.includes(p));
+      }
+
+      function formatLocation(loc) {
+        const s = (loc || '').toString().trim();
+        if (!s) return '';
+        // Normalise comma-separated parts and remove obvious duplicates / venue echoes.
+        const parts = s.split(',').map(x => x.trim()).filter(Boolean);
+        if (!parts.length) return s;
+        const out = [];
+        const seen = new Set();
+        const venue = (parts[0] || '').toLowerCase();
+        for (let i = 0; i < parts.length; i++) {
+          const p = parts[i];
+          const pl = p.toLowerCase();
+          if (seen.has(pl)) continue;
+          // Drop patterns like "Venue, Venue 131, 8005 Zürich" (venue echoed as "street").
+          if (i === 1 && venue && pl.startsWith(venue + ' ') && /\b\d+[a-z]?\b/i.test(p.slice(venue.length))) {
+            continue;
+          }
+          seen.add(pl);
+          out.push(p);
+        }
+        return out.join(', ');
+      }
+
+      function cleanVenueLabel(venueText) {
+        // Remove trailing "comedy" from venue labels like "stubä comedy",
+        // but keep names like "ComedyHaus" intact.
+        const v = (venueText || '').toString().trim();
+        return v.replace(/\s+comedy$/i, '').trim();
+      }
+
+      function capFirst(s) {
+        const v = (s || '').toString();
+        if (!v) return v;
+        const c0 = v[0];
+        // Only adjust if the first char is a lowercase letter (covers ü/ä/ö too).
+        if (c0 !== c0.toUpperCase()) {
+          return c0.toUpperCase() + v.slice(1);
+        }
+        return v;
+      }
+
+      const PIN_FILL = '#3a677a';
+      const PIN_STROKE = '#2d5366';
+
+      function escapeHtml(s) {
+        return (s || '').toString().replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+      }
+
+      function weekdayAbbr(d) {
+        const x = (d || '').toString().trim().toLowerCase();
+        if (x.startsWith('mon')) return 'Mon';
+        if (x.startsWith('tue')) return 'Tue';
+        if (x.startsWith('wed')) return 'Wed';
+        if (x.startsWith('thu')) return 'Thu';
+        if (x.startsWith('fri')) return 'Fri';
+        if (x.startsWith('sat')) return 'Sat';
+        if (x.startsWith('sun')) return 'Sun';
+        return (d || '').toString().trim();
+      }
+
+      function venueGroupKey(e) {
+        const venueText = (e.venue || (e.location_display || e.location || '').split(',')[0] || '').toString().trim();
+        let k = norm(cleanVenueLabel(venueText));
+        if (!k) k = norm(venueText);
+        if (!k) k = 'unknown';
+        return k;
+      }
+
+      // One pin per location (rounded coordinates). This keeps multiple events at the same
+      // place on a single pin even if venue labels vary slightly.
+      function pinGroupsForFiltered(filtered) {
+        const groups = new Map();
+        const eventToKey = filtered.map(() => '');
+        function coordKey(lat, lon) {
+          // Round to avoid tiny float differences creating multiple pins.
+          // Use ~1e-4 degrees (~11m lat) to tolerate cache/key differences while
+          // still keeping distinct venues separate in practice.
+          return `${lat.toFixed(4)},${lon.toFixed(4)}`;
+        }
+        for (let i = 0; i < filtered.length; i++) {
+          const e = filtered[i];
+          const lat = Number(e.lat);
+          const lon = Number(e.lon);
+          if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+          const k = coordKey(lat, lon);
+          eventToKey[i] = k;
+          if (!groups.has(k)) groups.set(k, { idxs: [], lats: [], lons: [] });
+          const g = groups.get(k);
+          g.idxs.push(i);
+          g.lats.push(lat);
+          g.lons.push(lon);
+        }
+        function medianNums(arr) {
+          if (!arr.length) return NaN;
+          const s = [...arr].sort((a, b) => a - b);
+          const m = Math.floor(s.length / 2);
+          return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+        }
+        const out = [];
+        for (const [k, g] of groups.entries()) {
+          out.push({
+            key: k,
+            lat: medianNums(g.lats),
+            lon: medianNums(g.lons),
+            idxs: g.idxs,
           });
-        },
-        { threshold: 0.12 }
-      );
-      document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
-    </script>
-    <script>
-      (async function () {
-        const cards = document.getElementById("langStatsCards");
-        if (!cards) return;
-        const manualCards = document.getElementById("manualStatsCards");
-
-        function eventKey(e) {
-          const url = (e && e.url) ? String(e.url).trim() : "";
-          if (url) return "url:" + url;
-          const parts = [
-            (e && e.title) ? String(e.title).trim().toLowerCase() : "",
-            (e && e.venue) ? String(e.venue).trim().toLowerCase() : "",
-            (e && e.weekday) ? String(e.weekday).trim().toLowerCase() : "",
-            (e && e.time) ? String(e.time).trim().toLowerCase() : "",
-          ];
-          return "tvtwt:" + parts.join("|");
         }
+        return { groups: out, eventToKey };
+      }
 
-        function mergeEvents(primary, extra) {
-          const out = [];
-          const seen = new Set();
-          function addAll(list) {
-            for (const e of (list || [])) {
-              if (!e) continue;
-              const k = eventKey(e);
-              if (seen.has(k)) continue;
-              seen.add(k);
-              out.push(e);
-            }
-          }
-          addAll(primary);
-          addAll(extra);
-          return out;
-        }
+      function groupPopupHtml(filtered, idxs) {
+        const first = filtered[idxs[0]] || {};
+        const venueText = (first.venue || (first.location_display || first.location || '').split(',')[0] || '').toString().trim();
+        const venueLabel = capFirst(cleanVenueLabel(venueText));
+        const locText = formatLocation(first.location_display || first.location || '');
+        const locQuery = locText || venueText;
+        const mapsLine = locQuery
+          ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locQuery)}" target="_blank" rel="noreferrer">${escapeHtml(venueLabel || venueText || locQuery)}</a>`
+          : escapeHtml(venueLabel || venueText || '(venue)');
 
-        function langFlagSrc(lang) {
-          const s = (lang || "").toString().trim().toLowerCase();
-          if (!s) return "";
+        // Header: venue name only (as Google Maps link when possible)
+        const addrRaw = (first.address || '').toString().trim();
+        const addrFromLoc = (locText || '').split(',').slice(1).map(x => x.trim()).filter(Boolean).join(', ');
+        const addr = addrRaw || addrFromLoc;
+        const addrLine = addr ? `<span style="opacity:0.85;">${escapeHtml(addr)}</span><br/>` : '';
+        const header = `<strong>${mapsLine}</strong><br/>${addrLine}`;
 
-          // Minimal inline SVG flags (data URLs). Keeps the site self-contained.
-          const SVG = {
-            ch:
-              "data:image/svg+xml;utf8," +
-              encodeURIComponent(
-                "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 12'>" +
-                  "<rect width='18' height='12' fill='#d52b1e'/>" +
-                  "<rect x='7.25' y='2.2' width='3.5' height='7.6' fill='#fff'/>" +
-                  "<rect x='5.0' y='4.25' width='8.0' height='3.5' fill='#fff'/>" +
-                "</svg>"
-              ),
-            gb:
-              "data:image/svg+xml;utf8," +
-              encodeURIComponent(
-                "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 12'>" +
-                  "<rect width='18' height='12' fill='#012169'/>" +
-                  "<path d='M0 0 L18 12 M18 0 L0 12' stroke='#fff' stroke-width='2.4'/>" +
-                  "<path d='M0 0 L18 12 M18 0 L0 12' stroke='#C8102E' stroke-width='1.2'/>" +
-                  "<rect x='7.4' width='3.2' height='12' fill='#fff'/>" +
-                  "<rect y='4.4' width='18' height='3.2' fill='#fff'/>" +
-                  "<rect x='8.0' width='2.0' height='12' fill='#C8102E'/>" +
-                  "<rect y='5.0' width='18' height='2.0' fill='#C8102E'/>" +
-                "</svg>"
-              ),
-            es:
-              "data:image/svg+xml;utf8," +
-              encodeURIComponent(
-                "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 12'>" +
-                  "<rect width='18' height='12' fill='#aa151b'/>" +
-                  "<rect y='3' width='18' height='6' fill='#f1bf00'/>" +
-                "</svg>"
-              ),
-            fr:
-              "data:image/svg+xml;utf8," +
-              encodeURIComponent(
-                "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 12'>" +
-                  "<rect width='6' height='12' x='0' fill='#0055a4'/>" +
-                  "<rect width='6' height='12' x='6' fill='#fff'/>" +
-                  "<rect width='6' height='12' x='12' fill='#ef4135'/>" +
-                "</svg>"
-              ),
-            it:
-              "data:image/svg+xml;utf8," +
-              encodeURIComponent(
-                "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 12'>" +
-                  "<rect width='6' height='12' x='0' fill='#009246'/>" +
-                  "<rect width='6' height='12' x='6' fill='#fff'/>" +
-                  "<rect width='6' height='12' x='12' fill='#ce2b37'/>" +
-                "</svg>"
-              ),
-          };
+        const rows = idxs.map(i => {
+          const e = filtered[i] || {};
+          const t = escapeHtml(e.title || '(untitled)');
+          const w = escapeHtml(weekdayAbbr(e.weekday));
+          const tm = escapeHtml(e.time || '');
+          const line = [w, tm].filter(Boolean).join(' ');
+          const link = e.url ? `<a href="${e.url}" target="_blank" rel="noreferrer">${t}</a>` : t;
+          return `<div style="margin-top:6px;"><span style="opacity:0.85;">${escapeHtml(line)}</span><br/>${link}</div>`;
+        }).join('');
+        return header + rows;
+      }
 
-          // German shows are in Zürich → Swiss flag.
-          if (s === "german" || s === "de" || s.startsWith("german ")) return SVG.ch;
-          if (s === "english" || s === "en" || s.startsWith("english ")) return SVG.gb;
-          if (s === "spanish" || s === "es" || s.startsWith("spanish ")) return SVG.es;
-          if (s === "french" || s === "fr" || s.startsWith("french ")) return SVG.fr;
-          if (s === "italian" || s === "it" || s.startsWith("italian ")) return SVG.it;
-          return "";
-        }
-
-        function pushManualCard(container, { n, label, isAlert, isManual } = {}) {
-          if (!container) return;
-          const card = document.createElement("div");
-          card.className =
-            "stat-card flip" +
-            (isAlert ? " is-alert" : "") +
-            (isManual ? " is-manual" : "");
-
-          const v = document.createElement("div");
-          v.className = "v";
-          v.textContent = String(n);
-
-          const k = document.createElement("div");
-          k.className = "k";
-          k.textContent = label || "";
-
-          card.appendChild(v);
-          card.appendChild(k);
-          container.appendChild(card);
-        }
-
+      function clearActive() {
+        // Clear any stuck highlights (do not rely only on _lastActiveId).
         try {
-          const r1 = await fetch("./data/events.json", { cache: "no-cache" });
-          const p1 = await r1.json();
-          const primary = (p1 && p1.events) ? p1.events : [];
+          document.querySelectorAll('.item.active').forEach(el => el.classList.remove('active'));
+        } catch (e) {}
+        _lastActiveId = null;
+      }
 
-          let manual = [];
-          let manualMeta = null;
-          try {
-            const r2 = await fetch("./data/events_manual.json", { cache: "no-cache" });
-            if (r2.ok) {
-              const p2 = await r2.json();
-              manualMeta = p2 || null;
-              manual = (p2 && p2.events) ? p2.events : [];
-            }
-          } catch (e) {}
-
-          const events = mergeEvents(primary, manual);
-
-          const dataTag =
-            (manualMeta && typeof manualMeta.data_tag === "string" && manualMeta.data_tag.trim())
-              ? manualMeta.data_tag.trim()
-              : ((p1 && typeof p1.data_tag === "string" && p1.data_tag.trim()) ? p1.data_tag.trim() : "");
-          const dataTagNote =
-            (manualMeta && typeof manualMeta.data_tag_note === "string" && manualMeta.data_tag_note.trim())
-              ? manualMeta.data_tag_note.trim()
-              : ((p1 && typeof p1.data_tag_note === "string" && p1.data_tag_note.trim()) ? p1.data_tag_note.trim() : "");
-
-          // Manual edits (exactly 3 cards, deduped by key)
-          if (manualCards) {
-            manualCards.innerHTML = "";
-
-            const editsRaw = (manualMeta && Array.isArray(manualMeta.edits)) ? manualMeta.edits : [];
-            const addrEditKeys = new Set();
-            const nameEditKeys = new Set();
-            const allEditKeys = new Set();
-            for (const it of editsRaw) {
-              if (!it || typeof it !== "object") continue;
-              const type = (it.type || "").toString().trim().toLowerCase();
-              const key = (it.key || "").toString().trim();
-              if (!key) continue;
-              allEditKeys.add(key);
-              if (type === "address") addrEditKeys.add(key);
-              if (type === "name") nameEditKeys.add(key);
-            }
-
-            // Compute "no edit needed" as events not covered by any edit key.
-            const allEventKeys = new Set(events.map(eventKey));
-            const affectedEventKeys = new Set();
-            for (const k of allEditKeys) {
-              if (k.startsWith("url:")) {
-                affectedEventKeys.add(k);
-                continue;
+      function setActive(eventId, opts) {
+        const scroll = opts && Object.prototype.hasOwnProperty.call(opts, 'scroll') ? !!opts.scroll : false;
+        // Ensure only one active item, even if something else applied `.active`.
+        try {
+          document.querySelectorAll('.item.active').forEach(el => el.classList.remove('active'));
+        } catch (e) {}
+        _lastActiveId = eventId;
+        const el = document.getElementById(eventId);
+        if (el) {
+          el.classList.add('active');
+          if (scroll) {
+            const scroller = document.querySelector('.list');
+            const doScroll = () => {
+              if (scroller && typeof scroller.scrollTo === 'function') {
+                const top = el.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
+                scroller.scrollTo({ top: Math.max(0, top - 40), behavior: 'smooth' });
+              } else {
+                el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
               }
-              if (k.startsWith("addr:")) {
-                const addr = k.slice("addr:".length).trim();
-                if (!addr) continue;
-                for (const e of events) {
-                  const ea = (e && e.address) ? String(e.address).trim() : "";
-                  if (ea && ea === addr) affectedEventKeys.add(eventKey(e));
-                }
-              }
-            }
-
-            pushManualCard(manualCards, { n: addrEditKeys.size, label: "Edits\nAddress", isManual: true });
-            pushManualCard(manualCards, { n: nameEditKeys.size, label: "Edits\nName", isManual: true });
-            pushManualCard(manualCards, { n: Math.max(0, allEventKeys.size - affectedEventKeys.size), label: "No edit\nneeded", isManual: true });
+            };
+            requestAnimationFrame(() => requestAnimationFrame(doScroll));
           }
-
-          const counts = new Map();
-          for (const e of events) {
-            const raw = (e && e.language) ? String(e.language) : "";
-            const parts = raw.split(/[;,]/).map(s => s.trim()).filter(Boolean);
-            const langs = parts.length ? parts : ["Unspecified"];
-            for (const lang of langs) {
-              counts.set(lang, (counts.get(lang) || 0) + 1);
-            }
-          }
-
-          const rows = Array.from(counts.entries())
-            .sort((a, b) => (b[1] - a[1]) || a[0].localeCompare(b[0]));
-
-          cards.innerHTML = "";
-
-          for (let i = 0; i < rows.length; i++) {
-            const [lang, n] = rows[i];
-            const card = document.createElement("div");
-            card.className = "stat-card flip";
-            // small stagger so it feels like a deck
-            card.style.animationDelay = (70 * i) + "ms";
-
-            const flagSrc = langFlagSrc(lang);
-            if (flagSrc) {
-              const img = document.createElement("img");
-              img.className = "flag";
-              img.alt = "";
-              img.decoding = "async";
-              img.loading = "lazy";
-              img.src = flagSrc;
-              card.appendChild(img);
-            }
-
-            const v = document.createElement("div");
-            v.className = "v";
-            v.textContent = String(n);
-
-            const k = document.createElement("div");
-            k.className = "k";
-            k.textContent = lang;
-
-            card.appendChild(v);
-            card.appendChild(k);
-            cards.appendChild(card);
-          }
-        } catch (e) {
-          cards.innerHTML = "";
-          const card = document.createElement("div");
-          card.className = "stat-card is-loading";
-          card.textContent = "Couldn’t load stats.";
-          cards.appendChild(card);
         }
-      })();
+      }
+
+      function clearMarkers() {
+        for (const m of gMarkers) {
+          m.setMap(null);
+        }
+        gMarkers = [];
+        if (lMarkersLayer) {
+          lMarkersLayer.clearLayers();
+        }
+      }
+
+      function render(events) {
+        const weekdaySel = checkedValues('weekdayChecks');
+        const langSel = checkedValues('languageChecks');
+        const q = norm(document.getElementById('q').value);
+
+        const filtered = events.filter(e => {
+          if (!weekdayMatches(e.weekday, weekdaySel)) return false;
+          if (!languageMatches(e.language, langSel)) return false;
+          if (q) {
+            const hay = norm(e.title) + ' ' + norm(e.location);
+            if (!hay.includes(q)) return false;
+          }
+          return true;
+        });
+
+        // Sort by weekday (Mon..Sun), then time, then venue/title.
+        const WD = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+        function wdIndex(cell) {
+          const parts = (cell || '').toString().split(',').map(x => x.trim()).filter(Boolean);
+          let best = 999;
+          for (const p of parts) {
+            const i = WD.indexOf(p);
+            if (i >= 0 && i < best) best = i;
+          }
+          return best;
+        }
+        function timeKey(t) {
+          const m = (t || '').toString().trim().match(/^(\d(1, 2)):(\d2)$/);
+          if (!m) return 9999;
+          return (parseInt(m[1], 10) * 60) + parseInt(m[2], 10);
+        }
+        filtered.sort((a, b) => {
+          const da = wdIndex(a.weekday);
+          const db = wdIndex(b.weekday);
+          if (da !== db) return da - db;
+          const ta = timeKey(a.time);
+          const tb = timeKey(b.time);
+          if (ta !== tb) return ta - tb;
+          const va = norm((a.venue || '').toString());
+          const vb = norm((b.venue || '').toString());
+          if (va !== vb) return va < vb ? -1 : 1;
+          const la = norm((a.title || '').toString());
+          const lb = norm((b.title || '').toString());
+          if (la !== lb) return la < lb ? -1 : 1;
+          return 0;
+        });
+
+        const pins = pinGroupsForFiltered(filtered);
+        const pinGroups = pins.groups;
+        const eventToKey = pins.eventToKey;
+        const markerByKey = new Map();
+
+        document.getElementById('count').textContent = `${filtered.length} event(s)`;
+
+        const items = document.getElementById('items');
+        items.innerHTML = '';
+        clearMarkers();
+        clearActive();
+
+        // When leaving the list area, clear the hover selection.
+        try {
+          const listEl = document.querySelector('.list');
+          if (listEl) {
+            listEl.onmouseleave = () => clearActive();
+          }
+        } catch (e) {}
+
+        for (let idx = 0; idx < filtered.length; idx++) {
+          const e = filtered[idx];
+          const eventId = `event-${idx}`;
+          const div = document.createElement('div');
+          div.className = 'item';
+          div.id = eventId;
+
+          const inner = document.createElement('div');
+          inner.className = 'item-inner';
+
+          // Thumbnail (use placeholder when missing)
+          const imgUrl = (e.image_url || '').toString().trim();
+          const thumbUrl = imgUrl || (PLACEHOLDER_THUMB || '');
+          if (thumbUrl) {
+            const img = document.createElement('img');
+            img.className = 'thumb';
+            img.loading = 'lazy';
+            img.alt = '';
+            img.src = thumbUrl;
+            img.addEventListener('error', () => {
+              // If the real image fails and we have a placeholder, swap to it.
+              if (imgUrl && PLACEHOLDER_THUMB) {
+                img.src = PLACEHOLDER_THUMB;
+                return;
+              }
+              try { img.remove(); } catch (e) {}
+            });
+            inner.appendChild(img);
+          }
+
+          const textCol = document.createElement('div');
+
+          const a = document.createElement('a');
+          a.className = 'title-link';
+          a.href = e.url || '#';
+          a.target = '_blank';
+          a.rel = 'noreferrer';
+          a.textContent = e.title || '(untitled)';
+          textCol.appendChild(a);
+
+          const mt = document.createElement('div');
+          mt.className = 'meta-strong';
+          mt.textContent = [e.weekday, e.time].filter(Boolean).join(' · ');
+          textCol.appendChild(mt);
+
+          const ml = document.createElement('div');
+          ml.className = 'meta venue';
+          const venueText = (e.venue || (e.location_display || e.location || '').split(',')[0] || '').toString().trim();
+          const venueLabel = capFirst(cleanVenueLabel(venueText));
+          // Keep the Maps query as specific as possible; only clean the visible label.
+          const locQuery = formatLocation(e.location_display || e.location || venueText);
+          const mapsA = document.createElement('a');
+          mapsA.href = locQuery ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locQuery)}` : '#';
+          mapsA.target = '_blank';
+          mapsA.rel = 'noreferrer';
+          mapsA.textContent = venueLabel || venueText || '(venue)';
+          ml.appendChild(mapsA);
+          textCol.appendChild(ml);
+
+          const pills = document.createElement('div');
+          for (const p of [e.language, e.cost].filter(Boolean)) {
+            const s = document.createElement('span');
+            s.className = 'pill';
+            s.textContent = p;
+            pills.appendChild(s);
+          }
+          textCol.appendChild(pills);
+
+          // If there is no image, let text span full width.
+          if (!thumbUrl) {
+            inner.style.gridTemplateColumns = '1fr';
+          }
+          inner.appendChild(textCol);
+          div.appendChild(inner);
+
+          items.appendChild(div);
+
+          // Hovering in the sidebar should be the only active selection.
+          div.addEventListener('mouseenter', () => {
+            setActive(eventId, { scroll: false });
+          });
+
+          const k = eventToKey[idx];
+          if (k) {
+            // Show venue tooltip on hover (without auto-panning the map).
+            div.addEventListener('mouseenter', () => {
+              const mk = markerByKey.get(k);
+              if (!mk) return;
+              if (gmap) {
+                if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({ disableAutoPan: true });
+                gInfoWindow.setContent(mk.popupHtml || '');
+                gInfoWindow.open({ anchor: mk.marker, map: gmap });
+              } else {
+                try { mk.marker.openPopup(); } catch (e) {}
+              }
+            });
+            div.addEventListener('mouseleave', () => {
+              const mk = markerByKey.get(k);
+              if (!mk) return;
+              if (gmap) {
+                if (gInfoWindow) gInfoWindow.close();
+              } else {
+                try { mk.marker.closePopup(); } catch (e) {}
+              }
+            });
+
+            // Also open the popup when the user explicitly clicks an item.
+            div.addEventListener('click', (ev) => {
+              try {
+                const t = ev && ev.target;
+                if (t && typeof t.closest === 'function' && t.closest('a')) return;
+              } catch (e) {}
+              const mk = markerByKey.get(k);
+              if (!mk) return;
+              if (gmap) {
+                if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({ disableAutoPan: true });
+                gInfoWindow.setContent(mk.popupHtml || '');
+                gInfoWindow.open({ anchor: mk.marker, map: gmap });
+              } else {
+                try { mk.marker.openPopup(); } catch (e) {}
+              }
+            });
+          }
+        }
+
+        // Add one marker per venue group.
+        for (const g of pinGroups) {
+          const popupHtml = groupPopupHtml(filtered, g.idxs);
+          const firstEventId = `event-${g.idxs[0]}`;
+          if (gmap) {
+            const first = filtered[g.idxs[0]] || {};
+            const venueText = (first.venue || (first.location_display || first.location || '').split(',')[0] || '').toString().trim();
+            const venueLabel = capFirst(cleanVenueLabel(venueText));
+            const marker = new google.maps.Marker({
+              position: { lat: g.lat, lng: g.lon },
+              map: gmap,
+              // Use venue name for the native hover title (not just the first event).
+              title: venueLabel || venueText || '(venue)',
+              icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 7,
+                fillColor: PIN_FILL,
+                fillOpacity: 1,
+                strokeColor: PIN_STROKE,
+                strokeWeight: 1,
+                strokeOpacity: 1,
+              },
+            });
+            // Show popup on hover (no auto-pan), hide on rollout.
+            marker.addListener('mouseover', () => {
+              if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({ disableAutoPan: true });
+              gInfoWindow.setContent(popupHtml);
+              gInfoWindow.open({ anchor: marker, map: gmap });
+            });
+            marker.addListener('mouseout', () => {
+              if (gInfoWindow) gInfoWindow.close();
+            });
+            marker.addListener('click', () => {
+              setActive(firstEventId, { scroll: true });
+              if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({ disableAutoPan: true });
+              gInfoWindow.setContent(popupHtml);
+              gInfoWindow.open({ anchor: marker, map: gmap });
+            });
+            gMarkers.push(marker);
+            markerByKey.set(g.key, { marker, popupHtml });
+          } else if (lmap && lMarkersLayer) {
+            const marker = L.circleMarker([g.lat, g.lon], {
+              radius: 7,
+              color: PIN_STROKE,
+              weight: 1,
+              opacity: 1,
+              fillColor: PIN_FILL,
+              fillOpacity: 1,
+            });
+            marker.bindPopup(popupHtml, { autoPan: false });
+            marker.on('mouseover', () => {
+              try { marker.openPopup(); } catch (e) {}
+            });
+            marker.on('mouseout', () => {
+              try { marker.closePopup(); } catch (e) {}
+            });
+            marker.on('click', () => {
+              setActive(firstEventId, { scroll: true });
+            });
+            marker.addTo(lMarkersLayer);
+            markerByKey.set(g.key, { marker, popupHtml });
+          }
+        }
+
+        const pinned = pinGroups.length;
+        document.getElementById('mapNote').textContent =
+          `Venues: ${pinned} · ${filtered.length} event(s)`;
+      }
+
+      function getGoogleMapsKey() {
+        const params = new URLSearchParams(window.location.search);
+        const fromQuery = params.get('gmaps_key');
+        if (fromQuery) return fromQuery;
+        try {
+          return window.localStorage.getItem('open_mics_gmaps_key') || '';
+        } catch (e) {
+          return '';
+        }
+      }
+
+      function showBanner(html) {
+        const b = document.getElementById('banner');
+        b.style.display = 'block';
+        b.innerHTML = html;
+      }
+
+      async function boot() {
+        // Dynamically size map + list to viewport, with safe bounds.
+        function updatePanelHeight() {
+          const minH = 420;
+          const maxH = 560;
+          const header = document.querySelector('header');
+          const headerH = header ? header.getBoundingClientRect().height : 120;
+          // Reserve space for header + gutters + footer
+          const reserve = headerH + 190;
+          const h = Math.max(minH, Math.min(maxH, Math.floor(window.innerHeight - reserve)));
+          document.documentElement.style.setProperty('--panel-h', `${h}px`);
+        }
+        updatePanelHeight();
+        window.addEventListener('resize', updatePanelHeight, { passive: true });
+
+        const resp = await fetch(`./data/events.json?v=${encodeURIComponent(BUILD_STAMP)}`, { cache: 'no-cache' });
+        const payload = await resp.json();
+        const events = payload.events || [];
+
+        // Build Streamlit-like checkbox filters (all checked by default).
+        function mountChecks(containerId, values, metaId) {
+          const root = document.getElementById(containerId);
+          if (!root) return;
+          root.innerHTML = '';
+
+          function updateRowStates() {
+            for (const lab of Array.from(root.querySelectorAll('label.check'))) {
+              const cb = lab.querySelector('input[type="checkbox"]');
+              if (!cb) continue;
+              // Do not set state for the "select all" row here.
+              if (cb.getAttribute('data-select-all') === '1') continue;
+              lab.setAttribute('data-on', cb.checked ? '1' : '0');
+            }
+          }
+
+          function updateSelectAll() {
+            const selAll = root.querySelector('input[type="checkbox"][data-select-all="1"]');
+            const boxes = Array.from(root.querySelectorAll('input[type="checkbox"][data-value]'));
+            if (!selAll || !boxes.length) return;
+            const checkedN = boxes.filter(b => b.checked).length;
+            selAll.indeterminate = checkedN > 0 && checkedN < boxes.length;
+            selAll.checked = checkedN === boxes.length;
+
+            const selAllLabel = root.querySelector('[data-select-all-label="1"]');
+            if (selAllLabel) {
+              selAllLabel.textContent = (checkedN === boxes.length) ? 'Select none' : 'Select all';
+            }
+
+            const metaEl = metaId ? document.getElementById(metaId) : null;
+            if (metaEl) {
+              if (checkedN === boxes.length) {
+                metaEl.textContent = 'All';
+              } else if (checkedN === 0) {
+                metaEl.textContent = 'None';
+              } else {
+                const checkedSet = new Set(boxes.filter(b => b.checked).map(b => b.getAttribute('data-value')));
+                const ordered = values.filter(v => checkedSet.has(v));
+                const maxNames = 3;
+                const head = ordered.slice(0, maxNames);
+                const rest = Math.max(0, ordered.length - head.length);
+                const headText = head.join(', ');
+                metaEl.textContent = rest ? `${headText} (+${rest})` : headText;
+              }
+            }
+          }
+
+          // "Select all" row
+          const allLab = document.createElement('label');
+          allLab.className = 'check select-all';
+          const allCb = document.createElement('input');
+          allCb.type = 'checkbox';
+          allCb.checked = true;
+          allCb.setAttribute('data-select-all', '1');
+          allCb.addEventListener('change', () => {
+            const boxes = Array.from(root.querySelectorAll('input[type="checkbox"][data-value]'));
+            for (const b of boxes) b.checked = allCb.checked;
+            allCb.indeterminate = false;
+            updateRowStates();
+            updateSelectAll();
+            render(events);
+          });
+          const allSpan = document.createElement('span');
+          allSpan.textContent = 'Select all';
+          allSpan.className = 'label';
+          allSpan.setAttribute('data-select-all-label', '1');
+          allLab.appendChild(allCb);
+          allLab.appendChild(allSpan);
+          root.appendChild(allLab);
+
+          for (const v of values) {
+            const lab = document.createElement('label');
+            lab.className = 'check';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.checked = true;
+            cb.setAttribute('data-value', v);
+            cb.addEventListener('change', () => {
+              updateRowStates();
+              updateSelectAll();
+              render(events);
+            });
+            const span = document.createElement('span');
+            span.textContent = v;
+            span.className = 'label';
+            lab.appendChild(cb);
+            lab.appendChild(span);
+            root.appendChild(lab);
+          }
+
+          updateRowStates();
+          updateSelectAll();
+        }
+
+        mountChecks('weekdayChecks', ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], 'weekdayMeta');
+
+        const langSet = new Set();
+        for (const e of events) {
+          const parts = (e.language || '').toString().split(/[;,]/).map(x => x.trim()).filter(Boolean);
+          for (const p of parts) langSet.add(p);
+        }
+        const langs = Array.from(langSet).sort((a, b) => a.localeCompare(b));
+        mountChecks('languageChecks', langs, 'languageMeta');
+
+        function setOpen(btnId, popId, open) {
+          const btn = document.getElementById(btnId);
+          const pop = document.getElementById(popId);
+          if (!btn || !pop) return;
+          if (open) {
+            pop.removeAttribute('hidden');
+            btn.setAttribute('data-open', '1');
+            btn.setAttribute('aria-expanded', 'true');
+          } else {
+            pop.setAttribute('hidden','');
+            btn.setAttribute('data-open', '0');
+            btn.setAttribute('aria-expanded', 'false');
+          }
+        }
+
+        function closeAllPops() {
+          setOpen('weekdayBtn', 'weekdayPop', false);
+          setOpen('languageBtn', 'languagePop', false);
+        }
+
+        function togglePop(btnId, popId) {
+          const btn = document.getElementById(btnId);
+          const pop = document.getElementById(popId);
+          if (!btn || !pop) return;
+          btn.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            const isOpen = !pop.hasAttribute('hidden');
+            closeAllPops();
+            if (!isOpen) setOpen(btnId, popId, true);
+          });
+        }
+        togglePop('weekdayBtn', 'weekdayPop');
+        togglePop('languageBtn', 'languagePop');
+
+        document.addEventListener('click', (ev) => {
+          const t = ev.target;
+          const wp = document.getElementById('weekdayPop');
+          const lp = document.getElementById('languagePop');
+          const wb = document.getElementById('weekdayBtn');
+          const lb = document.getElementById('languageBtn');
+          const inside = (el) => el && (el === t || (t && el.contains && el.contains(t)));
+          if (!inside(wp) && !inside(lp) && !inside(wb) && !inside(lb)) {
+            closeAllPops();
+          }
+        });
+
+        document.addEventListener('keydown', (ev) => {
+          if (ev.key === 'Escape') {
+            closeAllPops();
+          }
+        });
+
+        const key = getGoogleMapsKey();
+        if (!key) {
+          // OSM fallback map
+          const ZURICH_BOUNDS = L.latLngBounds(
+            L.latLng(47.30, 8.45),   // SW
+            L.latLng(47.45, 8.65)    // NE
+          );
+          const ZURICH_MIN_ZOOM = 12;
+
+          lmap = L.map('map', {
+            zoomControl: true,
+            minZoom: ZURICH_MIN_ZOOM,
+            maxBounds: ZURICH_BOUNDS,
+            maxBoundsViscosity: 1.0,
+          }).setView([47.3769, 8.5417], ZURICH_MIN_ZOOM);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+          }).addTo(lmap);
+          lmap.setMaxBounds(ZURICH_BOUNDS);
+          lMarkersLayer = L.layerGroup().addTo(lmap);
+
+          showBanner(
+            `Using OpenStreetMap (no Google key). To enable Google basemap add <code>?gmaps_key=YOUR_KEY</code> ` +
+            `or set <code>localStorage.setItem('open_mics_gmaps_key','YOUR_KEY')</code>.`
+          );
+          document.getElementById('q').addEventListener('input', () => render(events));
+          render(events);
+          return;
+        }
+
+        // Load Google Maps JS API dynamically.
+        await new Promise((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&v=weekly`;
+          s.async = true;
+          s.onload = resolve;
+          s.onerror = reject;
+          document.head.appendChild(s);
+        });
+
+        gmap = new google.maps.Map(document.getElementById('map'), {
+          center: { lat: 47.3769, lng: 8.5417 },
+          zoom: 12,
+          minZoom: 12,
+          maxZoom: 19,
+          restriction: {
+            latLngBounds: {
+              south: 47.30,
+              west: 8.45,
+              north: 47.45,
+              east: 8.65,
+            },
+            strictBounds: true,
+          },
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: true,
+        });
+
+        document.getElementById('q').addEventListener('input', () => render(events));
+        render(events);
+      }
+
+      boot().catch(err => {
+        document.getElementById('mapNote').textContent = 'Failed to load event data';
+        console.error(err);
+      });
     </script>
   </body>
 </html>

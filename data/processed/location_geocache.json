@@ -459,25 +459,15 @@
     "lon": 8.5418172,
     "display_name": "8001, Altstadt, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Auer & Co. Courtyard, Industriequartier 8005, 8005 Zürich": {
-    "lat": 47.3875069,
-    "lon": 8.5206272,
-    "display_name": "Industriequartier, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
-  },
   "Gleis, Industriequartier 8005, 8005 Zürich": {
-    "lat": 47.3875069,
-    "lon": 8.5206272,
-    "display_name": "Industriequartier, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
+    "lat": 47.381465,
+    "lon": 8.5296408,
+    "display_name": "Gleis, Zollstrasse, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8031, Schweiz/Suisse/Svizzera/Svizra"
   },
   "ROBIN's Coffee, Altstadt 8001, 8001 Zürich": {
-    "lat": 47.3722329,
-    "lon": 8.5423291,
-    "display_name": "Altstadt, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
-  },
-  "VIOR, Altstadt 8001, 8001 Zürich": {
-    "lat": 47.3722329,
-    "lon": 8.5423291,
-    "display_name": "Altstadt, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
+    "lat": 47.3757594,
+    "lon": 8.5444649,
+    "display_name": "Robin's coffee, Zähringerstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8092, Schweiz/Suisse/Svizzera/Svizra"
   },
   "Stubä, Brauerstrasse 42, 8004 Zürich": {
     "lat": 47.3779077,
