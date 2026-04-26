@@ -13,7 +13,7 @@ Für jede aktive Quelle muss es einen Block der Form geben:
 ```source
 id: eventfrog_de
 label: Eventfrog (DE, Zürich Comedy & Kabarett / Open Mic)
-start_url: https://eventfrog.ch/de/events/zuerich/comedy-cabaret.html?searchTerm=open+mic&geoRadius=10
+start_url: https://eventfrog.ch/de/events/zuerich/comedy-cabaret.html?searchTerm=open+mic+comedy+standup+comedia+espanol&geoRadius=10
 extractor: eventfrog
 listing_behavior: eventfrog
 ```
@@ -49,7 +49,7 @@ Nur diese Keys werden gelesen: `id`, `label`, `start_url`, `extractor`, `listing
 ```source
 id: eventfrog_de
 label: Eventfrog (DE, Zürich Comedy & Kabarett / Open Mic)
-start_url: https://eventfrog.ch/de/events/zuerich/comedy-cabaret.html?searchTerm=open+mic&geoRadius=10
+start_url: https://eventfrog.ch/de/events/zuerich/comedy-cabaret.html?searchTerm=open+mic+comedy+standup+comedia+espanol&geoRadius=10
 extractor: eventfrog
 listing_behavior: eventfrog
 ```

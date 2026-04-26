@@ -98,6 +98,46 @@ _GERMAN_WEEKDAY_TO_ISO: dict[str, int] = {
     "sonntag": 7,
 }
 
+# Spanish weekday words (common on Spanish-language event pages).
+_SPANISH_WEEKDAY_TO_ISO: dict[str, int] = {
+    "lunes": 1,
+    "martes": 2,
+    "miércoles": 3,
+    "miercoles": 3,
+    "jueves": 4,
+    "viernes": 5,
+    "sábado": 6,
+    "sabado": 6,
+    "domingo": 7,
+}
+
+# French weekday words (common on FR pages).
+_FRENCH_WEEKDAY_TO_ISO: dict[str, int] = {
+    "lundi": 1,
+    "mardi": 2,
+    "mercredi": 3,
+    "jeudi": 4,
+    "vendredi": 5,
+    "samedi": 6,
+    "dimanche": 7,
+}
+
+# Italian weekday words (common on IT pages).
+_ITALIAN_WEEKDAY_TO_ISO: dict[str, int] = {
+    "lunedì": 1,
+    "lunedi": 1,
+    "martedì": 2,
+    "martedi": 2,
+    "mercoledì": 3,
+    "mercoledi": 3,
+    "giovedì": 4,
+    "giovedi": 4,
+    "venerdì": 5,
+    "venerdi": 5,
+    "sabato": 6,
+    "domenica": 7,
+}
+
 # schema.org: strip date suffixes so multiple dates cluster as one series
 _DATE_SUFFIX_EN = re.compile(
     r"\s*[-–]\s*("
@@ -425,7 +465,7 @@ def _normalize_series_name(name: str) -> str:
 
 
 def _weekday_indices_from_text(text: str) -> set[int]:
-    """English, German, common abbreviations (Tue, …), and phrases like ``every Thursday``."""
+    """Weekday tokens across languages + phrases like "every Thursday"."""
     if not text:
         return set()
     tl = text.lower()
@@ -445,6 +485,24 @@ def _weekday_indices_from_text(text: str) -> set[int]:
         for word, iso in _GERMAN_WEEKDAY_TO_ISO.items():
             if re.search(rf"\b{re.escape(word)}\b", chunk):
                 out.add(iso)
+    # Spanish phrases like "cada jueves" / "todos los martes"
+    for m in re.finditer(r"\b(?:cada|todos?\s+los?)\s+([^.\n]{1,120})", tl):
+        chunk = m.group(1)
+        for word, iso in _SPANISH_WEEKDAY_TO_ISO.items():
+            if re.search(rf"\b{re.escape(word)}\b", chunk):
+                out.add(iso)
+    # French phrases like "chaque jeudi" / "tous les mardis"
+    for m in re.finditer(r"\b(?:chaque|tous?\s+les?)\s+([^.\n]{1,120})", tl):
+        chunk = m.group(1)
+        for word, iso in _FRENCH_WEEKDAY_TO_ISO.items():
+            if re.search(rf"\b{re.escape(word)}\b", chunk):
+                out.add(iso)
+    # Italian phrases like "ogni giovedì" / "tutti i martedì"
+    for m in re.finditer(r"\b(?:ogni|tutti\s+gli|tutti\s+i|tutte\s+le)\s+([^.\n]{1,120})", tl):
+        chunk = m.group(1)
+        for word, iso in _ITALIAN_WEEKDAY_TO_ISO.items():
+            if re.search(rf"\b{re.escape(word)}\b", chunk):
+                out.add(iso)
     # Long English names first (word boundaries)
     for i, name in enumerate(
         ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"),
@@ -454,6 +512,18 @@ def _weekday_indices_from_text(text: str) -> set[int]:
             out.add(i)
     # German weekday words
     for word, i in _GERMAN_WEEKDAY_TO_ISO.items():
+        if re.search(rf"\b{re.escape(word)}\b", tl):
+            out.add(i)
+    # Spanish weekday words
+    for word, i in _SPANISH_WEEKDAY_TO_ISO.items():
+        if re.search(rf"\b{re.escape(word)}\b", tl):
+            out.add(i)
+    # French weekday words
+    for word, i in _FRENCH_WEEKDAY_TO_ISO.items():
+        if re.search(rf"\b{re.escape(word)}\b", tl):
+            out.add(i)
+    # Italian weekday words
+    for word, i in _ITALIAN_WEEKDAY_TO_ISO.items():
         if re.search(rf"\b{re.escape(word)}\b", tl):
             out.add(i)
     # Abbreviations as separate tokens (Tue, Thu, …)

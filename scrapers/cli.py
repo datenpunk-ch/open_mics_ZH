@@ -251,6 +251,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Seconds between page loads",
     )
     p_en.add_argument("--limit", type=int, default=None, help="Only first N events (debug)")
+    p_en.add_argument(
+        "--venue-llm",
+        action="store_true",
+        help="After scraping: run venue LLM address extraction (requires OPENAI_API_KEY)",
+    )
     p_en.set_defaults(func=cmd_enrich)
 
     p_fl = sub.add_parser(
