@@ -220,6 +220,16 @@ def _load_location_geocache() -> dict[str, dict]:
         return {}
 
 
+def _geocache_key(loc: str) -> str:
+    s = str(loc or "")
+    s = s.replace("\u00a0", " ")
+    s = re.sub(r"\s+", " ", s).strip()
+    s = re.sub(r"\s*\((?:ch|switzerland)\)\s*$", "", s, flags=re.I)
+    s = re.sub(r"\s*,\s*", ", ", s)
+    s = re.sub(r"\bzurich\b", "zürich", s, flags=re.I)
+    return s.casefold()
+
+
 _LOCATION_GEOCACHE = _load_location_geocache()
 
 
@@ -347,7 +357,9 @@ def _canonicalize_location(loc: str) -> str:
     l = (loc or "").strip()
     if not l:
         return ""
-    entry = _LOCATION_GEOCACHE.get(l) if isinstance(_LOCATION_GEOCACHE, dict) else None
+    entry = None
+    if isinstance(_LOCATION_GEOCACHE, dict):
+        entry = _LOCATION_GEOCACHE.get(l) or _LOCATION_GEOCACHE.get(_geocache_key(l))
     if isinstance(entry, dict):
         dn = entry.get("display_name")
         if isinstance(dn, str) and dn.strip():

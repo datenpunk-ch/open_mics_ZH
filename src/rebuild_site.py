@@ -68,7 +68,7 @@ def main() -> int:
                     p.unlink()
             except OSError:
                 pass
-        # Keep events_manual.json (manual edits layer).
+        # Keep events_manual.json and venues_manual.json (manual edits layers).
 
     source_ids = sorted(LISTING_SOURCES.keys())
     if not source_ids:

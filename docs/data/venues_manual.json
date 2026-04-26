@@ -1,0 +1,5 @@
+{
+  "_comment": "Manual venue overrides. This file is merged into docs/data/venues.json by src/export_site.py on every export.",
+  "updated_at": "2026-04-26",
+  "venues": {}
+}

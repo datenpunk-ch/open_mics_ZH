@@ -1,6 +1,7 @@
 # Manual edits (events + coordinates)
 
 This repo has a generated dataset (`docs/data/events.json`) and an optional manual sidecar (`docs/data/events_manual.json`).
+It also has a manual venue override layer (`docs/data/venues_manual.json`) for persistent venue name/address fixes.
 
 ## When to edit which file
 
@@ -11,6 +12,37 @@ This repo has a generated dataset (`docs/data/events.json`) and an optional manu
 - **Persistent “status flag” for the article**: edit `docs/data/events_manual.json`
   - Use this to record that the scrape/export is incomplete or that manual changes were applied.
   - The article reads `data_tag` from `events_manual.json` and shows it as a **status card** (no hover needed).
+
+- **Persistent venue corrections (recommended for venue name/address)**: edit `docs/data/venues_manual.json`
+  - Use this to fix a venue once (name/address/display), and have it apply everywhere after each rebuild.
+  - This file is merged into `docs/data/venues.json` by `src/export_site.py` on every export.
+
+## Editing venues persistently (`docs/data/venues_manual.json`)
+
+Format:
+
+```json
+{
+  "updated_at": "2026-04-26",
+  "venues": {
+    "v_970c36d42823": {
+      "venue": "Monroe",
+      "address": "Brauerstrasse 26, 8004 Zürich",
+      "location_display": "Monroe, Brauerstrasse 26, 8004 Zürich"
+    }
+  }
+}
+```
+
+Optional: merge two venue IDs when the exporter created duplicates:
+
+```json
+{
+  "venues": {
+    "v_old123": { "merge_into": "v_keep456" }
+  }
+}
+```
 
 ## Flagging scrape completeness in the article
 

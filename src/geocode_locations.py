@@ -52,6 +52,50 @@ def _load_geocache(path: Path) -> dict[str, dict]:
     except json.JSONDecodeError:
         return {}
 
+def _cache_key(loc: str) -> str:
+    """
+    Normalize location strings so the same venue/address doesn't get cached multiple times
+    just because the input formatting differs.
+    """
+    s = str(loc or "")
+    s = s.replace("\u00a0", " ")
+    s = re.sub(r"\s+", " ", s).strip()
+    # Drop common suffix noise.
+    s = re.sub(r"\s*\((?:ch|switzerland)\)\s*$", "", s, flags=re.I)
+    # Normalize commas / separators.
+    s = re.sub(r"\s*,\s*", ", ", s)
+    # Normalize Zürich spelling.
+    s = re.sub(r"\bzurich\b", "zürich", s, flags=re.I)
+    return s.casefold()
+
+
+def _dedupe_cache(cache: dict[str, dict]) -> dict[str, dict]:
+    """
+    Convert any legacy raw-key cache to a normalized-key cache.
+    When multiple keys map to the same normalized key, keep the "best" entry.
+    """
+    out: dict[str, dict] = {}
+    for k, v in (cache or {}).items():
+        nk = _cache_key(k)
+        if not nk:
+            continue
+        if not isinstance(v, dict):
+            continue
+        cur = out.get(nk)
+        if not isinstance(cur, dict):
+            out[nk] = v
+            continue
+        # Prefer entries that have lat/lon and a longer display_name.
+        def score(d: dict) -> tuple[int, int]:
+            has_latlon = int(d.get("lat") is not None and d.get("lon") is not None)
+            dn = d.get("display_name")
+            dn_len = len(dn) if isinstance(dn, str) else 0
+            return (has_latlon, dn_len)
+
+        if score(v) > score(cur):
+            out[nk] = v
+    return out
+
 
 def _save_geocache(path: Path, cache: dict[str, dict]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -230,14 +274,14 @@ def main() -> int:
         return 2
 
     locations = sorted({str(x).strip() for x in df["Location"].tolist() if str(x).strip()})
-    cache = _load_geocache(GEOCACHE_PATH)
+    cache = _dedupe_cache(_load_geocache(GEOCACHE_PATH))
 
-    missing = [loc for loc in locations if loc not in cache]
+    missing = [loc for loc in locations if _cache_key(loc) not in cache]
     # Also refresh suspicious cached entries where the cached display_name clearly mismatches
     # a zip/city present in the original location string (dynamic, not hardcoded).
     refresh: list[str] = []
     for loc in locations:
-        entry = cache.get(loc)
+        entry = cache.get(_cache_key(loc))
         if not isinstance(entry, dict):
             continue
         dn = entry.get("display_name")
@@ -293,7 +337,7 @@ def main() -> int:
             # BUT: when we explicitly refresh a suspicious entry, we must *not* trust the cached
             # lat/lon (they may be wrong) — use forward geocoding instead.
             if loc not in refresh_set:
-                entry_existing = cache.get(loc)
+                entry_existing = cache.get(_cache_key(loc))
                 if isinstance(entry_existing, dict):
                     try:
                         lat0 = float(entry_existing.get("lat")) if entry_existing.get("lat") is not None else None
@@ -313,12 +357,12 @@ def main() -> int:
             res = None
 
         if res:
-            cache[loc] = res
+            cache[_cache_key(loc)] = res
             _save_geocache(GEOCACHE_PATH, cache)
             print(f"[geocode] {i}/{len(todo)} OK: {loc}")
         else:
-            if loc in refresh_set and loc in cache:
-                cache.pop(loc, None)
+            if loc in refresh_set and _cache_key(loc) in cache:
+                cache.pop(_cache_key(loc), None)
                 _save_geocache(GEOCACHE_PATH, cache)
                 print(f"[geocode] {i}/{len(todo)} DROP: {loc} (no valid match)")
                 time.sleep(1.0)

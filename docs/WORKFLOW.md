@@ -80,6 +80,7 @@ pixi run export-site
 - `docs/data/events.json` (event data for the tool)
 - `docs/data/venues.json` + `docs/data/occurrences.json` (deduped venue model; preferred by the map)
 - `docs/data/events_manual.json` (optional manual metadata + extra events; merged at runtime by the article)
+- `docs/data/venues_manual.json` (manual venue overrides; merged by export-site into venues.json)
 
 ### Preview locally
 

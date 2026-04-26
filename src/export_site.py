@@ -23,6 +23,7 @@ DOCS_DATA_DIR = DOCS_DIR / "data"
 DOCS_EVENTS_JSON = DOCS_DATA_DIR / "events.json"
 DOCS_VENUES_JSON = DOCS_DATA_DIR / "venues.json"
 DOCS_OCCURRENCES_JSON = DOCS_DATA_DIR / "occurrences.json"
+DOCS_VENUES_MANUAL_JSON = DOCS_DATA_DIR / "venues_manual.json"
 PLACEHOLDER_SVG = ROOT / "assets" / "open_mic_placeholder.svg"
 
 
@@ -119,6 +120,25 @@ def _load_geocache(path: Path) -> dict[str, dict]:
         return {}
     except json.JSONDecodeError:
         return {}
+
+
+def _load_venues_manual(path: Path) -> dict:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return {"venues": {}}
+    except json.JSONDecodeError:
+        return {"venues": {}}
+
+
+def _geocache_key(loc: str) -> str:
+    s = str(loc or "")
+    s = s.replace("\u00a0", " ")
+    s = re.sub(r"\s+", " ", s).strip()
+    s = re.sub(r"\s*\((?:ch|switzerland)\)\s*$", "", s, flags=re.I)
+    s = re.sub(r"\s*,\s*", ", ", s)
+    s = re.sub(r"\bzurich\b", "zürich", s, flags=re.I)
+    return s.casefold()
 
 
 def _norm(s: str) -> str:
@@ -1643,7 +1663,7 @@ def main() -> int:
         # If there is an exact hit in the cache, still allow a better-scored key to override it.
         # This avoids situations where a low-quality cached string (neighborhood-only or artefact)
         # pins the venue to the wrong place.
-        exact_entry = cache.get(loc)
+        exact_entry = cache.get(loc) or cache.get(_geocache_key(loc))
         exact_score = _score_key(loc) if exact_entry else -1
         exact_coords = _coords_from_entry(exact_entry) if exact_entry else (None, None)
 
@@ -1698,10 +1718,20 @@ def main() -> int:
             address = ", ".join(deduped).strip()
         location_display = ", ".join(x for x in [venue, address] if x).strip() or s
 
-        # If we only have "800x Zürich" (no street), try to improve address from the geocode cache
-        # but only accept it when it clearly contains a street + house number.
-        if venue and re.fullmatch(r"8\d{3}\s+zürich", (address or "").strip(), flags=re.I):
-            entry = cache.get(s) or {}
+        def _address_too_vague(a: str) -> bool:
+            aa = _norm(a)
+            if not aa:
+                return True
+            if re.fullmatch(r"(?:zürich|zurich)", aa, flags=re.I):
+                return True
+            if re.fullmatch(r"8\d{3}\s+(?:zürich|zurich)", aa, flags=re.I):
+                return True
+            return False
+
+        # If the address is missing or too vague ("Zürich", "8092 Zürich"), try to improve it
+        # from the geocode cache, but only accept it when it clearly contains street + house number + ZIP.
+        if venue and _address_too_vague(address):
+            entry = cache.get(s) or cache.get(_geocache_key(s)) or {}
             dn = entry.get("display_name")
             if isinstance(dn, str) and dn.strip():
                 v2, a2, ld2 = _format_address_from_display_name(venue_hint=venue, display_name=dn)
@@ -1761,14 +1791,12 @@ def main() -> int:
     site_data_date_display = listing_disp or now_utc.strftime("%d/%m/%Y")
 
     def _venue_id(*, venue: str, address: str, lat: float | None, lon: float | None) -> str:
-        key = "|".join(
-            [
-                _norm(venue).casefold(),
-                _norm(address).casefold(),
-                f"{float(lat):.6f}" if isinstance(lat, (int, float)) else "",
-                f"{float(lon):.6f}" if isinstance(lon, (int, float)) else "",
-            ]
-        )
+        # Venue identity should be stable even when venue label formatting differs slightly
+        # ("ROBIN's Coffee" vs "ROBIN'S bar & coffee"). Prefer address + coordinates.
+        addr_k = _norm(address).casefold()
+        lat_k = f"{float(lat):.5f}" if isinstance(lat, (int, float)) else ""
+        lon_k = f"{float(lon):.5f}" if isinstance(lon, (int, float)) else ""
+        key = "|".join([addr_k, lat_k, lon_k])
         h = hashlib.sha1(key.encode("utf-8")).hexdigest()[:12]
         return f"v_{h}"
 
@@ -1781,10 +1809,73 @@ def main() -> int:
         h = hashlib.sha1(key.encode("utf-8")).hexdigest()[:12]
         return f"s_{h}"
 
+    def _venue_merge_candidate(
+        *,
+        venues_by_id: dict[str, dict],
+        venue: str,
+        address: str,
+        lat: float | None,
+        lon: float | None,
+    ) -> str | None:
+        """
+        Merge nearly-identical venues that differ only in location string formatting.
+        This is intentionally conservative: only merge when coordinates are very close and
+        there is some venue-name word overlap (e.g. "ROBIN's Coffee" vs "ROBIN'S bar & coffee").
+        """
+        if not isinstance(lat, (int, float)) or not isinstance(lon, (int, float)):
+            return None
+
+        def _words(s: str) -> set[str]:
+            t = re.sub(r"[^a-z0-9]+", " ", (s or "").casefold()).strip()
+            return {w for w in t.split() if len(w) >= 4}
+
+        w_new = _words(venue)
+        if not w_new:
+            return None
+
+        # Haversine distance in meters.
+        def _dist_m(a_lat: float, a_lon: float, b_lat: float, b_lon: float) -> float:
+            import math
+
+            r = 6371000.0
+            p1 = math.radians(a_lat)
+            p2 = math.radians(b_lat)
+            dp = math.radians(b_lat - a_lat)
+            dl = math.radians(b_lon - a_lon)
+            x = math.sin(dp / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ** 2
+            return 2 * r * math.asin(math.sqrt(x))
+
+        best: tuple[float, str] | None = None
+        for vid, v in venues_by_id.items():
+            try:
+                elat = float(v.get("lat"))
+                elon = float(v.get("lon"))
+            except Exception:
+                continue
+            d = _dist_m(float(lat), float(lon), elat, elon)
+            if d > 35.0:
+                continue
+            w_old = _words(str(v.get("venue") or ""))
+            if not (w_new & w_old):
+                continue
+            if best is None or d < best[0]:
+                best = (d, vid)
+        return best[1] if best else None
+
     venues_by_id: dict[str, dict] = {}
     occurrences: list[dict] = []
     for e in events:
         vid = _venue_id(venue=e.get("venue", ""), address=e.get("address", ""), lat=e.get("lat"), lon=e.get("lon"))
+        if vid not in venues_by_id:
+            merged = _venue_merge_candidate(
+                venues_by_id=venues_by_id,
+                venue=_norm(e.get("venue", "")),
+                address=_norm(e.get("address", "")),
+                lat=e.get("lat"),
+                lon=e.get("lon"),
+            )
+            if merged:
+                vid = merged
         if vid not in venues_by_id:
             venues_by_id[vid] = {
                 "venue_id": vid,
@@ -1809,6 +1900,65 @@ def main() -> int:
                 "image_url": _norm(e.get("image_url", "")),
             }
         )
+
+    # Apply manual venue overrides (stable across rebuilds).
+    # Format:
+    # {
+    #   "updated_at": "...",
+    #   "venues": {
+    #     "v_abc...": { "venue": "...", "address": "...", "location_display": "...", "merge_into": "v_def..." }
+    #   }
+    # }
+    manual = _load_venues_manual(DOCS_VENUES_MANUAL_JSON)
+    manual_venues = manual.get("venues") if isinstance(manual, dict) else None
+    if isinstance(manual_venues, dict) and manual_venues:
+        # First apply requested merges (old_id -> new_id).
+        merges: dict[str, str] = {}
+        for vid, patch in manual_venues.items():
+            if not isinstance(vid, str) or not vid.startswith("v_"):
+                continue
+            if not isinstance(patch, dict):
+                continue
+            tgt = patch.get("merge_into")
+            if isinstance(tgt, str) and tgt.startswith("v_") and tgt != vid:
+                merges[vid] = tgt
+        if merges:
+            # Re-point occurrences.
+            for occ in occurrences:
+                v0 = occ.get("venue_id")
+                if isinstance(v0, str) and v0 in merges:
+                    occ["venue_id"] = merges[v0]
+            # Drop merged-away venues.
+            for old in list(merges.keys()):
+                venues_by_id.pop(old, None)
+
+        # Then apply field overrides.
+        allowed_fields = {"venue", "address", "location_display", "lat", "lon"}
+        for vid, patch in manual_venues.items():
+            if not isinstance(vid, str) or not vid.startswith("v_"):
+                continue
+            if vid not in venues_by_id:
+                continue
+            if not isinstance(patch, dict):
+                continue
+            v = venues_by_id[vid]
+            for k in allowed_fields:
+                if k in patch:
+                    v[k] = patch[k]
+            # Keep types sane.
+            v["venue"] = _norm(str(v.get("venue") or ""))
+            v["address"] = _norm(str(v.get("address") or ""))
+            v["location_display"] = _norm(str(v.get("location_display") or ""))
+            try:
+                if v.get("lat") is not None:
+                    v["lat"] = float(v["lat"])
+            except Exception:
+                pass
+            try:
+                if v.get("lon") is not None:
+                    v["lon"] = float(v["lon"])
+            except Exception:
+                pass
 
     DOCS_VENUES_JSON.write_text(
         json.dumps(
