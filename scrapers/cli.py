@@ -195,7 +195,7 @@ def build_parser() -> argparse.ArgumentParser:
         required=True,
         choices=sorted(LISTING_SOURCES),
         metavar="SOURCE",
-        help="Source id(s); repeat values allowed, e.g. --source eventfrog eventfrog_de",
+        help="Source id(s); repeat values allowed, e.g. --source eventfrog_de",
     )
     p_l.add_argument(
         "--url",
@@ -278,10 +278,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_run.add_argument(
         "--source",
         nargs="+",
-        default=["eventfrog"],
+        default=["eventfrog_de"],
         choices=sorted(LISTING_SOURCES),
         metavar="SOURCE",
-        help="Listing-Quelle(n); Standard: eventfrog",
+        help="Listing-Quelle(n); Standard: eventfrog_de",
     )
     p_run.add_argument(
         "--url",

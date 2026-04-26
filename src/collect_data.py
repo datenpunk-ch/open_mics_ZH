@@ -22,9 +22,9 @@ Beispiele:
   python collect_data.py --headed
   python collect_data.py --limit 5
   python collect_data.py run
-  python collect_data.py listing --source eventfrog eventfrog_de
+  python collect_data.py listing --source eventfrog_de
   python collect_data.py enrich
-  python collect_data.py enrich --from data/raw/eventfrog_listing_....json --limit 3
+  python collect_data.py enrich --from data/raw/eventfrog_de_listing_....json --limit 3
   python collect_data.py flatten
 """
 

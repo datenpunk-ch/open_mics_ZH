@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+from pathlib import Path
 import subprocess
 import sys
 
@@ -15,7 +16,22 @@ def main() -> int:
     # End-to-end rebuild:
     # listing (all configured sources) -> enrich -> flatten -> geocode -> export-site
     # Keep the source list explicit so it's reproducible.
-    # Increase navigation timeout to tolerate slow pages (e.g. gz-zh.ch).
+    # Increase navigation timeout to tolerate slow pages.
+    #
+    # Cleanup: remove older listing artifacts (new crawl each run).
+    root = Path(__file__).resolve().parents[1]
+    raw_dir = root / "data" / "raw"
+    if raw_dir.is_dir():
+        for p in raw_dir.glob("*listing_*.json"):
+            try:
+                p.unlink()
+            except OSError:
+                pass
+        for p in raw_dir.glob("merged_listing_*.json"):
+            try:
+                p.unlink()
+            except OSError:
+                pass
     _run(
         [
             "pixi",
@@ -27,10 +43,7 @@ def main() -> int:
             "--timeout-ms",
             "180000",
             "--source",
-            "eventfrog",
             "eventfrog_de",
-            "zuerich_com_event_finder",
-            "stubae_comedy",
         ]
     )
     _run(["pixi", "run", "geocode"])

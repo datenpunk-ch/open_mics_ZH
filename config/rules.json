@@ -46,16 +46,6 @@
         }
       ]
     }
-  },
-  "location_overrides": [
-    {
-      "url_contains": "milanski-comedy.ch/stubae-comedy",
-      "location": "Stubä comedy, Brauerstrasse 42, 8004 Zürich"
-    },
-    {
-      "url_contains": "jokes-jokes-jokes-english-stand-up-comedy-show-7413564801610218198",
-      "location": "ROBIN'S bar & coffee, Zähringerstrasse 33, 8001 Zürich"
-    }
-  ]
+  }
 }
 

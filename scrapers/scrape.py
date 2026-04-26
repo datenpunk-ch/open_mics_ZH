@@ -4,8 +4,7 @@
 From the repository root:
 
   python -m scrapers.scrape list-sources
-  python -m scrapers.scrape listing --source eventfrog
-  python -m scrapers.scrape listing --source eventfrog eventfrog_de
+  python -m scrapers.scrape listing --source eventfrog_de
   python -m scrapers.scrape event-page --url https://...
 
 Or (same behaviour):

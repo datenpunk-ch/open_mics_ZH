@@ -4,7 +4,7 @@ Weekday, Location, Time, Cost, Comedy_language, Regularity, Event_title, URL.
 
 - Per URL: schema.org Event in ``detail.ld_json``; group pages without LD are filled
   from listing title, meta titles, optional ``text_preview`` (see ``event_page``), and URL.
-- **Regularity:** Eventfrog groups, schema.org series hints, and the same normalized series
+- **Regularity:** schema.org series hints, and the same normalized series
   name appearing more than once in one export → ``recurring``.
 - **Slot dedup:** rows with the same normalized event title, location, weekday, and time are
   merged into one row with ``Regularity`` ``recurring`` (multiple ticket URLs for the same
@@ -25,14 +25,6 @@ from typing import Any, Iterator
 from urllib.parse import unquote, urlparse
 
 _RULES_JSON_PATH = Path(__file__).resolve().parents[1] / "config" / "rules.json"
-_LOCATION_OVERRIDES_CACHE: list[dict[str, Any]] | None = None
-
-# Eventfrog group pages often repeat "Venue, 8xxx Zürich, CH" in the scraped schedule table while
-# the listing title only has "Venue, Zürich".
-_RE_EVENTFROG_VENUE_PLZ = re.compile(
-    r"(?P<venue>[A-Za-z0-9'’&][A-Za-z0-9'’&.,\s\-–]{1,140}?),\s*(?P<plz>8\d{3})\s+Zürich(?:\s*,\s*CH)?",
-    re.I,
-)
 
 _RE_LEADING_TIME_IN_LOCATION = re.compile(
     r"^\s*(?:"
@@ -54,71 +46,6 @@ def _strip_leading_time_from_location(loc: str) -> str:
         return ""
     s2 = _RE_LEADING_TIME_IN_LOCATION.sub("", s, count=1).strip()
     return s2 or s
-
-
-def _load_location_overrides() -> list[dict[str, Any]]:
-    global _LOCATION_OVERRIDES_CACHE
-    if _LOCATION_OVERRIDES_CACHE is not None:
-        return _LOCATION_OVERRIDES_CACHE
-    out: list[dict[str, Any]] = []
-    try:
-        data = json.loads(_RULES_JSON_PATH.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        _LOCATION_OVERRIDES_CACHE = out
-        return out
-    raw = data.get("location_overrides")
-    if isinstance(raw, list):
-        for item in raw:
-            if isinstance(item, dict):
-                out.append(item)
-    _LOCATION_OVERRIDES_CACHE = out
-    return out
-
-
-def _eventfrog_plz_location_from_preview(detail: dict | None, location: str) -> str:
-    if not detail or str(detail.get("host") or "").lower() != "eventfrog.ch":
-        return location
-    tp = detail.get("text_preview")
-    if not isinstance(tp, str) or not tp.strip():
-        return location
-    loc = (location or "").strip()
-    if re.search(r"\b8\d{3}\s+Zürich\b", loc, re.I):
-        return location
-    venue_hint = loc.split(",", 1)[0].strip().casefold() if loc else ""
-    if not venue_hint:
-        return location
-    best: str | None = None
-    for m in _RE_EVENTFROG_VENUE_PLZ.finditer(tp):
-        v = m.group("venue").strip()
-        plz = m.group("plz").strip()
-        if not v or not plz:
-            continue
-        v_fold = v.casefold()
-        if venue_hint not in v_fold and v_fold not in venue_hint:
-            continue
-        cand = f"{v}, {plz} Zürich"
-        if best is None or len(cand) > len(best):
-            best = cand
-    return best if best else location
-
-
-def _apply_location_overrides(url: str, location: str) -> str:
-    u = (url or "").strip().lower()
-    loc_cur = (location or "").strip()
-    for item in _load_location_overrides():
-        needle = item.get("url_contains")
-        if not isinstance(needle, str) or not needle.strip():
-            continue
-        if needle.strip().lower() not in u:
-            continue
-        loc_need = item.get("location_contains")
-        if isinstance(loc_need, str) and loc_need.strip():
-            if loc_need.strip().lower() not in loc_cur.lower():
-                continue
-        repl = item.get("location")
-        if isinstance(repl, str) and repl.strip():
-            return repl.strip()
-    return loc_cur
 
 
 def _location_looks_complete(loc: str) -> bool:
@@ -488,7 +415,7 @@ def _normalize_series_name(name: str) -> str:
     if not name or not isinstance(name, str):
         return ""
     n = name.strip()
-    # Strip common category prefixes some sources prepend (e.g. Guidle "StandUp: ...").
+    # Strip common category prefixes some sites prepend (e.g. "StandUp: ...").
     n = re.sub(r"^(?:stand\s*up|standup|stand-?up)\s*[:\-–—]\s*", "", n, flags=re.I)
     n = re.sub(r"^(?:comedy)\s*[:\-–—]\s*", "", n, flags=re.I)
     n = _DATE_SUFFIX_EN.sub("", n)
@@ -569,31 +496,13 @@ def _detail_meta_blob(detail: dict | None) -> str:
     return " ".join(p for p in parts if p).strip()
 
 
-def _gz_extract_fields(detail: dict | None) -> tuple[str, str]:
-    """
-    Extract (location, cost) from gz-zh.ch offer pages.
-    Their pages have consistent labels like "Ort" and "Kosten" in the visible text preview.
-    """
-    if not detail or str(detail.get("host") or "").lower() != "gz-zh.ch":
-        return "", ""
-    text = str(detail.get("text_preview") or "")
-    if not text:
-        return "", ""
-    t = re.sub(r"\s+", " ", text).strip()
-
-    loc = ""
-    m = re.search(r"\bOrt\b\s+(.+?)\s+\bVeranstalter", t, flags=re.I)
-    if m:
-        loc = m.group(1).strip()
-    cost = ""
-    m2 = re.search(r"\bKosten\b\s+(.+?)\s+\bAnmeldung\b", t, flags=re.I)
-    if m2:
-        cost = m2.group(1).strip()
-    return loc[:300], cost[:120]
+def _gz_extract_fields(_detail: dict | None) -> tuple[str, str]:
+    # No per-source parsing rules.
+    return "", ""
 
 
 def _location_after_events_count(title: str) -> str:
-    """``16 Events Auer & Co., …`` → location segment after the event count (Eventfrog groups)."""
+    """``16 Events Auer & Co., …`` → location segment after the event count."""
     if not title:
         return ""
     m = re.search(r"\b\d+\s+Events\s+(.+)$", title, re.I)
@@ -703,7 +612,7 @@ def _fill_group_row_gaps(
             if not (0 <= hh <= 23 and 0 <= mm <= 59):
                 return ""
             # Avoid interpreting dates like "16.04.2026" as a time "16:04".
-            # This is a common artifact in Eventfrog/landing pages where the date appears
+            # This is a common artifact on listing/landing pages where the date appears
             # near words like "Start:".
             if sep == ".":
                 t = (tail or "").lstrip()
@@ -762,7 +671,7 @@ def find_latest_enriched(processed_dir: Path) -> Path | None:
 
 
 def _iter_ld_dicts(block: Any) -> Iterator[dict]:
-    """A value from ``ld_json`` may be dict, @graph object, or nested list (Eventfrog)."""
+    """A value from ``ld_json`` may be dict, @graph object, or nested list."""
     if isinstance(block, list):
         for item in block:
             yield from _iter_ld_dicts(item)
@@ -821,14 +730,8 @@ def _recurrence_from_ld(ld_blocks: list[Any] | None) -> str | None:
 
 
 def _recurrence_from_listing(path: str, title: str, url: str) -> str | None:
-    combined = f"{path} {url}".lower()
-    if "/p/groups/" in combined:
-        return "recurring"
-    tl = title.lower()
-    if "event group" in tl or "veranstaltungsgruppe" in tl or "eventgruppe" in tl:
-        return "recurring"
-    if re.search(r"\b\d+\s+events\b", title, re.I):
-        return "recurring"
+    # No per-source recurrence inference rules.
+    # Recurrence should come from generic schema.org signals or explicit weekday patterns in copy.
     return None
 
 
@@ -844,8 +747,6 @@ def _recurrence_label(
     if r == "recurring":
         return "recurring"
     if has_event_node:
-        return "one-off"
-    if url and "eventfrog.ch" in url.lower() and "/p/groups/" not in url.lower():
         return "one-off"
     return "unknown"
 
@@ -1017,9 +918,6 @@ def _language_from_description(desc: str) -> str:
     # Explicit on-stage language (common on Swiss sites even when schema.org inLanguage is "en").
     if re.search(r"\bdeutschsprachig", dl, re.I):
         return "German"
-    # English Eventfrog copy (do not use "bringt" — German marketing is common for English shows)
-    if "comedy connection brings" in dl:
-        return "English"
     if re.search(r"is the show in English\?\s*→\s*Yes", desc, re.I):
         return "English"
     if re.search(
@@ -1064,10 +962,7 @@ def _infer_comedy_language(
     url: str,
     path: str,
 ) -> str:
-    """
-    On-stage / performance language. Does **not** treat ``/en/`` (or other locale paths)
-    as proof of English — that is only the site language on Eventfrog.
-    """
+    """On-stage / performance language."""
     # Visible page copy (not only schema.org description) — avoids wrong inLanguage from site locale.
     desc_for_lang = ""
     if node and isinstance(node.get("description"), str) and node["description"].strip():
@@ -1281,10 +1176,8 @@ def _flatten_row_and_key(event: dict) -> tuple[dict[str, str], str]:
         cost = gz_cost
 
     location = _location_from_venue_llm(detail, location)
-    location = _eventfrog_plz_location_from_preview(detail, location)
     location = _strip_leading_time_from_location(location)
     location = _canonicalize_location(location)
-    location = _apply_location_overrides(url, location)
 
     ld_list = detail.get("ld_json") if detail else None
     if not isinstance(ld_list, list):
@@ -1301,13 +1194,7 @@ def _flatten_row_and_key(event: dict) -> tuple[dict[str, str], str]:
         blob = detail["text_preview"].lower()
         if ("jeden" in blob or "every" in blob) and _weekday_indices_from_text(blob):
             regularity = "recurring"
-    if (
-        detail
-        and str(detail.get("host") or "").lower() == "gz-zh.ch"
-        and isinstance(detail.get("text_preview"), str)
-        and re.search(r"\bjeden\b[^.]{0,80}\bmonat", detail["text_preview"].lower())
-    ):
-        regularity = "recurring"
+    # No per-source recurrence inference rules.
 
     titel_event = _titel_event(node, detail, title)
     series_key = _series_identity_key(title=title, detail=detail, node=node)
@@ -1399,10 +1286,8 @@ def _dedupe_recurring_slots(rows: list[dict[str, str]]) -> list[dict[str, str]]:
 
         urls = [r.get("URL", "").strip() for r in grp if r.get("URL", "").strip()]
         if urls:
-            pref = [u for u in urls if "/p/groups/" in u.lower()]
-            if pref:
-                base["URL"] = pref[0]
-            # else: keep first row's URL so it stays aligned with Listing_title
+            # No source-specific URL preference.
+            base["URL"] = urls[0]
 
         langs = [r.get("Comedy_language", "").strip() for r in grp if r.get("Comedy_language", "").strip()]
         if langs:
@@ -1492,11 +1377,10 @@ def _dedupe_loose_same_slot(rows: list[dict[str, str]]) -> list[dict[str, str]]:
                 out.append(dict(c[0]))
                 continue
             base = dict(c[0])
-            # Prefer group URLs when available
+            # No source-specific URL preference.
             urls = [x.get("URL", "").strip() for x in c if x.get("URL", "").strip()]
             if urls:
-                pref = [u for u in urls if "/p/groups/" in u.lower()]
-                base["URL"] = (pref[0] if pref else urls[0])
+                base["URL"] = urls[0]
 
             # Keep the "best" title (longest non-empty after normalization)
             titles = [x.get("Event_title", "").strip() for x in c if x.get("Event_title", "").strip()]
@@ -1540,14 +1424,9 @@ def _venue_key(loc: str) -> str:
 
 def _dedupe_series_across_sources(rows: list[dict[str, str]]) -> list[dict[str, str]]:
     """
-    Cross-source dedupe for the same recurring series at the same venue.
+    Cross-row dedupe for the same recurring series at the same venue.
 
-    This is intentionally conservative and designed to collapse obvious duplicates
-    coming from different listing sources (Eventfrog EN/DE, Guidle, single-page seeds, ...).
-
-    Heuristic:
-    - group by (venue_key, normalized series title)
-    - keep the single "best" row (prefer Eventfrog group URLs and broader weekday coverage)
+    No source-specific preferences: pick the "best" row using only generic signals.
     """
     groups: OrderedDict[str, list[dict[str, str]]] = OrderedDict()
     for r in rows:
@@ -1555,17 +1434,17 @@ def _dedupe_series_across_sources(rows: list[dict[str, str]]) -> list[dict[str, 
         groups.setdefault(k, []).append(r)
 
     def score(r: dict[str, str]) -> tuple[int, int, int, int]:
-        url = (r.get("URL") or "").lower()
+        url = (r.get("URL") or "").strip()
         title = (r.get("Event_title") or "").strip()
         weekday = (r.get("Weekday") or "").strip()
         time_s = (r.get("Time") or "").strip()
-        # Prefer Eventfrog group pages (stable recurring series URL)
-        s0 = 3 if (".eventfrog.ch" in url or "eventfrog.ch" in url) and "/p/groups/" in url else (2 if "eventfrog.ch" in url else 0)
         # Prefer entries that cover more weekdays (e.g. "Tue, Fri, Sun")
         wd_n = len([x for x in weekday.split(",") if x.strip()]) if weekday else 0
-        s1 = wd_n
+        s0 = wd_n
         # Prefer non-empty time
-        s2 = 1 if time_s else 0
+        s1 = 1 if time_s else 0
+        # Prefer having a URL (generic stability signal)
+        s2 = 1 if url else 0
         # Prefer longer, more descriptive title (minor tie-break)
         s3 = min(200, len(title))
         return (s0, s1, s2, s3)
