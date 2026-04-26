@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import re
+import hashlib
 from pathlib import Path
 from datetime import datetime, timezone
 
@@ -20,6 +21,8 @@ GEOCACHE_PATH = ROOT / "data" / "processed" / "location_geocache.json"
 DOCS_DIR = ROOT / "docs"
 DOCS_DATA_DIR = DOCS_DIR / "data"
 DOCS_EVENTS_JSON = DOCS_DATA_DIR / "events.json"
+DOCS_VENUES_JSON = DOCS_DATA_DIR / "venues.json"
+DOCS_OCCURRENCES_JSON = DOCS_DATA_DIR / "occurrences.json"
 PLACEHOLDER_SVG = ROOT / "assets" / "open_mic_placeholder.svg"
 
 
@@ -1756,6 +1759,88 @@ def main() -> int:
     build_stamp = now_utc.strftime("%Y-%m-%dT%H:%M:%SZ")
     listing_disp, listing_iso = pipeline_meta.latest_listing_scraped_meta(ROOT / "data" / "processed")
     site_data_date_display = listing_disp or now_utc.strftime("%d/%m/%Y")
+
+    def _venue_id(*, venue: str, address: str, lat: float | None, lon: float | None) -> str:
+        key = "|".join(
+            [
+                _norm(venue).casefold(),
+                _norm(address).casefold(),
+                f"{float(lat):.6f}" if isinstance(lat, (int, float)) else "",
+                f"{float(lon):.6f}" if isinstance(lon, (int, float)) else "",
+            ]
+        )
+        h = hashlib.sha1(key.encode("utf-8")).hexdigest()[:12]
+        return f"v_{h}"
+
+    def _show_id(*, url: str, title: str, venue_id: str) -> str:
+        u = _norm(url)
+        if u:
+            h = hashlib.sha1(u.encode("utf-8")).hexdigest()[:12]
+            return f"s_{h}"
+        key = "|".join([_norm(title).casefold(), venue_id])
+        h = hashlib.sha1(key.encode("utf-8")).hexdigest()[:12]
+        return f"s_{h}"
+
+    venues_by_id: dict[str, dict] = {}
+    occurrences: list[dict] = []
+    for e in events:
+        vid = _venue_id(venue=e.get("venue", ""), address=e.get("address", ""), lat=e.get("lat"), lon=e.get("lon"))
+        if vid not in venues_by_id:
+            venues_by_id[vid] = {
+                "venue_id": vid,
+                "venue": _norm(e.get("venue", "")),
+                "address": _norm(e.get("address", "")),
+                "location_display": _norm(e.get("location_display", "")),
+                "lat": e.get("lat"),
+                "lon": e.get("lon"),
+            }
+        sid = _show_id(url=e.get("url", ""), title=e.get("title", ""), venue_id=vid)
+        occurrences.append(
+            {
+                "show_id": sid,
+                "venue_id": vid,
+                "weekday": _norm(e.get("weekday", "")),
+                "time": _norm(e.get("time", "")),
+                "cost": _norm(e.get("cost", "")),
+                "language": _norm(e.get("language", "")),
+                "regularity": _norm(e.get("regularity", "")),
+                "title": _norm(e.get("title", "")),
+                "url": _norm(e.get("url", "")),
+                "image_url": _norm(e.get("image_url", "")),
+            }
+        )
+
+    DOCS_VENUES_JSON.write_text(
+        json.dumps(
+            {
+                "generated_at": now_utc.isoformat(),
+                "build_stamp": build_stamp,
+                "listing_scraped_at": listing_iso,
+                "data_updated_display": site_data_date_display,
+                "venues_total": len(venues_by_id),
+                "venues": list(venues_by_id.values()),
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    DOCS_OCCURRENCES_JSON.write_text(
+        json.dumps(
+            {
+                "generated_at": now_utc.isoformat(),
+                "build_stamp": build_stamp,
+                "listing_scraped_at": listing_iso,
+                "data_updated_display": site_data_date_display,
+                "occurrences_total": len(occurrences),
+                "occurrences": occurrences,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
 
     DOCS_EVENTS_JSON.write_text(
         json.dumps(

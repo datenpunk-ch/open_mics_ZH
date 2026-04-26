@@ -894,9 +894,52 @@
         updatePanelHeight();
         window.addEventListener('resize', updatePanelHeight, { passive: true });
 
-        const resp = await fetch(`./data/events.json?v=${encodeURIComponent(BUILD_STAMP)}`, { cache: 'no-cache' });
-        const payload = await resp.json();
-        const eventsPrimary = payload.events || [];
+        // New (preferred) data model: venues + occurrences (no duplicated location edits).
+        // Back-compat: fall back to events.json if the new files don't exist yet.
+        let venuesById = new Map();
+        let occurrencesPrimary = null;
+        try {
+          const [rv, ro] = await Promise.all([
+            fetch(`./data/venues.json?v=${encodeURIComponent(BUILD_STAMP)}`, { cache: 'no-cache' }),
+            fetch(`./data/occurrences.json?v=${encodeURIComponent(BUILD_STAMP)}`, { cache: 'no-cache' }),
+          ]);
+          if (rv.ok && ro.ok) {
+            const pv = await rv.json();
+            const po = await ro.json();
+            const venues = pv.venues || [];
+            for (const v of venues) {
+              if (v && v.venue_id) venuesById.set(v.venue_id, v);
+            }
+            occurrencesPrimary = po.occurrences || [];
+          }
+        } catch (e) {}
+
+        let eventsPrimary = [];
+        if (occurrencesPrimary) {
+          eventsPrimary = occurrencesPrimary.map(o => {
+            const v = (o && o.venue_id) ? venuesById.get(o.venue_id) : null;
+            return {
+              weekday: o.weekday,
+              venue: v ? v.venue : '',
+              address: v ? v.address : '',
+              location_display: v ? (v.location_display || '') : '',
+              location: v ? (v.location_display || '') : '',
+              time: o.time,
+              cost: o.cost,
+              language: o.language,
+              regularity: o.regularity,
+              title: o.title,
+              url: o.url,
+              image_url: o.image_url,
+              lat: v ? v.lat : null,
+              lon: v ? v.lon : null,
+            };
+          });
+        } else {
+          const resp = await fetch(`./data/events.json?v=${encodeURIComponent(BUILD_STAMP)}`, { cache: 'no-cache' });
+          const payload = await resp.json();
+          eventsPrimary = payload.events || [];
+        }
 
         let eventsManual = [];
         try {
