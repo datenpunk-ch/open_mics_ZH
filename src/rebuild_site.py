@@ -26,7 +26,7 @@ def main() -> int:
     # Keep the source list explicit so it's reproducible.
     # Increase navigation timeout to tolerate slow pages.
     #
-    # Cleanup: remove older listing artifacts (new crawl each run).
+    # Cleanup: remove older generated artifacts (new crawl each run).
     root = Path(__file__).resolve().parents[1]
     raw_dir = root / "data" / "raw"
     if raw_dir.is_dir():
@@ -40,6 +40,35 @@ def main() -> int:
                 p.unlink()
             except OSError:
                 pass
+
+    # Processed outputs are derived from the crawl; remove stale versions so a failed
+    # run can't leave old results looking "fresh".
+    processed_dir = root / "data" / "processed"
+    if processed_dir.is_dir():
+        for p in processed_dir.glob("events_enriched_*.json"):
+            try:
+                p.unlink()
+            except OSError:
+                pass
+        for p in (processed_dir / "events_flat.csv",):
+            try:
+                if p.is_file():
+                    p.unlink()
+            except OSError:
+                pass
+        # Keep location_geocache.json (cache) unless user explicitly wants a full reset.
+
+    # Exported docs/data outputs are generated; remove stale ones.
+    docs_data_dir = root / "docs" / "data"
+    if docs_data_dir.is_dir():
+        for name in ("events.json", "venues.json", "occurrences.json"):
+            p = docs_data_dir / name
+            try:
+                if p.is_file():
+                    p.unlink()
+            except OSError:
+                pass
+        # Keep events_manual.json (manual edits layer).
 
     source_ids = sorted(LISTING_SOURCES.keys())
     if not source_ids:
