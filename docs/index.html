@@ -340,6 +340,65 @@
         color: var(--color-accent);
       }
 
+      .weekday-strip-hint {
+        font-size: 0.9rem;
+        color: var(--color-muted);
+        margin: 0.15rem 0 0.35rem;
+        max-width: 70ch;
+      }
+      .weekday-strip {
+        display: flex;
+        align-items: stretch;
+        gap: 8px;
+        margin-top: 0.35rem;
+        min-height: 128px;
+      }
+      .weekday-col {
+        flex: 1 1 0;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 6px;
+      }
+      .weekday-bar-track {
+        width: 100%;
+        flex: 1;
+        min-height: 40px;
+        background: rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--color-rule);
+        border-radius: 10px 10px 4px 4px;
+        display: flex;
+        align-items: flex-end;
+        overflow: hidden;
+      }
+      .weekday-bar-fill {
+        width: 100%;
+        border-radius: 8px 8px 0 0;
+        background: rgba(58, 103, 122, 0.38);
+        min-height: 0;
+        transition: height 0.35s ease;
+      }
+      .weekday-col.is-busiest .weekday-bar-fill {
+        background: rgba(58, 103, 122, 0.82);
+      }
+      .weekday-abbr {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        color: var(--color-muted);
+        text-transform: uppercase;
+        text-align: center;
+      }
+      .weekday-count {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--color-ink);
+        line-height: 1;
+      }
+
       .embed-frame {
         width: 100%;
         /* Avoid clipping the embedded page's side gutters */
@@ -383,6 +442,7 @@
         .reveal{ opacity:1; transform:none; transition:none; }
         .progress-bar{ transition:none; }
         .stat-card.flip{ opacity:1; transform:none; animation:none; }
+        .weekday-bar-fill { transition: none; }
       }
     </style>
   </head>
@@ -435,6 +495,14 @@
               <div class="stats-label">Shows by language</div>
               <div class="stats-cards" id="langStatsCards">
                 <div class="stat-card is-loading">Loading…</div>
+              </div>
+            </div>
+
+            <div class="stats reveal" id="weekdayStats" aria-live="polite">
+              <div class="stats-label">Shows by weekday</div>
+              <p class="weekday-strip-hint">Bar height is relative to the busiest night in this dataset (same show on two days counts twice).</p>
+              <div id="weekdayStatsInner">
+                <div class="stat-card is-loading" style="width:100%;max-width:100%;height:auto;min-height:72px;">Loading…</div>
               </div>
             </div>
 
@@ -566,6 +634,7 @@
         const cards = document.getElementById("langStatsCards");
         if (!cards) return;
         const manualCards = document.getElementById("manualStatsCards");
+        const weekdayWrap = document.getElementById("weekdayStatsInner");
 
         function eventKey(e) {
           const url = (e && e.url) ? String(e.url).trim() : "";
@@ -810,12 +879,90 @@
             card.appendChild(k);
             cards.appendChild(card);
           }
+
+          if (weekdayWrap) {
+            const WEEKDAYS = [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday",
+            ];
+            const WDAY_LOWER = new Map(WEEKDAYS.map((d) => [d.toLowerCase(), d]));
+            function normWeekdayToken(s) {
+              const t = String(s || "")
+                .trim()
+                .replace(/\.$/, "");
+              if (!t) return "";
+              return WDAY_LOWER.get(t.toLowerCase()) || "";
+            }
+            const dayCounts = new Map(WEEKDAYS.map((d) => [d, 0]));
+            for (const e of events) {
+              const raw = (e && e.weekday) ? String(e.weekday) : "";
+              const parts = raw
+                .split(/[,;/]/)
+                .map((x) => x.trim())
+                .filter(Boolean);
+              const toks = parts.length ? parts : [];
+              for (const tok of toks) {
+                const d = normWeekdayToken(tok);
+                if (d) dayCounts.set(d, (dayCounts.get(d) || 0) + 1);
+              }
+            }
+            const peak = Math.max(0, ...WEEKDAYS.map((d) => dayCounts.get(d) || 0));
+            const maxScale = Math.max(1, peak);
+
+            weekdayWrap.innerHTML = "";
+            const strip = document.createElement("div");
+            strip.className = "weekday-strip";
+            strip.setAttribute("role", "group");
+            strip.setAttribute("aria-label", "Recurring shows counted per weekday");
+
+            for (const d of WEEKDAYS) {
+              const n = dayCounts.get(d) || 0;
+              const col = document.createElement("div");
+              col.className = "weekday-col" + (peak > 0 && n === peak ? " is-busiest" : "");
+              const pct = peak > 0 ? (n / maxScale) * 100 : 0;
+
+              const track = document.createElement("div");
+              track.className = "weekday-bar-track";
+              const fill = document.createElement("div");
+              fill.className = "weekday-bar-fill";
+              fill.style.height = pct + "%";
+              fill.title = d + ": " + n + (n === 1 ? " show" : " shows");
+              track.appendChild(fill);
+
+              const abbr = document.createElement("div");
+              abbr.className = "weekday-abbr";
+              abbr.textContent = d.slice(0, 3);
+
+              const num = document.createElement("div");
+              num.className = "weekday-count";
+              num.textContent = String(n);
+
+              col.appendChild(track);
+              col.appendChild(abbr);
+              col.appendChild(num);
+              strip.appendChild(col);
+            }
+            weekdayWrap.appendChild(strip);
+          }
         } catch (e) {
           cards.innerHTML = "";
           const card = document.createElement("div");
           card.className = "stat-card is-loading";
           card.textContent = "Couldn’t load stats.";
           cards.appendChild(card);
+          if (weekdayWrap) {
+            weekdayWrap.innerHTML = "";
+            const w = document.createElement("div");
+            w.className = "stat-card is-loading";
+            w.style.cssText = "width:100%;max-width:100%;height:auto;min-height:72px;";
+            w.textContent = "Couldn’t load stats.";
+            weekdayWrap.appendChild(w);
+          }
         }
       })();
     </script>
