@@ -800,8 +800,28 @@ def _recurrence_from_ld(ld_blocks: list[Any] | None) -> str | None:
 
 
 def _recurrence_from_listing(path: str, title: str, url: str) -> str | None:
-    # No per-source recurrence inference rules.
-    # Recurrence should come from generic schema.org signals or explicit weekday patterns in copy.
+    """
+    Listing-level recurrence hints when schema.org series signals are missing.
+
+    Keep this generic and structural: detect "group/series pages" that represent multiple dates.
+    """
+    p = (path or "").lower()
+    u = (url or "").lower()
+    t = (title or "").strip()
+    tl = t.lower()
+
+    # Structural: a dedicated "group" path (common on some listing sites).
+    if "/p/gruppen/" in p or "/p/gruppen/" in u:
+        return "recurring"
+
+    # Structural: explicit multi-event count in listing title (e.g. "13 Events").
+    if re.search(r"\b\d{1,3}\s+events?\b", tl, flags=re.I):
+        # Eventfrog uses "Eventgruppe" wording; other sites may use "event group".
+        if "eventgruppe" in tl or "event group" in tl or "group" in tl:
+            return "recurring"
+        # Even without a "group" keyword, an explicit multi-event count is a strong signal.
+        return "recurring"
+
     return None
 
 
@@ -1262,7 +1282,10 @@ def _flatten_row_and_key(event: dict) -> tuple[dict[str, str], str]:
     if regularity == "unknown" and detail and isinstance(detail.get("text_preview"), str):
         # Generic fallback: recurring wording in visible copy, even when no EventSeries schema exists.
         blob = detail["text_preview"].lower()
-        if ("jeden" in blob or "every" in blob) and _weekday_indices_from_text(blob):
+        if (
+            ("jeden" in blob or "every" in blob or "cada" in blob or "chaque" in blob or "ogni" in blob)
+            and _weekday_indices_from_text(blob)
+        ):
             regularity = "recurring"
     # No per-source recurrence inference rules.
 
