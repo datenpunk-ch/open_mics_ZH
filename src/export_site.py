@@ -308,12 +308,7 @@ def _write_map_html(
     <meta http-equiv="Cache-Control" content="no-store, max-age=0" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Karla:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="stylesheet" href="./assets/fonts.css" />
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -323,17 +318,29 @@ def _write_map_html(
     <style>
       :root {{
         --color-bg: #ffffff;
-        --color-bg-soft: #f7f8f9;
-        --color-ink: #0f0f0f;
-        --color-ink-body: #171717;
-        --color-muted: #5f5f5f;
-        --color-rule: #d9dde1;
-        --color-accent: #3a677a;
-        --color-accent-hover: #2f5a6b;
+        --color-bg-soft: #f4f4f4;
+        --color-band: #f2f2f2;
+        --color-ink: #0b0d10;
+        --color-ink-body: #12161b;
+        --color-muted: #55606a;
+        --color-rule: #d6d6d6;
+        --color-accent: #b5542a;
+        --color-accent-hover: #944322;
+        --color-accent-text: #7a3418;
+        --color-accent-text-hover: #5c2712;
+
+        --color-bg-glass: rgba(255, 255, 255, 0.96);
+        --color-overlay: rgba(255, 255, 255, 0.82);
+        --shadow-hairline: rgba(0, 0, 0, 0.06);
+
+        --rule-w: 2px;
+        --rule-strong-w: 4px;
+        --underline-w: 2px;
 
         --font-display: "Spectral", "Georgia", serif;
-        --font-ui: "Karla", system-ui, sans-serif;
-        --font-mono: "JetBrains Mono", ui-monospace, monospace;
+        --font-ui: "Karla", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
 
         --space-1: 0.5rem;
         --space-2: 1rem;
@@ -376,7 +383,7 @@ def _write_map_html(
         transition: color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
       }}
       a:hover {{
-        color: var(--color-accent);
+        color: var(--color-ink);
       }}
       a:focus-visible {{
         outline: 2px solid var(--color-accent);
@@ -403,8 +410,8 @@ def _write_map_html(
         position: sticky;
         top: 0;
         z-index: 50;
-        background: rgba(255, 255, 255, 0.96);
-        border-bottom: 1px solid var(--color-ink);
+        background: var(--color-bg-glass);
+        border-bottom: var(--rule-w) solid var(--color-ink);
         backdrop-filter: blur(8px);
         padding: var(--space-3) var(--gutter-end) var(--space-3) var(--gutter-start);
       }}
@@ -437,7 +444,7 @@ def _write_map_html(
       .panel-title {{
         margin: 0 0 10px 0;
         padding-bottom: 6px;
-        border-bottom: 1px solid var(--color-rule);
+        border-bottom: var(--rule-w) solid var(--color-rule);
         /* Match event title styling in sidebar list */
         font-family: var(--font-display);
         font-size: 18px;
@@ -450,7 +457,7 @@ def _write_map_html(
         /* Slightly shorter, editorial feel */
         height: var(--panel-h, clamp(400px, calc(100vh - 200px), 480px));
         min-height: 400px;
-        border: 1px solid var(--color-rule);
+        border: var(--rule-w) solid var(--color-rule);
       }}
       /* Leaflet/SVG "focus" styling can leave clicked markers looking selected. */
       .leaflet-container .leaflet-interactive:focus {{
@@ -462,10 +469,10 @@ def _write_map_html(
         right: 0;
         top: 0;
         padding: 10px 12px;
-        background: rgba(255,255,255,0.92);
+        background: var(--color-overlay);
         color: var(--color-ink);
         font-size: 12px;
-        border-bottom: 1px solid var(--color-rule);
+        border-bottom: var(--rule-w) solid var(--color-rule);
         z-index: 5;
         backdrop-filter: blur(6px);
       }}
@@ -475,7 +482,7 @@ def _write_map_html(
       }}
       .controls {{
         padding: 0 0 14px 0;
-        border-bottom: 1px solid var(--color-rule);
+        border-bottom: var(--rule-w) solid var(--color-rule);
         display: grid;
         grid-template-columns: 1fr;
         gap: 10px;
@@ -496,7 +503,7 @@ def _write_map_html(
         padding: 10px 10px;
         border-radius: 0;
         box-sizing: border-box;
-        border: 1px solid var(--color-rule);
+        border: var(--rule-w) solid var(--color-rule);
         background: var(--color-bg-soft);
         color: var(--color-ink);
         outline: none;
@@ -514,7 +521,7 @@ def _write_map_html(
         width: 100%;
         text-align: left;
         padding: 10px 10px;
-        border: 1px solid var(--color-rule);
+        border: var(--rule-w) solid var(--color-rule);
         background: var(--color-bg-soft);
         color: var(--color-ink);
         font-family: var(--font-ui);
@@ -551,18 +558,18 @@ def _write_map_html(
       }}
       .filter-button[data-open="1"] {{
         background: #ffffff;
-        border-color: var(--color-accent);
+        border-color: var(--color-ink);
       }}
       .filter-button[data-open="1"] .meta,
       .filter-button[data-open="1"] .caret {{
-        color: var(--color-accent);
+        color: var(--color-ink);
       }}
       .filter-popover {{
         position: absolute;
         left: 0;
         right: 0;
         top: calc(100% + 6px);
-        border: 1px solid var(--color-rule);
+        border: var(--rule-w) solid var(--color-rule);
         background: var(--color-bg);
         padding: 8px;
         z-index: 20;
@@ -652,7 +659,7 @@ def _write_map_html(
         gap: 12px;
         flex-wrap: wrap;
         padding-bottom: 6px;
-        border-bottom: 1px solid var(--color-rule);
+        border-bottom: var(--rule-w) solid var(--color-rule);
         margin-bottom: 6px;
       }}
       .list-heading-title {{
@@ -673,7 +680,7 @@ def _write_map_html(
       }}
       .item {{
         padding: 10px 0;
-        border-bottom: 1px solid var(--color-rule);
+        border-bottom: var(--rule-w) solid var(--color-rule);
       }}
       .item-inner {{
         display: grid;
@@ -685,7 +692,7 @@ def _write_map_html(
         width: 116px;
         height: 76px;
         object-fit: cover;
-        border: 1px solid var(--color-rule);
+        border: var(--rule-w) solid var(--color-rule);
         background: var(--color-bg-soft);
       }}
       @media (max-width: 980px) {{
@@ -698,8 +705,8 @@ def _write_map_html(
         }}
       }}
       .item.active {{
-        background: rgba(58, 103, 122, 0.08);
-        outline: 2px solid rgba(58, 103, 122, 0.30);
+        background: rgba(181, 84, 42, 0.08);
+        outline: 2px solid rgba(181, 84, 42, 0.30);
         outline-offset: 3px;
       }}
       .item a {{
@@ -725,12 +732,12 @@ def _write_map_html(
         font-size: 15px;
         line-height: 1.25;
         text-decoration: underline;
-        text-decoration-color: rgba(58, 103, 122, 0.55);
+        text-decoration-color: rgba(181, 84, 42, 0.55);
         text-underline-offset: 3px;
       }}
       .meta.venue a:hover {{
         color: var(--color-accent-hover);
-        text-decoration-color: rgba(47, 90, 107, 0.7);
+        text-decoration-color: rgba(148, 67, 34, 0.7);
       }}
       .meta-strong {{
         color: var(--color-ink);
@@ -743,7 +750,7 @@ def _write_map_html(
       .pill {{
         display: inline-block;
         font-size: 11px;
-        border: 1px solid var(--color-rule);
+        border: var(--rule-w) solid var(--color-rule);
         border-radius: 0;
         padding: 2px 6px;
         color: var(--color-muted);
@@ -757,7 +764,7 @@ def _write_map_html(
         padding: 10px 12px;
         color: var(--color-muted);
         font-size: 12px;
-        border-top: 1px solid var(--color-rule);
+        border-top: var(--rule-w) solid var(--color-rule);
         font-family: var(--font-mono);
       }}
       .site-footer {{
@@ -765,7 +772,7 @@ def _write_map_html(
         color: var(--color-muted);
         font-size: 12px;
         font-family: var(--font-mono);
-        border-top: 1px solid var(--color-rule);
+        border-top: var(--rule-w) solid var(--color-ink);
         text-align: center;
       }}
       @media (max-width: 980px) {{
@@ -928,8 +935,8 @@ def _write_map_html(
         return v;
       }}
 
-      const PIN_FILL = '#3a677a';
-      const PIN_STROKE = '#2d5366';
+      const PIN_FILL = '#b5542a';
+      const PIN_STROKE = '#0b0d10';
 
       function escapeHtml(s) {{
         return (s || '').toString().replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
