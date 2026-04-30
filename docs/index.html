@@ -461,24 +461,9 @@
     <a class="skip-link" href="#content">Skip to content</a>
     <div class="progress-bar" id="progress"></div>
 
-    <header class="hero" aria-label="Open MicZH article hero">
-      <div class="container">
-        <div class="hero-tag reveal">Field guide · Zurich · comedy</div>
-        <h1 class="reveal">An editorial guide to open mics in Zürich</h1>
-        <p class="hero-sub reveal">
-          Open mics are the city’s weekly rehearsal rooms: short sets, low stakes, and the fastest way to
-          understand what a comedy scene actually sounds like. This page explains how to use the project
-          map, what “recurring” means in practice, and how to show up well.
-        </p>
-        <div class="hero-byline reveal">
-          <span>Open MicZH</span>
-          <span>Living document</span>
-          <span><a href="#interactive">TL;DR → interactive tool</a></span>
-        </div>
-      </div>
-    </header>
+    <header class="hero" aria-label="Open MicZH article hero" data-src="./content/article.md" data-part="hero"></header>
 
-    <main id="content" data-src="./content/index_body.md"></main>
+    <main id="content" data-src="./content/article.md" data-part="body"></main>
 
     <footer class="site-footer reveal">
       Open MicZH · Article page · <a href="./map.html">Map / interactive</a>
@@ -486,10 +471,8 @@
 
     <script>
       window.__contentReady = (async function () {
-        const main = document.getElementById("content");
-        if (!main) return;
-        const src = main.getAttribute("data-src");
-        if (!src) return;
+        const nodes = Array.from(document.querySelectorAll("[data-src]"));
+        if (!nodes.length) return;
 
         function escapeHtml(s) {
           return String(s || "")
@@ -514,7 +497,6 @@
           const lines = String(md || "").replace(/\r\n?/g, "\n").split("\n");
           const out = [];
           let inUl = false;
-          let inHtmlBlock = false;
 
           function closeUl() {
             if (inUl) {
@@ -530,25 +512,13 @@
 
             if (!t) {
               closeUl();
-              if (inHtmlBlock) {
-                out.push(raw);
-              }
               continue;
             }
 
-            // Raw HTML blocks: pass through until the matching closing tag appears.
-            if (inHtmlBlock) {
-              out.push(raw);
-              if (t.startsWith("</section") || t.startsWith("</div") || t.startsWith("</ul") || t.startsWith("</p") || t.startsWith("</iframe")) {
-                // Heuristic: when we hit a closing tag at column start, allow leaving HTML mode.
-                // This keeps markdown parsing from accidentally wrapping block HTML.
-                inHtmlBlock = false;
-              }
-              continue;
-            }
+            // Raw HTML lines: pass through, but keep parsing markdown between tags.
+            // This lets us embed structural wrappers (<section>, <div>, etc.) and still write copy in markdown.
             if (t.startsWith("<")) {
               closeUl();
-              inHtmlBlock = true;
               out.push(raw);
               continue;
             }
@@ -583,22 +553,61 @@
           return out.join("\n");
         }
 
-        try {
-          const r = await fetch(src, { cache: "no-cache" });
-          if (!r.ok) throw new Error("Failed to load: " + src);
-          const txt = await r.text();
+        function splitParts(md) {
+          const text = String(md || "").replace(/\r\n?/g, "\n");
+          const re = /^<!--PART:([a-zA-Z0-9_-]+)-->\s*$/gm;
+          const matches = Array.from(text.matchAll(re));
+          if (!matches.length) return null;
+          const parts = {};
+          for (let i = 0; i < matches.length; i++) {
+            const key = matches[i][1];
+            const start = matches[i].index + matches[i][0].length;
+            const end = (i + 1 < matches.length) ? matches[i + 1].index : text.length;
+            parts[key] = text.slice(start, end).trim();
+          }
+          return parts;
+        }
+
+        async function fetchTextCached(cache, src) {
+          if (cache.has(src)) return cache.get(src);
+          const p = (async () => {
+            const r = await fetch(src, { cache: "no-cache" });
+            if (!r.ok) throw new Error("Failed to load: " + src);
+            return await r.text();
+          })();
+          cache.set(src, p);
+          return p;
+        }
+
+        async function loadInto(node, cache) {
+          const src = node.getAttribute("data-src");
+          if (!src) return;
+          const part = (node.getAttribute("data-part") || "").trim();
+          const txt = await fetchTextCached(cache, src);
           if (src.toLowerCase().endsWith(".md")) {
-            main.innerHTML = mdToHtml(txt);
+            const parts = splitParts(txt);
+            const chunk = (parts && part && Object.prototype.hasOwnProperty.call(parts, part)) ? parts[part] : txt;
+            node.innerHTML = mdToHtml(chunk);
           } else {
-            main.innerHTML = txt;
+            node.innerHTML = txt;
+          }
+        }
+
+        try {
+          const cache = new Map();
+          for (const node of nodes) {
+            await loadInto(node, cache);
           }
         } catch (e) {
           console.error(e);
-          main.innerHTML =
-            "<section><div class='container'><div class='note-box'>" +
-            "<div class='note-box-label'>Note</div>" +
-            "<p>Could not load the article body. Try opening <a href='./content/index_body.md'>index_body.md</a>.</p>" +
-            "</div></div></section>";
+          const main = document.getElementById("content");
+          if (main) {
+            main.innerHTML =
+              "<section><div class='container'><div class='note-box'>" +
+              "<div class='note-box-label'>Note</div>" +
+              "<p>Could not load the article body. Try opening <a href='./content/article.md'>article.md</a>.</p>" +
+              "</div></div></section>";
+          }
         }
       })();
     </script>

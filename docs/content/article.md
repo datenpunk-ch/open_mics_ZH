@@ -1,9 +1,26 @@
 <!--
-  Article body in Markdown.
-  This file is rendered into `docs/index.html` at runtime.
-  (Raw HTML blocks are allowed and will be passed through.)
+  Single-source article content.
+  `docs/index.html` loads this file and injects PART:hero into the hero header,
+  and PART:body into the <main id="content"> element.
 -->
 
+<!--PART:hero-->
+<div class="container">
+  <div class="hero-tag reveal">Field guide · Zurich · comedy</div>
+  <h1 class="reveal">An editorial guide to open mics in Zürich</h1>
+  <p class="hero-sub reveal">
+    Open mics are the city’s weekly rehearsal rooms: short sets, low stakes, and the fastest way to
+    understand what a comedy scene actually sounds like. This page explains how to use the project
+    map, what “recurring” means in practice, and how to show up well.
+  </p>
+  <div class="hero-byline reveal">
+    <span>Open MicZH</span>
+    <span>Living document</span>
+    <span><a href="#interactive">TL;DR → interactive tool</a></span>
+  </div>
+</div>
+
+<!--PART:body-->
 <section>
   <div class="container">
     <div class="section-label reveal">Start here</div>

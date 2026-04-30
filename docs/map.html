@@ -492,7 +492,7 @@
       <div class="card">
         <div class="controls">
           <div>
-            <label for="weekday">Weekday</label>
+            <label for="weekday" id="weekdayLabel">Weekday</label>
             <div class="filter-row" style="position:relative;">
               <button class="filter-button" id="weekdayBtn" type="button" aria-expanded="false" data-open="0">
                 <span class="meta" id="weekdayMeta">All</span>
@@ -504,7 +504,7 @@
             </div>
           </div>
           <div>
-            <label for="language">Comedy language</label>
+            <label for="language" id="languageLabel">Comedy language</label>
             <div class="filter-row" style="position:relative;">
               <button class="filter-button" id="languageBtn" type="button" aria-expanded="false" data-open="0">
                 <span class="meta" id="languageMeta">All</span>
@@ -516,7 +516,7 @@
             </div>
           </div>
           <div>
-            <label for="q">Search</label>
+            <label for="q" id="searchLabel">Search</label>
             <input id="q" placeholder="title or location" />
           </div>
         </div>
@@ -1029,7 +1029,7 @@
 
         const pinned = pinGroups.length;
         document.getElementById('mapNote').textContent =
-          `Venues: ${pinned} · ${filtered.length} event(s)`;
+          `${UI_TEXT.mapNote.venues || 'Venues'}: ${pinned} · ${filtered.length} ${UI_TEXT.mapNote.events || 'event(s)'}`;
       }
 
       function getGoogleMapsKey() {
@@ -1113,6 +1113,53 @@
       }
 
       async function boot() {
+        const UI_TEXT = {
+          title: "Open Mics Zurich",
+          subtitle: "Recurring open mic events in and around Zürich.",
+          filters: {
+            weekdayLabel: "Weekday",
+            languageLabel: "Comedy language",
+            searchLabel: "Search",
+            searchPlaceholder: "title or location",
+          },
+          checks: {
+            metaAll: "All",
+            metaNone: "None",
+            selectAll: "Select all",
+            selectNone: "Select none",
+          },
+          mapNote: {
+            venues: "Venues",
+            events: "event(s)",
+          },
+        };
+
+        async function loadUiText() {
+          try {
+            const r = await fetch("./content/map_text.json", { cache: "no-cache" });
+            if (!r.ok) return;
+            const j = await r.json();
+            if (!j || typeof j !== "object") return;
+            // Shallow merge is enough (small schema).
+            Object.assign(UI_TEXT, j);
+            if (j.filters) UI_TEXT.filters = Object.assign(UI_TEXT.filters, j.filters);
+            if (j.checks) UI_TEXT.checks = Object.assign(UI_TEXT.checks, j.checks);
+            if (j.mapNote) UI_TEXT.mapNote = Object.assign(UI_TEXT.mapNote, j.mapNote);
+          } catch (e) {}
+        }
+
+        await loadUiText();
+
+        // Apply static UI labels (safe if elements missing).
+        const weekdayLabel = document.getElementById("weekdayLabel");
+        if (weekdayLabel) weekdayLabel.textContent = UI_TEXT.filters.weekdayLabel || "Weekday";
+        const languageLabel = document.getElementById("languageLabel");
+        if (languageLabel) languageLabel.textContent = UI_TEXT.filters.languageLabel || "Comedy language";
+        const searchLabel = document.getElementById("searchLabel");
+        if (searchLabel) searchLabel.textContent = UI_TEXT.filters.searchLabel || "Search";
+        const q = document.getElementById("q");
+        if (q && UI_TEXT.filters.searchPlaceholder) q.setAttribute("placeholder", UI_TEXT.filters.searchPlaceholder);
+
         // Dynamically size map + list to viewport, with safe bounds.
         function updatePanelHeight() {
           const minH = 400;
@@ -1159,15 +1206,18 @@
 
             const selAllLabel = root.querySelector('[data-select-all-label="1"]');
             if (selAllLabel) {
-              selAllLabel.textContent = (checkedN === boxes.length) ? 'Select none' : 'Select all';
+              selAllLabel.textContent =
+                (checkedN === boxes.length)
+                  ? (UI_TEXT.checks.selectNone || 'Select none')
+                  : (UI_TEXT.checks.selectAll || 'Select all');
             }
 
             const metaEl = metaId ? document.getElementById(metaId) : null;
             if (metaEl) {
               if (checkedN === boxes.length) {
-                metaEl.textContent = 'All';
+                metaEl.textContent = UI_TEXT.checks.metaAll || 'All';
               } else if (checkedN === 0) {
-                metaEl.textContent = 'None';
+                metaEl.textContent = UI_TEXT.checks.metaNone || 'None';
               } else {
                 const checkedSet = new Set(boxes.filter(b => b.checked).map(b => b.getAttribute('data-value')));
                 const ordered = values.filter(v => checkedSet.has(v));
@@ -1196,7 +1246,7 @@
             render(events);
           });
           const allSpan = document.createElement('span');
-          allSpan.textContent = 'Select all';
+          allSpan.textContent = UI_TEXT.checks.selectAll || 'Select all';
           allSpan.className = 'label';
           allSpan.setAttribute('data-select-all-label', '1');
           allLab.appendChild(allCb);

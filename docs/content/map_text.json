@@ -1,0 +1,23 @@
+{
+  "title": "Open Mics Zurich",
+  "subtitle": "Recurring open mic events in and around Zürich.",
+
+  "filters": {
+    "weekdayLabel": "Weekday",
+    "languageLabel": "Comedy language",
+    "searchLabel": "Search",
+    "searchPlaceholder": "title or location"
+  },
+
+  "checks": {
+    "metaAll": "All",
+    "metaNone": "None",
+    "selectAll": "Select all",
+    "selectNone": "Select none"
+  },
+
+  "mapNote": {
+    "venues": "Venues",
+    "events": "event(s)"
+  }
+}
