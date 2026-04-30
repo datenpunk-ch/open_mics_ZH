@@ -6,13 +6,10 @@
 
 <!--PART:hero-->
 <div class="container">
-  <div class="hero-tag reveal">Field guide · Zürich · Comedy</div>
+  <div class="hero-tag reveal">Guide · Zürich · Comedy</div>
   <h1 class="reveal">Live, love, laugh in Züri </h1>
-  <p class="hero-sub reveal">
-    Schon die Grosi wusste: **Lachen kostet nichts**. Allerdings kannte sie wohl auch nicht das Leben in der teuersten Stadt der Welt oder die aktuellen Ticketpreise der Standuplegenden. Wo und wann es trotzdem günstig ist, findest du auf der Karte der Open-Mic-Szene in Zürich. Abwechslungsreich und mehrsprachig kannst du hier Newcomer entdecken, erprobten Comedians mit neuem Material beim Bomben zuschauen oder einfach selbst auftreten.
-  </p>
+  <p class="hero-sub reveal">Schon die Grosi wusste: Lachen kostet nichts. Allerdings kannte sie wohl auch nicht das Leben in der teuersten Stadt der Welt oder die aktuellen Ticketpreise der Standuplegenden. Wo und wann es trotzdem günstig ist, findest du auf der Karte der Open-Mic-Szene in Zürich. Abwechslungsreich und mehrsprachig kannst du hier Newcomer entdecken, erprobten Comedians mit neuem Material beim Bomben zuschauen oder einfach selbst auftreten.</p>
   <div class="hero-byline reveal">
-    <span>Open MicZH</span>
     <span><a href="#interactive">Direkt zur Karte</a></span>
   </div>
 </div>
@@ -23,7 +20,7 @@
     <div class="section-label reveal">Open-Mics</div>
     <div class="sec-head reveal">
       <div class="sec-num">01</div>
-      <h2>Lachen ist gesund</h2>
+      <h2>Lachen ist die beste Medizin</h2>
     </div>
     <div class="measure">
 
@@ -31,9 +28,7 @@ Es gibt Abende in dieser Stadt, an denen man in einem kleinen Saal sitzt, einen 
 
  <div class="note-box reveal">
         <div class="note-box-label">Was ist ein eigentlich ein Open Mic?</div>
-        <p>
-           Offene Bühne, kein Vorsprechen, jede:r kann auftreten. Meistens 5 Minuten, meistens mit Mikrofon, meistens mit schlechter Luft und guten Drinks. Ob Newcomer oder alteingesessen, hier wird neues Material getestet, verändert und iterativ feingeschliffen.
-        </p>
+        <p>Offene Bühne, kein Vorsprechen, jede:r kann auftreten. Meistens 5 Minuten, meistens mit Mikrofon, meistens mit schlechter Luft und guten Drinks. Ob Newcomer oder alteingesessen, hier wird neues Material getestet, verändert und iterativ feingeschliffen.</p>
       </div>
 
 Das Besondere an Open Mics ist, dass sie zwei völlig verschiedene Abende gleichzeitig sind. Je nachdem, auf welcher Seite des Mikrofons man sitzt.
@@ -41,23 +36,19 @@ Als **Zuschauer:in** ist es unvorhersehbares, echtes Entertainment. Kein poliert
 Als **Auftretende:r** ist es ein Testlabor. Neues Material, vor echtem Publikum, ohne Netz. Wer Stand-up lernen will, kommt an Open Mics nicht vorbei. Wer schon kann, kommt trotzdem. Und dass das meistens auch noch günstig ist, schadet in Zürich nicht.
 
       <div class="stats reveal" id="weekdayStats" aria-live="polite">
-        <div class="stats-label">Shows by weekday</div>
-        <p class="weekday-strip-hint">
-          Bar height is relative to the busiest night in this dataset (same show on two days counts twice).
-        </p>
+        <div class="stats-label">Shows nach Wochentag</div>
+        <p class="weekday-strip-hint">Die Balkenhöhe ist relativ zum geschäftigsten Abend in diesem Datensatz (wenn dieselbe Show an zwei Tagen stattfindet, zählt sie doppelt).</p>
         <div id="weekdayStatsInner">
-          <div class="stat-card is-loading" style="width:100%;max-width:100%;height:auto;min-height:72px;">
-            Loading…
-          </div>
+          <div class="stat-card is-loading" style="width:100%;max-width:100%;height:auto;min-height:72px;">Lädt…</div>
         </div>
       </div>
 
 Dienstag ist Zürichs heimlicher Comedy-Abend. Nicht Freitag, nicht Samstag. Warum genau, verraten die Daten nicht. Vielleicht günstigere Venue-Konditionen, vielleicht bewusste Konkurrenzvermeidung. Wahrscheinlich beides.
 
       <div class="stats reveal" id="langStats" aria-live="polite">
-        <div class="stats-label">Shows by language</div>
+        <div class="stats-label">Shows nach Sprache</div>
         <div class="stats-cards" id="langStatsCards">
-          <div class="stat-card is-loading">Loading…</div>
+          <div class="stat-card is-loading">Lädt…</div>
         </div>
       </div>
 
@@ -65,9 +56,9 @@ Wer in Zürich auf die Bühne will oder ins Publikum, spricht meistens Englisch.
 Aber es könnte auch ein Artefakt sein. Englischsprachige Events landen auf Eventplattformen. Deutschsprachige und schweizerdeutsche Open Mics leben eher auf Instagram-Stories oder per Mundpropaganda. Insiderwissen statt Suchmaschinenresultat.
 
       <div class="stats reveal" id="manualStats" aria-live="polite">
-        <div class="stats-label">Data status &amp; venue overrides</div>
+        <div class="stats-label">Datenstatus &amp; Venue-Overrides</div>
         <div class="stats-cards" id="manualStatsCards">
-          <div class="stat-card is-loading">Loading…</div>
+          <div class="stat-card is-loading">Lädt…</div>
         </div>
       </div>
 
@@ -77,24 +68,24 @@ Aber es könnte auch ein Artefakt sein. Englischsprachige Events landen auf Even
 
 <section>
   <div class="container">
-    <div class="section-label reveal">How to use it</div>
+    <div class="section-label reveal">So funktioniert’s</div>
     <div class="sec-head reveal">
       <div class="sec-num">02</div>
-      <h2>From “I’m curious” to “I’m on the mic”</h2>
+      <h2>Von «mal schauen» zu «ich geh hin»</h2>
     </div>
     <div class="measure">
 
-### If you’re going to watch
+### Wenn du zuschauen willst
 
-- **Arrive early** for a seat and to avoid interrupting sets.
-- **Check the venue link** (each entry links to the organizer/venue page when available).
-- **Respect the room**: phones down, listening up.
+- **Komm früh** für einen Platz und um Sets nicht zu unterbrechen.
+- **Check den Venue-/Organiser-Link** (wenn vorhanden).
+- **Respektiere den Raum**: Handy weg, zuhören.
 
-### If you’re going to perform
+### Wenn du auftreten willst
 
-- **Know the format**: sign-up style and set length vary by event.
-- **Bring a tight 3–5**: one clear premise is better than five half-jokes.
-- **Talk to the host**: they control the flow, and they can answer practical questions fast.
+- **Kenn das Format**: Sign-up und Set-Länge unterscheiden sich je nach Event.
+- **Bring ein tightes 3–5**: eine klare Prämisse ist besser als fünf halbe Jokes.
+- **Sprich mit dem Host**: der/die steuert den Ablauf und kann praktische Fragen schnell klären.
 
     </div>
   </div>
@@ -102,29 +93,21 @@ Aber es könnte auch ein Artefakt sein. Englischsprachige Events landen auf Even
 
 <section id="interactive">
   <div class="container">
-    <div class="section-label reveal">Interactive</div>
+    <div class="section-label reveal">Wo und wann jetzt genau?</div>
     <div class="sec-head reveal">
       <div class="sec-num">03</div>
-      <h2>The map + list, embedded</h2>
+      <h2>Ein guter Abend</h2>
     </div>
   </div>
   <div class="wide-bleed">
     <div class="embed-frame reveal" style="height: min(64vh, 700px);">
-      <iframe
-        title="Open MicZH Karte"
-        src="./map.html"
-        loading="lazy"
-        referrerpolicy="no-referrer"
-      ></iframe>
+      <iframe title="Open MicZH Karte" src="./map.html" loading="lazy" referrerpolicy="no-referrer"></iframe>
     </div>
     <div class="container">
       <div class="measure">
         <div class="note-box reveal" style="margin-top: 1.5rem;">
-          <div class="note-box-label">Note</div>
-          <p>
-            Falls die Karte auf dem Phone sich zu gequetscht anfühlt, versuche die Karte hier direkt:
-            <a href="./map.html">Open MicZH Karte</a>.
-          </p>
+          <div class="note-box-label">Hinweis</div>
+          <p>Falls die Karte auf dem Phone sich zu gequetscht anfühlt, versuche die Karte hier direkt: <a href="./map.html">Open MicZH Karte</a>.</p>
         </div>
       </div>
     </div>
@@ -133,7 +116,7 @@ Aber es könnte auch ein Artefakt sein. Englischsprachige Events landen auf Even
 
 <section>
   <div class="container">
-    <div class="section-label reveal">Contribute</div>
+    <div class="section-label reveal">Mitmachen</div>
     <div class="sec-head reveal">
       <div class="sec-num">04</div>
       <h2>Fehlt öppis?</h2>
@@ -146,7 +129,7 @@ Die Szene verändert sich laufend: Zeiten und Orte wechseln, der Wochentag wird 
 - **Falsche Zeit?** Gerne mit Source link.
 - **Neues Open-Mic?** Wochentag, Uhrzeit, Location.
 
-Project repo: [open_mics_ZH](https://github.com/datenpunk-ch/open_mics_ZH).
+Projekt GitHub repo: [open_mics_ZH](https://github.com/datenpunk-ch/open_mics_ZH).
 
     </div>
   </div>

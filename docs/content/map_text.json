@@ -1,12 +1,12 @@
 {
   "title": "Comedy Open MicZH",
-  "subtitle": "Finde ",
+  "subtitle": "Finde wiederkehrende Open Mics in und um Zürich.",
 
   "filters": {
     "weekdayLabel": "Wochentag",
     "languageLabel": "Sprache",
     "searchLabel": "Suche",
-    "searchPlaceholder": "Name oder Location"
+    "searchPlaceholder": "Name oder Ort"
   },
 
   "checks": {
@@ -17,7 +17,7 @@
   },
 
   "mapNote": {
-    "venues": "Venues",
-    "events": "Open Mic(s)"
+    "venues": "Orte",
+    "events": "Open Mics"
   }
 }
