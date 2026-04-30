@@ -6,7 +6,7 @@
     <title>Open MicZH — An article</title>
     <meta
       name="description"
-      content="An editorial overview of recurring open mic comedy events in Zurich, with an embedded interactive map and list."
+      content="An overview of recurring open mic comedy events in Zurich, with an embedded interactive map and some stats."
     />
     <link rel="stylesheet" href="./assets/fonts.css" />
     <style>
@@ -478,141 +478,133 @@
       </div>
     </header>
 
-    <main id="content">
-      <section>
-        <div class="container">
-          <div class="section-label reveal">Start here</div>
-          <div class="sec-head reveal">
-            <div class="sec-num">01</div>
-            <h2>What this project is (and isn’t)</h2>
-          </div>
-          <div class="measure">
-            <p class="reveal">
-              <strong>Open MicZH</strong> is a curated list of <strong>recurring</strong> open mic comedy events in
-              Zurich. “Recurring” means: if you go next week, there’s a good chance it’s happening again.
-            </p>
-            <p class="reveal">
-              It’s not a full calendar of every one-off showcase. It’s not a review site. It’s meant to be
-              useful when you have a free evening and want an event you can trust is really there.
-            </p>
-            <div class="note-box reveal">
-              <div class="note-box-label">Tip</div>
-              <p>
-                Use the filters to pick a weekday/language, then click an event in the list — the map will jump
-                to that venue and show the tooltip.
-              </p>
-            </div>
-            <div class="stats reveal" id="langStats" aria-live="polite">
-              <div class="stats-label">Shows by language</div>
-              <div class="stats-cards" id="langStatsCards">
-                <div class="stat-card is-loading">Loading…</div>
-              </div>
-            </div>
-
-            <div class="stats reveal" id="weekdayStats" aria-live="polite">
-              <div class="stats-label">Shows by weekday</div>
-              <p class="weekday-strip-hint">Bar height is relative to the busiest night in this dataset (same show on two days counts twice).</p>
-              <div id="weekdayStatsInner">
-                <div class="stat-card is-loading" style="width:100%;max-width:100%;height:auto;min-height:72px;">Loading…</div>
-              </div>
-            </div>
-
-            <div class="stats reveal" id="manualStats" aria-live="polite">
-              <div class="stats-label">Data status &amp; venue overrides</div>
-              <div class="stats-cards" id="manualStatsCards">
-                <div class="stat-card is-loading">Loading…</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section>
-        <div class="container">
-          <div class="section-label reveal">How to use it</div>
-          <div class="sec-head reveal">
-            <div class="sec-num">02</div>
-            <h2>From “I’m curious” to “I’m on the mic”</h2>
-          </div>
-          <div class="measure">
-            <h3 class="reveal">If you’re going to watch</h3>
-            <ul class="reveal">
-              <li><strong>Arrive early</strong> for a seat and to avoid interrupting sets.</li>
-              <li><strong>Check the venue link</strong> (each entry links to the organizer/venue page when available).</li>
-              <li><strong>Respect the room</strong>: phones down, listening up.</li>
-            </ul>
-            <h3 class="reveal">If you’re going to perform</h3>
-            <ul class="reveal">
-              <li><strong>Know the format</strong>: sign-up style and set length vary by event.</li>
-              <li><strong>Bring a tight 3–5</strong>: one clear premise is better than five half-jokes.</li>
-              <li><strong>Talk to the host</strong>: they control the flow, and they can answer practical questions fast.</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section id="interactive">
-        <div class="container">
-          <div class="section-label reveal">Interactive</div>
-          <div class="sec-head reveal">
-            <div class="sec-num">03</div>
-            <h2>The map + list, embedded</h2>
-          </div>
-        </div>
-        <div class="wide-bleed">
-          <div class="embed-frame reveal" style="height: min(64vh, 700px);">
-            <iframe
-              title="Open MicZH interactive map and list"
-              src="./map.html"
-              loading="lazy"
-              referrerpolicy="no-referrer"
-            ></iframe>
-          </div>
-          <div class="container">
-            <div class="measure">
-              <div class="note-box reveal" style="margin-top: 1.5rem;">
-                <div class="note-box-label">Note</div>
-                <p>
-                  If the embed feels cramped on mobile, open the full map page instead:
-                  <a href="./map.html">Open MicZH map</a>.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section>
-        <div class="container">
-          <div class="section-label reveal">Contribute</div>
-          <div class="sec-head reveal">
-            <div class="sec-num">04</div>
-            <h2>How to keep the list accurate</h2>
-          </div>
-          <div class="measure">
-            <p class="reveal">
-              Scenes change quickly: venues close, formats rotate, organizers take breaks. If you spot an
-              issue, the fastest way to improve the site is to open a GitHub issue with the exact correction.
-            </p>
-            <ul class="reveal">
-              <li><strong>Wrong location?</strong> Share the venue name + address.</li>
-              <li><strong>Time changed?</strong> Provide the updated start time and a source link.</li>
-              <li><strong>New recurring mic?</strong> Include weekday, language(s), and organizer link.</li>
-            </ul>
-            <p class="reveal">
-              Project repo: <a href="https://github.com/datenpunk-ch/open_mics_ZH" target="_blank" rel="noreferrer">open_mics_ZH</a>.
-            </p>
-          </div>
-        </div>
-      </section>
-    </main>
+    <main id="content" data-src="./content/index_body.md"></main>
 
     <footer class="site-footer reveal">
       Open MicZH · Article page · <a href="./map.html">Map / interactive</a>
     </footer>
 
     <script>
-      (function () {
+      window.__contentReady = (async function () {
+        const main = document.getElementById("content");
+        if (!main) return;
+        const src = main.getAttribute("data-src");
+        if (!src) return;
+
+        function escapeHtml(s) {
+          return String(s || "")
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#39;");
+        }
+
+        function renderInlineMarkdown(s) {
+          let out = escapeHtml(s);
+          out = out.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, t, url) => `<a href="${escapeHtml(url)}">${escapeHtml(t)}</a>`);
+          out = out.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+          out = out.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+          return out;
+        }
+
+        // Minimal markdown renderer (enough for our article copy).
+        // - Supports headings, paragraphs, unordered lists, and raw HTML blocks.
+        function mdToHtml(md) {
+          const lines = String(md || "").replace(/\r\n?/g, "\n").split("\n");
+          const out = [];
+          let inUl = false;
+          let inHtmlBlock = false;
+
+          function closeUl() {
+            if (inUl) {
+              out.push("</ul>");
+              inUl = false;
+            }
+          }
+
+          for (let i = 0; i < lines.length; i++) {
+            const raw = lines[i];
+            const line = raw.trimEnd();
+            const t = line.trim();
+
+            if (!t) {
+              closeUl();
+              if (inHtmlBlock) {
+                out.push(raw);
+              }
+              continue;
+            }
+
+            // Raw HTML blocks: pass through until the matching closing tag appears.
+            if (inHtmlBlock) {
+              out.push(raw);
+              if (t.startsWith("</section") || t.startsWith("</div") || t.startsWith("</ul") || t.startsWith("</p") || t.startsWith("</iframe")) {
+                // Heuristic: when we hit a closing tag at column start, allow leaving HTML mode.
+                // This keeps markdown parsing from accidentally wrapping block HTML.
+                inHtmlBlock = false;
+              }
+              continue;
+            }
+            if (t.startsWith("<")) {
+              closeUl();
+              inHtmlBlock = true;
+              out.push(raw);
+              continue;
+            }
+
+            const h3 = t.match(/^###\s+(.*)$/);
+            if (h3) {
+              closeUl();
+              out.push(`<h3 class="reveal">${renderInlineMarkdown(h3[1])}</h3>`);
+              continue;
+            }
+            const h2 = t.match(/^##\s+(.*)$/);
+            if (h2) {
+              closeUl();
+              out.push(`<h2 class="reveal">${renderInlineMarkdown(h2[1])}</h2>`);
+              continue;
+            }
+
+            const li = t.match(/^- (.*)$/);
+            if (li) {
+              if (!inUl) {
+                out.push('<ul class="reveal">');
+                inUl = true;
+              }
+              out.push(`<li>${renderInlineMarkdown(li[1])}</li>`);
+              continue;
+            }
+
+            closeUl();
+            out.push(`<p class="reveal">${renderInlineMarkdown(t)}</p>`);
+          }
+          closeUl();
+          return out.join("\n");
+        }
+
+        try {
+          const r = await fetch(src, { cache: "no-cache" });
+          if (!r.ok) throw new Error("Failed to load: " + src);
+          const txt = await r.text();
+          if (src.toLowerCase().endsWith(".md")) {
+            main.innerHTML = mdToHtml(txt);
+          } else {
+            main.innerHTML = txt;
+          }
+        } catch (e) {
+          console.error(e);
+          main.innerHTML =
+            "<section><div class='container'><div class='note-box'>" +
+            "<div class='note-box-label'>Note</div>" +
+            "<p>Could not load the article body. Try opening <a href='./content/index_body.md'>index_body.md</a>.</p>" +
+            "</div></div></section>";
+        }
+      })();
+    </script>
+    <script>
+      (async function () {
+        await (window.__contentReady || Promise.resolve());
         const progress = document.getElementById("progress");
         if (!progress) return;
         function tick() {
@@ -627,21 +619,25 @@
       })();
     </script>
     <script>
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((e) => {
-            if (e.isIntersecting) {
-              e.target.classList.add("visible");
-              observer.unobserve(e.target);
-            }
-          });
-        },
-        { threshold: 0.12 }
-      );
-      document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+      (async function () {
+        await (window.__contentReady || Promise.resolve());
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                e.target.classList.add("visible");
+                observer.unobserve(e.target);
+              }
+            });
+          },
+          { threshold: 0.12 }
+        );
+        document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+      })();
     </script>
     <script>
       (async function () {
+        await (window.__contentReady || Promise.resolve());
         const cards = document.getElementById("langStatsCards");
         if (!cards) return;
         const manualCards = document.getElementById("manualStatsCards");
