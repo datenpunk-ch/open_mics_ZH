@@ -1638,6 +1638,60 @@ def _dedupe_series_across_sources(rows: list[dict[str, str]]) -> list[dict[str, 
     return out
 
 
+def _dedupe_same_series_same_venue_weekday(rows: list[dict[str, str]]) -> list[dict[str, str]]:
+    """
+    Some sources disagree on the time for the same recurring series (e.g. Eventfrog vs Guidle).
+    Slot-based dedupe (venue+weekday+time) will keep both. Here we collapse duplicates for the
+    same venue + weekday when titles look equivalent, and prefer Eventfrog.
+    """
+    groups: OrderedDict[str, list[dict[str, str]]] = OrderedDict()
+    for r in rows:
+        vk = _venue_key(r.get("Location", ""))
+        wk = _norm_slot_field(r.get("Weekday", ""))
+        k = f"{vk}||{wk}"
+        groups.setdefault(k, []).append(r)
+
+    def score(r: dict[str, str]) -> tuple[int, int, int, int, int, int]:
+        url = (r.get("URL") or "").strip()
+        title = (r.get("Event_title") or "").strip()
+        weekday = (r.get("Weekday") or "").strip()
+        time_s = (r.get("Time") or "").strip()
+        u = url.lower()
+        s_pref = 2 if "eventfrog.ch" in u else (1 if u else 0)
+        wd_n = len([x for x in weekday.split(",") if x.strip()]) if weekday else 0
+        s0 = wd_n
+        s1 = 1 if time_s else 0
+        s2 = 1 if url else 0
+        s3 = min(200, len(title))
+        # Prefer non-empty address (minor, helps pick the more specific listing)
+        loc = (r.get("Location") or "").strip()
+        s4 = 1 if ("," in loc and any(ch.isdigit() for ch in loc)) else 0
+        return (s_pref, s0, s1, s4, s2, s3)
+
+    out: list[dict[str, str]] = []
+    for grp in groups.values():
+        if len(grp) == 1:
+            out.append(dict(grp[0]))
+            continue
+        clusters: list[list[dict[str, str]]] = []
+        for r in grp:
+            placed = False
+            for c in clusters:
+                if _titles_look_equivalent(r.get("Event_title", ""), c[0].get("Event_title", "")):
+                    c.append(r)
+                    placed = True
+                    break
+            if not placed:
+                clusters.append([r])
+        for c in clusters:
+            if len(c) == 1:
+                out.append(dict(c[0]))
+                continue
+            best = max(c, key=score)
+            out.append(dict(best))
+    return out
+
+
 def flatten_events_rows(events: list[Any]) -> list[dict[str, str]]:
     pairs: list[tuple[dict[str, str], str]] = []
     for ev in events:
@@ -1661,6 +1715,7 @@ def flatten_events_rows(events: list[Any]) -> list[dict[str, str]]:
     rows = _dedupe_recurring_slots(rows)
     rows = _dedupe_loose_same_slot(rows)
     rows = _dedupe_series_across_sources(rows)
+    rows = _dedupe_same_series_same_venue_weekday(rows)
     # Project output is focused on recurring open mics; drop one-off/single-performer shows.
     rows = [r for r in rows if (r.get("Regularity") or "").strip().lower() == "recurring"]
     return rows

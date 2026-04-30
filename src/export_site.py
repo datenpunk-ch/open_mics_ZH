@@ -1066,7 +1066,19 @@ def _write_map_html(
           el.classList.add('active');
           if (scroll) {{
             const scroller = document.querySelector('.list');
+            const listTop = document.getElementById('list-top');
             const doScroll = () => {{
+              // On small screens the list is below the map; ensure it's brought into view.
+              try {{
+                if (listTop) {{
+                  const r = listTop.getBoundingClientRect();
+                  const vh = window.innerHeight || document.documentElement.clientHeight || 0;
+                  const isMostlyOffscreen = (r.bottom < 40) || (r.top > vh - 40);
+                  if (isMostlyOffscreen) {{
+                    listTop.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
+                  }}
+                }}
+              }} catch (e) {{}}
               if (scroller && typeof scroller.scrollTo === 'function') {{
                 const top = el.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
                 scroller.scrollTo({{ top: Math.max(0, top - 40), behavior: 'smooth' }});
@@ -1076,6 +1088,19 @@ def _write_map_html(
             }};
             requestAnimationFrame(() => requestAnimationFrame(doScroll));
           }}
+        }}
+      }}
+
+      function firstEventIdForPinKey(pinKey) {{
+        const k = (pinKey || '').toString();
+        if (!k) return '';
+        try {{
+          const sel = `.item[data-pin-key="${{CSS.escape(k)}}"]`;
+          const el = document.querySelector(sel);
+          return el && el.id ? el.id : '';
+        }} catch (e) {{
+          // CSS.escape not supported? Fall back to index-based ids.
+          return '';
         }}
       }}
 
@@ -1089,7 +1114,11 @@ def _write_map_html(
         }}
       }}
 
+      let __didRender = false;
+
       function render(events) {{
+        const mapNoteEl = document.getElementById('mapNote');
+        if (mapNoteEl) mapNoteEl.style.display = '';
         const weekdaySel = checkedValues('weekdayChecks');
         const langSel = checkedValues('languageChecks');
         const q = norm(document.getElementById('q').value);
@@ -1162,6 +1191,8 @@ def _write_map_html(
           const div = document.createElement('div');
           div.className = 'item';
           div.id = eventId;
+          const pinKey = eventToKey[idx] || '';
+          if (pinKey) div.setAttribute('data-pin-key', pinKey);
 
           const inner = document.createElement('div');
           inner.className = 'item-inner';
@@ -1238,7 +1269,7 @@ def _write_map_html(
             setActive(eventId, {{ scroll: false }});
           }});
 
-          const k = eventToKey[idx];
+          const k = pinKey;
           if (k) {{
             // Show venue tooltip on hover (without auto-panning the map).
             div.addEventListener('mouseenter', () => {{
@@ -1271,10 +1302,12 @@ def _write_map_html(
               const mk = markerByKey.get(k);
               if (!mk) return;
               if (gmap) {{
+                try {{ gmap.panTo(mk.marker.getPosition()); }} catch (e) {{}}
                 if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({{ disableAutoPan: true }});
                 gInfoWindow.setContent(mk.popupHtml || '');
                 gInfoWindow.open({{ anchor: mk.marker, map: gmap }});
               }} else {{
+                try {{ lmap.panTo(mk.marker.getLatLng(), {{ animate: true, duration: 0.35 }}); }} catch (e) {{}}
                 try {{ mk.marker.openPopup(); }} catch (e) {{}}
               }}
             }});
@@ -1284,7 +1317,7 @@ def _write_map_html(
         // Add one marker per venue group.
         for (const g of pinGroups) {{
           const popupHtml = groupPopupHtml(filtered, g.idxs);
-          const firstEventId = `event-${{g.idxs[0]}}`;
+          const firstEventId = firstEventIdForPinKey(g.key) || `event-${{g.idxs[0]}}`;
           if (gmap) {{
             const first = filtered[g.idxs[0]] || {{}};
             const venueText = (first.venue || (first.location_display || first.location || '').split(',')[0] || '').toString().trim();
@@ -1314,7 +1347,9 @@ def _write_map_html(
               if (gInfoWindow) gInfoWindow.close();
             }});
             marker.addListener('click', () => {{
-              setActive(firstEventId, {{ scroll: true }});
+              const targetId = firstEventIdForPinKey(g.key) || firstEventId;
+              setActive(targetId, {{ scroll: true }});
+              try {{ gmap.panTo(marker.getPosition()); }} catch (e) {{}}
               if (!gInfoWindow) gInfoWindow = new google.maps.InfoWindow({{ disableAutoPan: true }});
               gInfoWindow.setContent(popupHtml);
               gInfoWindow.open({{ anchor: marker, map: gmap }});
@@ -1338,7 +1373,9 @@ def _write_map_html(
               try {{ marker.closePopup(); }} catch (e) {{}}
             }});
             marker.on('click', () => {{
-              setActive(firstEventId, {{ scroll: true }});
+              const targetId = firstEventIdForPinKey(g.key) || firstEventId;
+              setActive(targetId, {{ scroll: true }});
+              try {{ lmap.panTo([g.lat, g.lon], {{ animate: true, duration: 0.35 }}); }} catch (e) {{}}
             }});
             marker.addTo(lMarkersLayer);
             markerByKey.set(g.key, {{ marker, popupHtml }});
@@ -1346,8 +1383,11 @@ def _write_map_html(
         }}
 
         const pinned = pinGroups.length;
-        document.getElementById('mapNote').textContent =
-          `${{UI_TEXT.mapNote.venues || 'Venues'}}: ${{pinned}} · ${{filtered.length}} ${{UI_TEXT.mapNote.events || 'event(s)'}}`;
+        if (mapNoteEl) {{
+          mapNoteEl.textContent =
+            `${{UI_TEXT.mapNote.venues || 'Venues'}}: ${{pinned}} · ${{filtered.length}} ${{UI_TEXT.mapNote.events || 'event(s)'}}`;
+        }}
+        __didRender = true;
       }}
 
       function getGoogleMapsKey() {{
@@ -1448,28 +1488,29 @@ def _write_map_html(
         return mapped.join(', ');
       }}
 
-      async function boot() {{
-        const UI_TEXT = {{
-          title: "Open Mics Zurich",
-          subtitle: "Recurring open mic events in and around Zürich.",
-          filters: {{
-            weekdayLabel: "Weekday",
-            languageLabel: "Comedy language",
-            searchLabel: "Search",
-            searchPlaceholder: "title or location",
-          }},
-          checks: {{
-            metaAll: "All",
-            metaNone: "None",
-            selectAll: "Select all",
-            selectNone: "Select none",
-          }},
-          mapNote: {{
-            venues: "Venues",
-            events: "event(s)",
-          }},
-        }};
+      // UI text is used both inside boot() and by render(), so it must live in outer scope.
+      const UI_TEXT = {{
+        title: "Open Mics Zurich",
+        subtitle: "Recurring open mic events in and around Zürich.",
+        filters: {{
+          weekdayLabel: "Weekday",
+          languageLabel: "Comedy language",
+          searchLabel: "Search",
+          searchPlaceholder: "title or location",
+        }},
+        checks: {{
+          metaAll: "All",
+          metaNone: "None",
+          selectAll: "Select all",
+          selectNone: "Select none",
+        }},
+        mapNote: {{
+          venues: "Venues",
+          events: "event(s)",
+        }},
+      }};
 
+      async function boot() {{
         async function loadUiText() {{
           try {{
             const r = await fetch("./content/map_text.json", {{ cache: "no-cache" }});
@@ -1508,9 +1549,21 @@ def _write_map_html(
         updatePanelHeight();
         window.addEventListener('resize', updatePanelHeight, {{ passive: true }});
 
-        const resp = await fetch(`./data/events.json?v=${{encodeURIComponent(BUILD_STAMP)}}`, {{ cache: 'no-cache' }});
-        const payload = await resp.json();
-        const events = payload.events || [];
+        const dataUrl = `./data/events.json?v=${{encodeURIComponent(BUILD_STAMP)}}`;
+        const resp = await fetch(dataUrl, {{ cache: 'no-cache' }});
+        if (!resp.ok) {{
+          throw new Error(`events.json HTTP ${{resp.status}} ${{resp.statusText}} (${{dataUrl}})`);
+        }}
+        let payload;
+        try {{
+          payload = await resp.json();
+        }} catch (e) {{
+          throw new Error(`events.json invalid JSON (${{dataUrl}}): ${{String(e && e.message ? e.message : e)}}`);
+        }}
+        const events = (payload && payload.events) ? payload.events : [];
+        if (!Array.isArray(events)) {{
+          throw new Error(`events.json missing 'events' array (${{dataUrl}})`);
+        }}
 
         // Build Streamlit-like checkbox filters (all checked by default).
         function mountChecks(containerId, values, metaId, options) {{
@@ -1750,7 +1803,14 @@ def _write_map_html(
       }}
 
       boot().catch(err => {{
-        document.getElementById('mapNote').textContent = 'Failed to load event data';
+        const dbg = document.getElementById('mapNoteStats');
+        if (dbg) dbg.textContent = (err && err.message) ? err.message : String(err);
+        const note = document.getElementById('mapNote');
+        if (note) {{
+          note.style.display = '';
+          const msg = (err && err.message) ? err.message : String(err);
+          note.textContent = __didRender ? `Warning: ${{msg}}` : `Failed to load event data: ${{msg}}`;
+        }}
         console.error(err);
       }});
     </script>

@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-04-30T11:01:35.586806+00:00",
+  "generated_at": "2026-04-30T12:20:20.644991+00:00",
   "generated_from": "G:/My Drive/DATENPUNK/Open_Mics/data/processed/events_flat.csv",
-  "build_stamp": "2026-04-30T11:01:35Z",
+  "build_stamp": "2026-04-30T12:20:20Z",
   "listing_scraped_at": "2026-04-30T10:50:48.747107+00:00",
   "data_updated_display": "30/04/2026",
-  "events_total": 14,
+  "events_total": 13,
   "events_missing_coords": 0,
   "events": [
     {
@@ -214,22 +214,6 @@
       "image_url": "",
       "lat": 47.3779051,
       "lon": 8.5271003
-    },
-    {
-      "weekday": "Sunday",
-      "location": "VIOR, Löwenstrasse 2, 8001 Zürich",
-      "venue": "VIOR",
-      "address": "Löwenstrasse 2, 8001 Zürich",
-      "location_display": "VIOR, Löwenstrasse 2, 8001 Zürich",
-      "time": "19:00",
-      "cost": "",
-      "language": "German",
-      "regularity": "recurring",
-      "title": "StandUp: Dini Muetter Comedy - Open Mic",
-      "url": "https://www.guidle.com/hosted/template_portal/microsite/de/mr_e8X87y/standup-dini-muetter-comedy-open-mic-zuerich_A8fMjCK",
-      "image_url": "https://ik.imagekit.io/guidle/tr:n-small/2/6a/7f/26a7fc50b1772b95f018bdb7c6256899981f7cc7_928226143.png",
-      "lat": 47.3730762,
-      "lon": 8.5346637
     }
   ]
 }

@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-04-30T11:01:35.586806+00:00",
-  "build_stamp": "2026-04-30T11:01:35Z",
+  "generated_at": "2026-04-30T12:20:20.644991+00:00",
+  "build_stamp": "2026-04-30T12:20:20Z",
   "listing_scraped_at": "2026-04-30T10:50:48.747107+00:00",
   "data_updated_display": "30/04/2026",
-  "occurrences_total": 14,
+  "occurrences_total": 13,
   "occurrences": [
     {
       "show_id": "s_af9957bef32f",
@@ -160,18 +160,6 @@
       "title": "Stubä Comedy",
       "url": "https://www.milanski-comedy.ch/stubae-comedy",
       "image_url": ""
-    },
-    {
-      "show_id": "s_bff2be9cf408",
-      "venue_id": "v_a76b642db7bb",
-      "weekday": "Sunday",
-      "time": "19:00",
-      "cost": "",
-      "language": "German",
-      "regularity": "recurring",
-      "title": "StandUp: Dini Muetter Comedy - Open Mic",
-      "url": "https://www.guidle.com/hosted/template_portal/microsite/de/mr_e8X87y/standup-dini-muetter-comedy-open-mic-zuerich_A8fMjCK",
-      "image_url": "https://ik.imagekit.io/guidle/tr:n-small/2/6a/7f/26a7fc50b1772b95f018bdb7c6256899981f7cc7_928226143.png"
     }
   ]
 }
