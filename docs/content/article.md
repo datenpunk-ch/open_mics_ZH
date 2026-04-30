@@ -6,48 +6,39 @@
 
 <!--PART:hero-->
 <div class="container">
-  <div class="hero-tag reveal">Field guide · Zurich · comedy</div>
-  <h1 class="reveal">An editorial guide to open mics in Zürich</h1>
+  <div class="hero-tag reveal">Field guide · Zürich · Comedy</div>
+  <h1 class="reveal">Live, love, laugh in Züri </h1>
   <p class="hero-sub reveal">
-    Open mics are the city’s weekly rehearsal rooms: short sets, low stakes, and the fastest way to
-    understand what a comedy scene actually sounds like. This page explains how to use the project
-    map, what “recurring” means in practice, and how to show up well.
+    Schon die Grosi wusste: **Lachen kostet nichts**. Allerdings kannte sie wohl auch nicht das Leben in der teuersten Stadt der Welt oder die aktuellen Ticketpreise der Standuplegenden. Wo und wann es trotzdem günstig ist, findest du auf der Karte der Open-Mic-Szene in Zürich. Abwechslungsreich und mehrsprachig kannst du hier Newcomer entdecken, erprobten Comedians mit neuem Material beim Bomben zuschauen oder einfach selbst auftreten.
   </p>
   <div class="hero-byline reveal">
     <span>Open MicZH</span>
-    <span>Living document</span>
-    <span><a href="#interactive">TL;DR → interactive tool</a></span>
+    <span><a href="#interactive">Direkt zur Karte</a></span>
   </div>
 </div>
 
 <!--PART:body-->
 <section>
   <div class="container">
-    <div class="section-label reveal">Start here</div>
+    <div class="section-label reveal">Open-Mics</div>
     <div class="sec-head reveal">
       <div class="sec-num">01</div>
-      <h2>What this project is (and isn’t)</h2>
+      <h2>Lachen ist gesund</h2>
     </div>
     <div class="measure">
 
-**Open MicZH** is a curated list of **recurring** open mic comedy events in Zurich. “Recurring” means: if you go next week, there’s a good chance it’s happening again.
+Es gibt Abende in dieser Stadt, an denen man in einem kleinen Saal sitzt, einen Fremden beim Scheitern zusieht — und trotzdem, oder genau deswegen, lacht. Open Mics sind Zürichs unpolierteste Unterhaltung. Kein Programm, keine Garantie. Nur eine Bühne, ein Mikrofon, und jemand der es versucht.
 
-It’s not a full calendar of every one-off showcase. It’s not a review site. It’s meant to be useful when you have a free evening and want an event you can trust is really there.
-
-      <div class="note-box reveal">
-        <div class="note-box-label">Tip</div>
+ <div class="note-box reveal">
+        <div class="note-box-label">Was ist ein eigentlich ein Open Mic?</div>
         <p>
-          Use the filters to pick a weekday/language, then click an event in the list — the map will jump
-          to that venue and show the tooltip.
+           Offene Bühne, kein Vorsprechen, jede:r kann auftreten. Meistens 5 Minuten, meistens mit Mikrofon, meistens mit schlechter Luft und guten Drinks. Ob Newcomer oder alteingesessen, hier wird neues Material getestet, verändert und iterativ feingeschliffen.
         </p>
       </div>
 
-      <div class="stats reveal" id="langStats" aria-live="polite">
-        <div class="stats-label">Shows by language</div>
-        <div class="stats-cards" id="langStatsCards">
-          <div class="stat-card is-loading">Loading…</div>
-        </div>
-      </div>
+Das Besondere an Open Mics ist, dass sie zwei völlig verschiedene Abende gleichzeitig sind. Je nachdem, auf welcher Seite des Mikrofons man sitzt.
+Als **Zuschauer:in** ist es unvorhersehbares, echtes Entertainment. Kein poliertes Programm, kein sicheres Lachen. Dafür das Risiko, dass jemand auf der Bühne scheitert. Oder überraschend gut ist. Meistens beides an einem Abend.
+Als **Auftretende:r** ist es ein Testlabor. Neues Material, vor echtem Publikum, ohne Netz. Wer Stand-up lernen will, kommt an Open Mics nicht vorbei. Wer schon kann, kommt trotzdem. Und dass das meistens auch noch günstig ist, schadet in Zürich nicht.
 
       <div class="stats reveal" id="weekdayStats" aria-live="polite">
         <div class="stats-label">Shows by weekday</div>
@@ -60,6 +51,18 @@ It’s not a full calendar of every one-off showcase. It’s not a review site. 
           </div>
         </div>
       </div>
+
+Dienstag ist Zürichs heimlicher Comedy-Abend. Nicht Freitag, nicht Samstag. Warum genau, verraten die Daten nicht. Vielleicht günstigere Venue-Konditionen, vielleicht bewusste Konkurrenzvermeidung. Wahrscheinlich beides.
+
+      <div class="stats reveal" id="langStats" aria-live="polite">
+        <div class="stats-label">Shows by language</div>
+        <div class="stats-cards" id="langStatsCards">
+          <div class="stat-card is-loading">Loading…</div>
+        </div>
+      </div>
+
+Wer in Zürich auf die Bühne will oder ins Publikum, spricht meistens Englisch. Zumindest laut Internet. Das könnte ein echtes Abbild der Szene sein. Zürich hat einen hohen Expat-Anteil, und Englisch vergrössert das potenzielle Publikum auf beiden Seiten der Bühne. Vielleicht ist Englisch hier schlicht inklusiver als Hochdeutsch, ganz zu schweigen von Schweizerdeutsch.
+Aber es könnte auch ein Artefakt sein. Englischsprachige Events landen auf Eventplattformen. Deutschsprachige und schweizerdeutsche Open Mics leben eher auf Instagram-Stories oder per Mundpropaganda. Insiderwissen statt Suchmaschinenresultat.
 
       <div class="stats reveal" id="manualStats" aria-live="polite">
         <div class="stats-label">Data status &amp; venue overrides</div>
@@ -108,7 +111,7 @@ It’s not a full calendar of every one-off showcase. It’s not a review site. 
   <div class="wide-bleed">
     <div class="embed-frame reveal" style="height: min(64vh, 700px);">
       <iframe
-        title="Open MicZH interactive map and list"
+        title="Open MicZH Karte"
         src="./map.html"
         loading="lazy"
         referrerpolicy="no-referrer"
@@ -119,8 +122,8 @@ It’s not a full calendar of every one-off showcase. It’s not a review site. 
         <div class="note-box reveal" style="margin-top: 1.5rem;">
           <div class="note-box-label">Note</div>
           <p>
-            If the embed feels cramped on mobile, open the full map page instead:
-            <a href="./map.html">Open MicZH map</a>.
+            Falls die Karte auf dem Phone sich zu gequetscht anfühlt, versuche die Karte hier direkt:
+            <a href="./map.html">Open MicZH Karte</a>.
           </p>
         </div>
       </div>
@@ -133,15 +136,15 @@ It’s not a full calendar of every one-off showcase. It’s not a review site. 
     <div class="section-label reveal">Contribute</div>
     <div class="sec-head reveal">
       <div class="sec-num">04</div>
-      <h2>How to keep the list accurate</h2>
+      <h2>Fehlt öppis?</h2>
     </div>
     <div class="measure">
 
-Scenes change quickly: venues close, formats rotate, organizers take breaks. If you spot an issue, the fastest way to improve the site is to open a GitHub issue with the exact correction.
+Die Szene verändert sich laufend: Zeiten und Orte wechseln, der Wochentag wird gestrichen oder es kommen neue Abende hinzu. Auch Insidertipps, die nicht direkt auf den üblichen Eventseiten zu finden sind, sind immer willkommmen.
 
-- **Wrong location?** Share the venue name + address.
-- **Time changed?** Provide the updated start time and a source link.
-- **New recurring mic?** Include weekday, language(s), and organizer link.
+- **Falscher Ort?** Teile die Venue und Adresse.
+- **Falsche Zeit?** Gerne mit Source link.
+- **Neues Open-Mic?** Wochentag, Uhrzeit, Location.
 
 Project repo: [open_mics_ZH](https://github.com/datenpunk-ch/open_mics_ZH).
 
