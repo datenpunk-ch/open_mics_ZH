@@ -1,9 +1,14 @@
 {
   "_comment": "Manual venue overrides. This file is merged into docs/data/venues.json by src/export_site.py on every export. Optional data_tag / data_tag_note are read by docs/index.html for the article status row.",
-  "updated_at": "2026-04-26",
+  "updated_at": "2026-04-30",
   "data_tag": "",
   "data_tag_note": "",
   "venues": {
+    "v_a76b642db7bb": {
+      "venue": "VIOR",
+      "address": "Löwenstrasse 2, 8001 Zürich",
+      "location_display": "VIOR, Löwenstrasse 2, 8001 Zürich"
+    },
     "v_2d0c324000d2": {
       "venue": "ROBIN'S Bar & Coffee",
       "address": "Zähringerstrasse 33, 8001 Zürich",

@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-04-26T16:57:21.615992+00:00",
-  "build_stamp": "2026-04-26T16:57:21Z",
-  "listing_scraped_at": "2026-04-26T16:51:04.036512+00:00",
-  "data_updated_display": "26/04/2026",
+  "generated_at": "2026-04-30T11:01:35.586806+00:00",
+  "build_stamp": "2026-04-30T11:01:35Z",
+  "listing_scraped_at": "2026-04-30T10:50:48.747107+00:00",
+  "data_updated_display": "30/04/2026",
   "venues_total": 9,
   "venues": [
     {
@@ -22,10 +22,10 @@
       "lon": 8.5439538
     },
     {
-      "venue_id": "v_2998b8d5acd1",
-      "venue": "Vior",
+      "venue_id": "v_a76b642db7bb",
+      "venue": "VIOR",
       "address": "Löwenstrasse 2, 8001 Zürich",
-      "location_display": "Vior, Löwenstrasse 2, 8001 Zürich",
+      "location_display": "VIOR, Löwenstrasse 2, 8001 Zürich",
       "lat": 47.3730762,
       "lon": 8.5346637
     },

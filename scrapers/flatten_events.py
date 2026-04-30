@@ -864,6 +864,16 @@ def _recurrence_label(
     if r == "recurring":
         return "recurring"
     if has_event_node:
+        # Some hosts (incl. Eventfrog) sometimes expose a single schema.org Event while the
+        # visible copy clearly describes a repeating slot ("EVERY THURSDAY", "jeden Mittwoch", …).
+        # Treat this as recurring so weekly open mics don't get dropped as "one-off".
+        if isinstance(detail, dict) and isinstance(detail.get("text_preview"), str):
+            blob = detail["text_preview"].lower()
+            if (
+                ("jeden" in blob or "every" in blob or "cada" in blob or "chaque" in blob or "ogni" in blob)
+                and _weekday_indices_from_text(blob)
+            ):
+                return "recurring"
         if isinstance(detail, dict) and isinstance(detail.get("text_preview"), str):
             if _recurrence_from_multi_dates_preview(detail["text_preview"]) == "recurring":
                 return "recurring"
@@ -1256,6 +1266,13 @@ def _flatten_row_and_key(event: dict) -> tuple[dict[str, str], str]:
         location = _format_location(location_obj)
         cost = _format_offers(node.get("offers"))
 
+    # Eventfrog group/series pages sometimes expose a single schema.org Event whose startDate
+    # is just one occurrence. For recurring/group URLs we prefer extracting weekday/time from
+    # visible copy (and in enrich we may append child occurrence text previews).
+    if any(seg in f"{path} {url}".lower() for seg in ("/p/gruppen/", "/p/groups/", "/p/groupes/")):
+        weekday = ""
+        time_s = ""
+
     comedy_lang = _infer_comedy_language(
         node=node, detail=detail, title=title, url=url, path=path
     )
@@ -1562,18 +1579,27 @@ def _dedupe_series_across_sources(rows: list[dict[str, str]]) -> list[dict[str, 
     """
     Cross-row dedupe for the same recurring series at the same venue.
 
-    No source-specific preferences: pick the "best" row using only generic signals.
+    Prefer more stable listing sources when duplicates exist (e.g. Eventfrog).
     """
     groups: OrderedDict[str, list[dict[str, str]]] = OrderedDict()
     for r in rows:
-        k = _venue_key(r.get("Location", ""))
+        # Dedupe only "same slot" across sources. Venue-only grouping is too aggressive:
+        # it can incorrectly collapse distinct weekly series at the same venue
+        # (e.g. Wednesday vs Thursday open mic at Auer).
+        vk = _venue_key(r.get("Location", ""))
+        wk = _norm_slot_field(r.get("Weekday", ""))
+        tk = _norm_slot_field(r.get("Time", ""))
+        k = f"{vk}||{wk}||{tk}"
         groups.setdefault(k, []).append(r)
 
-    def score(r: dict[str, str]) -> tuple[int, int, int, int]:
+    def score(r: dict[str, str]) -> tuple[int, int, int, int, int]:
         url = (r.get("URL") or "").strip()
         title = (r.get("Event_title") or "").strip()
         weekday = (r.get("Weekday") or "").strip()
         time_s = (r.get("Time") or "").strip()
+        # Prefer Eventfrog when multiple sources list the same recurring series.
+        u = url.lower()
+        s_pref = 2 if "eventfrog.ch" in u else (1 if u else 0)
         # Prefer entries that cover more weekdays (e.g. "Tue, Fri, Sun")
         wd_n = len([x for x in weekday.split(",") if x.strip()]) if weekday else 0
         s0 = wd_n
@@ -1583,7 +1609,7 @@ def _dedupe_series_across_sources(rows: list[dict[str, str]]) -> list[dict[str, 
         s2 = 1 if url else 0
         # Prefer longer, more descriptive title (minor tie-break)
         s3 = min(200, len(title))
-        return (s0, s1, s2, s3)
+        return (s_pref, s0, s1, s2, s3)
 
     out: list[dict[str, str]] = []
     for grp in groups.values():

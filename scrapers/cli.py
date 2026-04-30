@@ -159,7 +159,15 @@ def cmd_listing(args: argparse.Namespace) -> int:
                 "; ".join(meta["errors"]),
                 file=sys.stderr,
             )
-            rc = 1
+            # Treat listing meta errors as warnings by default.
+            # Some sources intermittently hit timeouts but still return usable HTML/events.
+            # Only fail the run when a source produced zero events AND reported errors.
+            try:
+                cnt = int(payload.get("event_count") or 0)
+            except Exception:
+                cnt = 0
+            if cnt <= 0:
+                rc = 1
     return rc
 
 

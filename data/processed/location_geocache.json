@@ -1,480 +1,460 @@
 {
-  "Auer & Co., Zürich (CH)": {
+  "auer & co., zürich": {
     "lat": 47.38478,
     "lon": 8.5336683,
     "display_name": "Auer & Co, 131, Sihlquai, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Auer & Co., Zürich, Zürich (CH)": {
+  "auer & co., zürich, zürich": {
     "lat": 47.38478,
     "lon": 8.5336683,
     "display_name": "Auer & Co, 131, Sihlquai, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "ComedyHaus, Albisriederstrasse 16, 8003, Zürich": {
+  "comedyhaus, albisriederstrasse 16, 8003, zürich": {
     "lat": 47.3782065,
     "lon": 8.508589,
     "display_name": "ComedyHaus, 16, Albisriederstrasse, Sihlfeld, Kreis 3, Zürich, Bezirk Zürich, Zürich, 8003, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Gleis, Zürich (CH)": {
+  "gleis, zürich": {
     "lat": 47.381465,
     "lon": 8.5296408,
     "display_name": "Gleis, Zollstrasse, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8031, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "KON-TIKI, Niederdorfstrasse 24, 8001, Zürich": {
+  "kon-tiki, niederdorfstrasse 24, 8001, zürich": {
     "lat": 47.3738276,
     "lon": 8.5437708,
     "display_name": "Kon-Tiki, 24, Niederdorfstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Mama Shelter, Zürich (CH)": {
+  "mama shelter, zürich": {
     "lat": 47.410819,
     "lon": 8.5439538,
     "display_name": "Mama Shelter, 44, Schulstrasse, Oerlikon, Kreis 11, Zürich, Bezirk Zürich, Zürich, 8050, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Monroe, Zürich (CH)": {
+  "monroe, zürich": {
     "lat": 47.3774661,
     "lon": 8.5279076,
     "display_name": "Monroe, 26, Brauerstrasse, Langstrasse, Kreis 4, Zürich, Bezirk Zürich, Zürich, 8004, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "ROBIN's Coffee, Zürich (CH)": {
+  "robin's coffee, zürich": {
     "lat": 47.3757594,
     "lon": 8.5444649,
     "display_name": "Robin's coffee, Zähringerstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8092, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "CAB StuZ (ETH Building), Universitätstrasse 6, 8006, Zürich": {
+  "cab stuz (eth building), universitätstrasse 6, 8006, zürich": {
     "lat": 47.378314,
     "lon": 8.548805,
     "display_name": "food&lab, 6, Universitätstrasse, Oberstrass, Kreis 6, Zürich, Bezirk Zürich, Zürich, 8092, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Caverno Bülach, Feldstrasse 86, 8180, Bülach": {
+  "caverno bülach, feldstrasse 86, 8180, bülach": {
     "lat": 47.508154,
     "lon": 8.5400783,
     "display_name": "86, Feldstrasse, Bülach, Bezirk Bülach, Zürich, 8180, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Cooper's Pub, Schaffhauserstrasse 359, 8050, Zürich": {
+  "cooper's pub, schaffhauserstrasse 359, 8050, zürich": {
     "lat": 47.410739,
     "lon": 8.5463648,
     "display_name": "359, Schaffhauserstrasse, Oerlikon, Kreis 11, Zürich, Bezirk Zürich, Zürich, 8050, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "ROBIN'S bar & coffee, Zürich (CH)": {
+  "robin's bar & coffee, zürich": {
     "lat": 47.3744489,
     "lon": 8.5410422,
     "display_name": "Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "ROBIN's Coffee, Zähringerstrasse 33, 8001, Zürich": {
+  "robin's coffee, zähringerstrasse 33, 8001, zürich": {
     "lat": 47.3757274,
     "lon": 8.5444631,
     "display_name": "Citystudios, 33, Zähringerstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Regenbogen Bar, Rosengasse 6, 8001, Zürich": {
+  "regenbogen bar, rosengasse 6, 8001, zürich": {
     "lat": 47.3730958,
     "lon": 8.5432094,
     "display_name": "6, Rosengasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "SOHO, Guthirtstrasse 3, 8037, Zürich": {
+  "soho, guthirtstrasse 3, 8037, zürich": {
     "lat": 47.3945408,
     "lon": 8.5274664,
     "display_name": "3, Guthirtstrasse, Wipkingen, Kreis 10, Zürich, Bezirk Zürich, Zürich, 8037, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "VIOR, Zürich (CH)": {
+  "vior, zürich": {
     "lat": 47.3744489,
     "lon": 8.5410422,
     "display_name": "Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Volkshaus Zürich  Weisser Saal, Stauffacherstrasse 60, 8004, Zürich": {
+  "volkshaus zürich weisser saal, stauffacherstrasse 60, 8004, zürich": {
     "lat": 47.375496,
     "lon": 8.5271125,
     "display_name": "60, Stauffacherstrasse, Langstrasse, Kreis 4, Zürich, Bezirk Zürich, Zürich, 8004, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "GZ Wollishofen Bachstrasse 7 Saal 60": {
+  "gz wollishofen bachstrasse 7 saal 60": {
     "lat": 47.345012,
     "lon": 8.5358319,
     "display_name": "Gemeinschaftszentrum Wollishofen, 7, Bachstrasse, Wollishofen, Kreis 2, Zürich, Bezirk Zürich, Zürich, 8038, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Amboss Rampe, Zollstrasse 80, 8005, Zürich": {
+  "amboss rampe, zollstrasse 80, 8005, zürich": {
     "lat": 47.3811645,
     "lon": 8.5318876,
     "display_name": "Amboss Rampe, 80, Zollstrasse, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Amboss Rampe, Zürich (CH)": {
+  "amboss rampe, zürich": {
     "lat": 47.3811645,
     "lon": 8.5318876,
     "display_name": "Amboss Rampe, 80, Zollstrasse, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Floor Club, Oberfeldstrasse 12, 8302, Kloten": {
+  "floor club, oberfeldstrasse 12, 8302, kloten": {
     "lat": 47.4486981,
     "lon": 8.5915743,
     "display_name": "12c, Oberfeldstrasse, Kloten, Bezirk Bülach, Zürich, 8302, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Kraftwerk Selnau, Selnaustrasse 25, 8001, Zürich": {
+  "kraftwerk selnau, selnaustrasse 25, 8001, zürich": {
     "lat": 47.3722269,
     "lon": 8.5320109,
     "display_name": "Ehemaliges Unterwerk Selnau, 25, Selnaustrasse, City, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Lady Hamilton's Pub, Zürich (CH)": {
+  "lady hamilton's pub, zürich": {
     "lat": 47.3744489,
     "lon": 8.5410422,
     "display_name": "Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Raum im Hof, Im Hof 12, 8154, Oberglatt": {
+  "raum im hof, im hof 12, 8154, oberglatt": {
     "lat": 47.4772283,
     "lon": 8.5270879,
     "display_name": "12, Im Hof, Grafschaft, Hofstetten, Oberglatt, Bezirk Dielsdorf, Zürich, 8154, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Sama Space, Zürich (CH)": {
+  "sama space, zürich": {
     "lat": 47.3744489,
     "lon": 8.5410422,
     "display_name": "Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Soul City, Dienerstrasse 10, 8004, Zürich": {
+  "soul city, dienerstrasse 10, 8004, zürich": {
     "lat": 47.377763,
     "lon": 8.5290988,
     "display_name": "Soul City, 10, Dienerstrasse, Langstrasse, Kreis 4, Zürich, Bezirk Zürich, Zürich, 8004, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Studio Kayana, Bleicherweg 45, 8002, Zürich": {
+  "studio kayana, bleicherweg 45, 8002, zürich": {
     "lat": 47.3659366,
     "lon": 8.5326785,
     "display_name": "45, Bleicherweg, Enge, Kreis 2, Zürich, Bezirk Zürich, Zürich, 8002, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Zurich School of Samba, Bändlistrasse 86C, 8064, Zürich": {
+  "zürich school of samba, bändlistrasse 86c, 8064, zürich": {
     "lat": 47.3986189,
     "lon": 8.4831264,
     "display_name": "86c, Bändlistrasse, Werdwies, Altstetten, Kreis 9, Zürich, Bezirk Zürich, Zürich, 8064, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Zürcher Hochschule der Künste  ZHdK, Pfingstweidstrasse 96, 8005, Zürich": {
+  "zürcher hochschule der künste zhdk, pfingstweidstrasse 96, 8005, zürich": {
     "lat": 47.3915484,
     "lon": 8.5119351,
     "display_name": "96, Pfingstweidstrasse, Escher Wyss, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Volkshaus Zürich Weisser Saal, Stauffacherstrasse 60, 8004, Zürich": {
-    "lat": 47.375496,
-    "lon": 8.5271125,
-    "display_name": "60, Stauffacherstrasse, Langstrasse, Kreis 4, Zürich, Bezirk Zürich, Zürich, 8004, Schweiz/Suisse/Svizzera/Svizra"
-  },
-  "359, Schaffhauserstrasse, Oerlikon, Kreis 11, Zürich, Bezirk Zürich, Zürich, 8050": {
+  "359, schaffhauserstrasse, oerlikon, kreis 11, zürich, bezirk zürich, zürich, 8050": {
     "lat": 47.410739,
     "lon": 8.5463648,
     "display_name": "359, Schaffhauserstrasse, Oerlikon, Kreis 11, Zürich, Bezirk Zürich, Zürich, 8050, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "6, Rosengasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001": {
+  "6, rosengasse, rathaus, altstadt, zürich, bezirk zürich, zürich, 8001": {
     "lat": 47.3730958,
     "lon": 8.5432094,
     "display_name": "6, Rosengasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "60, Stauffacherstrasse, Langstrasse, Kreis 4, Zürich, Bezirk Zürich, Zürich, 8004": {
+  "60, stauffacherstrasse, langstrasse, kreis 4, zürich, bezirk zürich, zürich, 8004": {
     "lat": 47.3755166,
     "lon": 8.5271955,
     "display_name": "Stadbad Zürich, 60, Stauffacherstrasse, Langstrasse, Kreis 4, Zürich, Bezirk Zürich, Zürich, 8004, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "96, Pfingstweidstrasse, Escher Wyss, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005": {
+  "96, pfingstweidstrasse, escher wyss, industriequartier, zürich, bezirk zürich, zürich, 8005": {
     "lat": 47.3915484,
     "lon": 8.5119351,
     "display_name": "96, Pfingstweidstrasse, Escher Wyss, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Amboss Rampe, 80, Zollstrasse, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005": {
+  "amboss rampe, 80, zollstrasse, gewerbeschule, industriequartier, zürich, bezirk zürich, zürich, 8005": {
     "lat": 47.3811645,
     "lon": 8.5318876,
     "display_name": "Amboss Rampe, 80, Zollstrasse, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Auer & Co, 131, Sihlquai, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005": {
+  "auer & co, 131, sihlquai, gewerbeschule, industriequartier, zürich, bezirk zürich, zürich, 8005": {
     "lat": 47.38478,
     "lon": 8.5336683,
     "display_name": "Auer & Co, 131, Sihlquai, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Citystudios, 33, Zähringerstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001": {
+  "citystudios, 33, zähringerstrasse, rathaus, altstadt, zürich, bezirk zürich, zürich, 8001": {
     "lat": 47.3757274,
     "lon": 8.5444631,
     "display_name": "Citystudios, 33, Zähringerstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "ComedyHaus, 16, Albisriederstrasse, Sihlfeld, Kreis 3, Zürich, Bezirk Zürich, Zürich, 8003": {
+  "comedyhaus, 16, albisriederstrasse, sihlfeld, kreis 3, zürich, bezirk zürich, zürich, 8003": {
     "lat": 47.3782065,
     "lon": 8.508589,
     "display_name": "ComedyHaus, 16, Albisriederstrasse, Sihlfeld, Kreis 3, Zürich, Bezirk Zürich, Zürich, 8003, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Gemeinschaftszentrum Wollishofen, 7, Bachstrasse, Wollishofen, Kreis 2, Zürich, Bezirk Zürich, Zürich, 8038": {
+  "gemeinschaftszentrum wollishofen, 7, bachstrasse, wollishofen, kreis 2, zürich, bezirk zürich, zürich, 8038": {
     "lat": 47.345012,
     "lon": 8.5358319,
     "display_name": "Gemeinschaftszentrum Wollishofen, 7, Bachstrasse, Wollishofen, Kreis 2, Zürich, Bezirk Zürich, Zürich, 8038, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Gleis, Zollstrasse, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8031": {
+  "gleis, zollstrasse, gewerbeschule, industriequartier, zürich, bezirk zürich, zürich, 8031": {
     "lat": 47.381465,
     "lon": 8.5296408,
     "display_name": "Gleis, Zollstrasse, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8031, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Kon-Tiki, 24, Niederdorfstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001": {
+  "kon-tiki, 24, niederdorfstrasse, rathaus, altstadt, zürich, bezirk zürich, zürich, 8001": {
     "lat": 47.3738276,
     "lon": 8.5437708,
     "display_name": "Kon-Tiki, 24, Niederdorfstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Mama Shelter, 44, Schulstrasse, Oerlikon, Kreis 11, Zürich, Bezirk Zürich, Zürich, 8050": {
+  "mama shelter, 44, schulstrasse, oerlikon, kreis 11, zürich, bezirk zürich, zürich, 8050": {
     "lat": 47.4108189,
     "lon": 8.5439538,
     "display_name": "Mama Shelter, 44, Schulstrasse, Oerlikon, Kreis 11, Zürich, Bezirk Zürich, Zürich, 8050, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Monroe, 26, Brauerstrasse, Langstrasse, Kreis 4, Zürich, Bezirk Zürich, Zürich, 8004": {
+  "monroe, 26, brauerstrasse, langstrasse, kreis 4, zürich, bezirk zürich, zürich, 8004": {
     "lat": 47.3774661,
     "lon": 8.5279076,
     "display_name": "Monroe, 26, Brauerstrasse, Langstrasse, Kreis 4, Zürich, Bezirk Zürich, Zürich, 8004, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Robin's coffee, Zähringerstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8092": {
+  "robin's coffee, zähringerstrasse, rathaus, altstadt, zürich, bezirk zürich, zürich, 8092": {
     "lat": 47.3757594,
     "lon": 8.5444649,
     "display_name": "Robin's coffee, Zähringerstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8092, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Zürich, Bezirk Zürich, Zürich": {
+  "zürich, bezirk zürich, zürich": {
     "lat": 47.3744489,
     "lon": 8.5410422,
     "display_name": "Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Amboss Rampe, Amboss Rampe 80, 8005 Zürich": {
+  "amboss rampe, amboss rampe 80, 8005 zürich": {
     "lat": 47.3811645,
     "lon": 8.5318876,
     "display_name": "Amboss Rampe, 80, Zollstrasse, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Auer & Co., Auer & Co 131, 8005 Zürich": {
+  "auer & co., auer & co 131, 8005 zürich": {
     "lat": 47.38478,
     "lon": 8.5336683,
     "display_name": "Auer & Co, 131, Sihlquai, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "ComedyHaus, ComedyHaus 16, 8003 Zürich": {
+  "comedyhaus, comedyhaus 16, 8003 zürich": {
     "lat": 47.3782065,
     "lon": 8.508589,
     "display_name": "ComedyHaus, 16, Albisriederstrasse, Sihlfeld, Kreis 3, Zürich, Bezirk Zürich, Zürich, 8003, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Cooper's Pub, Schaffhauserstrasse 359, 8050 Zürich": {
+  "cooper's pub, schaffhauserstrasse 359, 8050 zürich": {
     "lat": 47.410739,
     "lon": 8.5463648,
     "display_name": "359, Schaffhauserstrasse, Oerlikon, Kreis 11, Zürich, Bezirk Zürich, Zürich, 8050, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "GZ Wollishofen Bachstrasse 7 Saal 60, Gemeinschaftszentrum Wollishofen 7, 8038 Zürich": {
+  "gz wollishofen bachstrasse 7 saal 60, gemeinschaftszentrum wollishofen 7, 8038 zürich": {
     "lat": 47.345012,
     "lon": 8.5358319,
     "display_name": "Gemeinschaftszentrum Wollishofen, 7, Bachstrasse, Wollishofen, Kreis 2, Zürich, Bezirk Zürich, Zürich, 8038, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "KON-TIKI, Kon-Tiki 24, 8001 Zürich": {
+  "kon-tiki, kon-tiki 24, 8001 zürich": {
     "lat": 47.3738276,
     "lon": 8.5437708,
     "display_name": "Kon-Tiki, 24, Niederdorfstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Mama Shelter, Mama Shelter 44, 8050 Zürich": {
+  "mama shelter, mama shelter 44, 8050 zürich": {
     "lat": 47.410819,
     "lon": 8.5439538,
     "display_name": "Mama Shelter, 44, Schulstrasse, Oerlikon, Kreis 11, Zürich, Bezirk Zürich, Zürich, 8050, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Monroe, Monroe 26, 8004 Zürich": {
+  "monroe, monroe 26, 8004 zürich": {
     "lat": 47.3774661,
     "lon": 8.5279076,
     "display_name": "Monroe, 26, Brauerstrasse, Langstrasse, Kreis 4, Zürich, Bezirk Zürich, Zürich, 8004, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "ROBIN'S bar & coffee, Zürich": {
-    "lat": 47.3744489,
-    "lon": 8.5410422,
-    "display_name": "Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
-  },
-  "ROBIN's Coffee, Citystudios 33, 8001 Zürich": {
+  "robin's coffee, citystudios 33, 8001 zürich": {
     "lat": 47.3757274,
     "lon": 8.5444631,
     "display_name": "Citystudios, 33, Zähringerstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Regenbogen Bar, Rosengasse 6, 8001 Zürich": {
+  "regenbogen bar, rosengasse 6, 8001 zürich": {
     "lat": 47.3730958,
     "lon": 8.5432094,
     "display_name": "6, Rosengasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "VIOR, Zürich": {
-    "lat": 47.3744489,
-    "lon": 8.5410422,
-    "display_name": "Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
-  },
-  "Volkshaus Zürich  Weisser Saal, Stauffacherstrasse 60, 8004 Zürich": {
+  "volkshaus zürich weisser saal, stauffacherstrasse 60, 8004 zürich": {
     "lat": 47.375496,
     "lon": 8.5271125,
     "display_name": "60, Stauffacherstrasse, Langstrasse, Kreis 4, Zürich, Bezirk Zürich, Zürich, 8004, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Volkshaus Zürich Weisser Saal, Stauffacherstrasse 60, 8004 Zürich": {
-    "lat": 47.375496,
-    "lon": 8.5271125,
-    "display_name": "60, Stauffacherstrasse, Langstrasse, Kreis 4, Zürich, Bezirk Zürich, Zürich, 8004, Schweiz/Suisse/Svizzera/Svizra"
-  },
-  "Amboss Rampe, Zollstrasse 80, 8005 Zürich": {
+  "amboss rampe, zollstrasse 80, 8005 zürich": {
     "lat": 47.3811645,
     "lon": 8.5318876,
     "display_name": "Amboss Rampe, 80, Zollstrasse, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "KON-TIKI, Niederdorfstrasse 24, 8001 Zürich": {
+  "kon-tiki, niederdorfstrasse 24, 8001 zürich": {
     "lat": 47.3738276,
     "lon": 8.5437708,
     "display_name": "Kon-Tiki, 24, Niederdorfstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Mama Shelter, Schulstrasse 44, 8050 Zürich": {
+  "mama shelter, schulstrasse 44, 8050 zürich": {
     "lat": 47.410819,
     "lon": 8.5439538,
     "display_name": "Mama Shelter, 44, Schulstrasse, Oerlikon, Kreis 11, Zürich, Bezirk Zürich, Zürich, 8050, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Monroe, Brauerstrasse 26, 8004 Zürich": {
+  "monroe, brauerstrasse 26, 8004 zürich": {
     "lat": 47.3774661,
     "lon": 8.5279076,
     "display_name": "Monroe, 26, Brauerstrasse, Langstrasse, Kreis 4, Zürich, Bezirk Zürich, Zürich, 8004, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Auer & Co., Sihlquai 131, 8005 Zürich": {
+  "auer & co., sihlquai 131, 8005 zürich": {
     "lat": 47.384919,
     "lon": 8.5338231,
     "display_name": "teslify, 131, Sihlquai, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "GZ Wollishofen Bachstrasse 7 Saal 60, Bachstrasse 7, 8038 Zürich": {
+  "gz wollishofen bachstrasse 7 saal 60, bachstrasse 7, 8038 zürich": {
     "lat": 47.345012,
     "lon": 8.5358319,
     "display_name": "Gemeinschaftszentrum Wollishofen, 7, Bachstrasse, Wollishofen, Kreis 2, Zürich, Bezirk Zürich, Zürich, 8038, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "ROBIN's Coffee, Zähringerstrasse 33, 8001 Zürich": {
+  "robin's coffee, zähringerstrasse 33, 8001 zürich": {
     "lat": 47.3757274,
     "lon": 8.5444631,
     "display_name": "Citystudios, 33, Zähringerstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "GZ Wollishofen Saal 60, Bachstrasse 7, 8038 Zürich": {
+  "gz wollishofen saal 60, bachstrasse 7, 8038 zürich": {
     "lat": 47.345012,
     "lon": 8.5358319,
     "display_name": "Gemeinschaftszentrum Wollishofen, 7, Bachstrasse, Wollishofen, Kreis 2, Zürich, Bezirk Zürich, Zürich, 8038, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Vior, Löwenstrasse 2, 8001, Zürich": {
+  "vior, löwenstrasse 2, 8001, zürich": {
     "lat": 47.3729575,
     "lon": 8.5346725,
     "display_name": "Spaccio, 2, Löwenstrasse, City, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Vior, Löwenstrasse 2, 8001 Zürich": {
+  "vior, löwenstrasse 2, 8001 zürich": {
     "lat": 47.3730762,
     "lon": 8.5346637,
     "display_name": "2, Löwenstrasse, City, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "stubä comedy, Zürich": {
+  "stubä comedy, zürich": {
     "lat": 47.3744489,
     "lon": 8.5410422,
     "display_name": "Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Gleis, Zürich 8031, 8031 Zürich": {
+  "gleis, zürich 8031, 8031 zürich": {
     "lat": 47.381465,
     "lon": 8.5296408,
     "display_name": "Gleis, Zollstrasse, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8031, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "ROBIN's Coffee, Zürich 8092, 8092 Zürich": {
+  "robin's coffee, zürich 8092, 8092 zürich": {
     "lat": 47.3757594,
     "lon": 8.5444649,
     "display_name": "Robin's coffee, Zähringerstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8092, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "00 Mama Shelter, 8050 Zürich": {
+  "00 mama shelter, 8050 zürich": {
     "lat": 47.4115294,
     "lon": 8.5508556,
     "display_name": "8050, Kreis 11, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "00 Monroe, 8004 Zürich": {
+  "00 monroe, 8004 zürich": {
     "lat": 47.3772055,
     "lon": 8.5227602,
     "display_name": "8004, Kreis 4, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "00 ROBIN's Coffee, 8001 Zürich": {
+  "00 robin's coffee, 8001 zürich": {
     "lat": 47.3725451,
     "lon": 8.5418172,
     "display_name": "8001, Altstadt, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "00 Uhr Mama Shelter, 8050 Zürich": {
+  "00 uhr mama shelter, 8050 zürich": {
     "lat": 47.4115294,
     "lon": 8.5508556,
     "display_name": "8050, Kreis 11, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "00 Uhr Monroe, 8004 Zürich": {
+  "00 uhr monroe, 8004 zürich": {
     "lat": 47.3772055,
     "lon": 8.5227602,
     "display_name": "8004, Kreis 4, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "00 Uhr ROBIN's Coffee, 8001 Zürich": {
+  "00 uhr robin's coffee, 8001 zürich": {
     "lat": 47.3725451,
     "lon": 8.5418172,
     "display_name": "8001, Altstadt, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "00 Uhr VIOR, 8001 Zürich": {
+  "00 uhr vior, 8001 zürich": {
     "lat": 47.3725451,
     "lon": 8.5418172,
     "display_name": "8001, Altstadt, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "00 VIOR, 8001 Zürich": {
+  "00 vior, 8001 zürich": {
     "lat": 47.3725451,
     "lon": 8.5418172,
     "display_name": "8001, Altstadt, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "30 Auer & Co. Courtyard, 8005 Zürich": {
+  "30 auer & co. courtyard, 8005 zürich": {
     "lat": 47.3863888,
     "lon": 8.5245004,
     "display_name": "8005, Industriequartier, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "30 Gleis, 8005 Zürich": {
+  "30 gleis, 8005 zürich": {
     "lat": 47.3863888,
     "lon": 8.5245004,
     "display_name": "8005, Industriequartier, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "30 Uhr Auer & Co. Courtyard, 8005 Zürich": {
+  "30 uhr auer & co. courtyard, 8005 zürich": {
     "lat": 47.3863888,
     "lon": 8.5245004,
     "display_name": "8005, Industriequartier, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "30 Uhr Gleis, 8005 Zürich": {
+  "30 uhr gleis, 8005 zürich": {
     "lat": 47.3863888,
     "lon": 8.5245004,
     "display_name": "8005, Industriequartier, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "ROBIN'S bar & coffee, Zähringerstrasse 33, 8001 Zürich": {
+  "robin's bar & coffee, zähringerstrasse 33, 8001 zürich": {
     "lat": 47.3757274,
     "lon": 8.5444631,
     "display_name": "Citystudios, 33, Zähringerstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Stubä comedy, Brauerstrasse 42, 8004 Zürich": {
+  "stubä comedy, brauerstrasse 42, 8004 zürich": {
     "lat": 47.3779051,
     "lon": 8.5271003,
     "display_name": "42, Brauerstrasse, Langstrasse, Kreis 4, Zürich, Bezirk Zürich, Zürich, 8004, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Auer & Co. Courtyard, 8005 Zürich": {
+  "auer & co. courtyard, 8005 zürich": {
     "lat": 47.3863871,
     "lon": 8.5245012,
     "display_name": "8005, Industriequartier, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Gleis, 8005 Zürich": {
+  "gleis, 8005 zürich": {
     "lat": 47.3863871,
     "lon": 8.5245012,
     "display_name": "8005, Industriequartier, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Mama Shelter, 8050 Zürich": {
+  "mama shelter, 8050 zürich": {
     "lat": 47.4108189,
     "lon": 8.5439538,
     "display_name": "Mama Shelter, 44, Schulstrasse, Oerlikon, Kreis 11, Zürich, Bezirk Zürich, Zürich, 8050, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Monroe, 8004 Zürich": {
+  "monroe, 8004 zürich": {
     "lat": 47.3774661,
     "lon": 8.5279076,
     "display_name": "Monroe, 26, Brauerstrasse, Langstrasse, Kreis 4, Zürich, Bezirk Zürich, Zürich, 8004, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "ROBIN's Coffee, 8001 Zürich": {
+  "robin's coffee, 8001 zürich": {
     "lat": 47.3725451,
     "lon": 8.5418172,
     "display_name": "8001, Altstadt, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "VIOR, 8001 Zürich": {
+  "vior, 8001 zürich": {
     "lat": 47.3725451,
     "lon": 8.5418172,
     "display_name": "8001, Altstadt, Zürich, Bezirk Zürich, Zürich, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Gleis, Industriequartier 8005, 8005 Zürich": {
+  "gleis, industriequartier 8005, 8005 zürich": {
     "lat": 47.381465,
     "lon": 8.5296408,
     "display_name": "Gleis, Zollstrasse, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8031, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "ROBIN's Coffee, Altstadt 8001, 8001 Zürich": {
+  "robin's coffee, altstadt 8001, 8001 zürich": {
     "lat": 47.3757594,
     "lon": 8.5444649,
     "display_name": "Robin's coffee, Zähringerstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8092, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "Stubä, Brauerstrasse 42, 8004 Zürich": {
+  "stubä, brauerstrasse 42, 8004 zürich": {
     "lat": 47.3779077,
     "lon": 8.5270821,
     "display_name": "Stubä, 42, Brauerstrasse, Langstrasse, Kreis 4, Zürich, Bezirk Zürich, Zürich, 8004, Schweiz/Suisse/Svizzera/Svizra"
   },
-  "ROBIN's, Zürich (CH)": {
+  "robin's, zürich": {
     "lat": 47.3757594,
     "lon": 8.5444649,
     "display_name": "Robin's coffee, Zähringerstrasse, Rathaus, Altstadt, Zürich, Bezirk Zürich, Zürich, 8092, Schweiz/Suisse/Svizzera/Svizra"
@@ -493,5 +473,30 @@
     "lat": 47.3815641,
     "lon": 8.5296555,
     "display_name": "Zollhaus, 121, Zollstrasse, Gewerbeschule, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "braschler's, zürich": {
+    "lat": 47.3854864,
+    "lon": 8.5194396,
+    "display_name": "Braschler‘s Bar, Geroldstrasse, Escher Wyss, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "micas garten, zürich": {
+    "lat": 47.3935167,
+    "lon": 8.475864,
+    "display_name": "Micas Garten, Hermetschloostrasse, Altstetten, Kreis 9, Zürich, Bezirk Zürich, Zürich, 8048, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "löwenstrasse 2, 8001 zürich": {
+    "lat": 47.3730762,
+    "lon": 8.5346637,
+    "display_name": "2, Löwenstrasse, City, Altstadt, Zürich, Bezirk Zürich, Zürich, 8001, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "braschler's, zürich 8005, 8005 zürich": {
+    "lat": 47.3854864,
+    "lon": 8.5194396,
+    "display_name": "Braschler‘s Bar, Geroldstrasse, Escher Wyss, Industriequartier, Zürich, Bezirk Zürich, Zürich, 8005, Schweiz/Suisse/Svizzera/Svizra"
+  },
+  "micas garten, zürich 8048, 8048 zürich": {
+    "lat": 47.3935167,
+    "lon": 8.475864,
+    "display_name": "Micas Garten, Hermetschloostrasse, Altstetten, Kreis 9, Zürich, Bezirk Zürich, Zürich, 8048, Schweiz/Suisse/Svizzera/Svizra"
   }
 }

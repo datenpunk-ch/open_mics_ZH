@@ -31,7 +31,7 @@ Es gibt Abende in dieser Stadt, an denen man in einem kleinen Saal sitzt, einen 
         <p>Offene Bühne, kein Vorsprechen, jede:r kann auftreten. Meistens 5 Minuten, meistens mit Mikrofon, meistens mit schlechter Luft und guten Drinks. Ob Newcomer oder alteingesessen, hier wird neues Material getestet, verändert und iterativ feingeschliffen.</p>
       </div>
 
-Das Besondere an Open Mics ist, dass sie zwei völlig verschiedene Abende gleichzeitig sind. Je nachdem, auf welcher Seite des Mikrofons man sitzt.
+Das Besondere an Open Mics ist, dass sie zwei völlig verschiedene Abende gleichzeitig sind. Je nachdem, auf welcher Seite des Mikrofons man sitzt. Oder steht. Pun intended.
 Als **Zuschauer:in** ist es unvorhersehbares, echtes Entertainment. Kein poliertes Programm, kein sicheres Lachen. Dafür das Risiko, dass jemand auf der Bühne scheitert. Oder überraschend gut ist. Meistens beides an einem Abend.
 Als **Auftretende:r** ist es ein Testlabor. Neues Material, vor echtem Publikum, ohne Netz. Wer Stand-up lernen will, kommt an Open Mics nicht vorbei. Wer schon kann, kommt trotzdem. Und dass das meistens auch noch günstig ist, schadet in Zürich nicht.
 

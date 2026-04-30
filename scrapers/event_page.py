@@ -8,7 +8,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
@@ -79,6 +79,47 @@ def _extract_links(soup: BeautifulSoup, *, max_links: int = 200) -> list[str]:
     return hrefs
 
 
+def _is_eventfrog_group_url(url: str) -> bool:
+    u = (url or "").lower()
+    return (
+        "eventfrog.ch" in u
+        and any(seg in u for seg in ("/p/gruppen/", "/p/groups/", "/p/groupes/"))
+    )
+
+
+def _extract_eventfrog_child_event_urls(url: str, soup: BeautifulSoup, *, max_urls: int = 12) -> list[str]:
+    """
+    Eventfrog group pages list multiple occurrence/detail links (often relative).
+    Pull a small set of child event URLs so enrich can capture text that might only
+    exist on the individual event pages (e.g. "open mic" in FAQ).
+    """
+    if not _is_eventfrog_group_url(url):
+        return []
+    hrefs = _extract_links(soup, max_links=400)
+    out: list[str] = []
+    seen: set[str] = set()
+    for h in hrefs:
+        abs_u = urljoin(url, h)
+        if not abs_u:
+            continue
+        # Keep only normal event pages, not other group pages.
+        lu = abs_u.lower()
+        if "eventfrog.ch" not in lu:
+            continue
+        if any(seg in lu for seg in ("/p/gruppen/", "/p/groups/", "/p/groupes/")):
+            continue
+        if not re.search(r"/p/[^\"'\s<>]+\.html(?:$|[?#])", lu):
+            continue
+        n = _norm_url(abs_u)
+        if n in seen:
+            continue
+        seen.add(n)
+        out.append(n)
+        if len(out) >= max_urls:
+            break
+    return out
+
+
 def payload_from_event_html(url: str, html: str, meta_warnings: list[str]) -> dict:
     """Build the event-page dict from raw HTML (no browser)."""
     parsed_host = (urlparse(url).hostname or "").lower()
@@ -89,6 +130,7 @@ def payload_from_event_html(url: str, html: str, meta_warnings: list[str]) -> di
     h1 = soup.find("h1")
     text_preview = _visible_text_preview(soup)
     links = _extract_links(soup)
+    child_event_urls: list[str] = _extract_eventfrog_child_event_urls(url, soup)
 
     return {
         "scraped_at": datetime.now(timezone.utc).isoformat(),
@@ -101,6 +143,7 @@ def payload_from_event_html(url: str, html: str, meta_warnings: list[str]) -> di
         "h1": (h1.get_text(" ", strip=True) if h1 else "") or "",
         "text_preview": text_preview,
         "links": links,
+        "child_event_urls": child_event_urls,
         "ld_json": _parse_ld_json_scripts(html),
         "meta": {"url": url, "warnings": list(meta_warnings)},
     }
@@ -125,7 +168,49 @@ def scrape_event_page(url: str, *, headless: bool = True, timeout_ms: int = 60_0
         finally:
             browser.close()
 
-    return payload_from_event_html(norm, html, meta_warnings)
+    payload = payload_from_event_html(norm, html, meta_warnings)
+
+    # Eventfrog group pages often omit critical "open mic" hints on the group itself
+    # (the wording may only exist on the occurrence detail pages). Fetch a tiny sample
+    # of child pages and append their visible text into the preview blob.
+    try:
+        if _is_eventfrog_group_url(norm):
+            child_urls = payload.get("child_event_urls") or []
+            if isinstance(child_urls, list):
+                child_urls = [u for u in child_urls if isinstance(u, str) and u.strip()]
+            else:
+                child_urls = []
+            child_urls = child_urls[:2]
+            if child_urls:
+                child_previews: list[str] = []
+                with sync_playwright() as p2:
+                    b2, c2 = new_browser_context(p2, headless=headless)
+                    try:
+                        pg2 = c2.new_page()
+                        pg2.set_default_timeout(timeout_ms)
+                        for cu in child_urls:
+                            pg2.goto(cu, wait_until="domcontentloaded")
+                            try:
+                                pg2.wait_for_load_state("networkidle", timeout=timeout_ms)
+                            except Exception:
+                                pass
+                            dismiss_cookie_banner(pg2)
+                            child_html = pg2.content()
+                            child_payload = payload_from_event_html(cu, child_html, [])
+                            tp = (child_payload.get("text_preview") or "").strip()
+                            if tp:
+                                child_previews.append(tp[:8000])
+                    finally:
+                        b2.close()
+                if child_previews:
+                    payload["child_text_previews"] = child_previews
+                    base_tp = (payload.get("text_preview") or "").strip()
+                    payload["text_preview"] = (base_tp + "\n\n" + "\n\n".join(child_previews)).strip()
+    except Exception:
+        # Best-effort enrichment; never fail the scrape.
+        pass
+
+    return payload
 
 
 def scrape_event_urls_batch(
@@ -159,14 +244,69 @@ def scrape_event_urls_batch(
             page.set_default_timeout(timeout_ms)
             for i, norm in enumerate(ordered_unique):
                 meta_warnings: list[str] = []
-                page.goto(norm, wait_until="domcontentloaded")
                 try:
-                    page.wait_for_load_state("networkidle", timeout=timeout_ms)
+                    page.goto(norm, wait_until="domcontentloaded", timeout=timeout_ms)
+                    try:
+                        page.wait_for_load_state("networkidle", timeout=timeout_ms)
+                    except Exception:
+                        meta_warnings.append("networkidle_timeout")
+                    dismiss_cookie_banner(page)
+                    html = page.content()
+                    payload = payload_from_event_html(norm, html, meta_warnings)
+                except Exception as e:
+                    # Make batch enrich resilient: one broken/slow page must not block the whole run.
+                    payload = {
+                        "scraped_at": datetime.now(timezone.utc).isoformat(),
+                        "kind": "event_page",
+                        "url": _norm_url(norm),
+                        "host": (urlparse(norm).hostname or "").lower(),
+                        "title_tag": "",
+                        "og_title": "",
+                        "og_image": "",
+                        "h1": "",
+                        "text_preview": "",
+                        "links": [],
+                        "child_event_urls": [],
+                        "ld_json": [],
+                        "meta": {
+                            "url": norm,
+                            "warnings": meta_warnings + [f"fetch_error:{type(e).__name__}"],
+                        },
+                    }
+
+                # Same as in scrape_event_page, but keep it lightweight in batch mode:
+                # fetch only the first child page.
+                try:
+                    if _is_eventfrog_group_url(norm):
+                        child_urls = payload.get("child_event_urls") or []
+                        if isinstance(child_urls, list):
+                            child_urls = [u for u in child_urls if isinstance(u, str) and u.strip()]
+                        else:
+                            child_urls = []
+                        child_urls = child_urls[:1]
+                        if child_urls:
+                            cu = child_urls[0]
+                            try:
+                                page.goto(cu, wait_until="domcontentloaded", timeout=timeout_ms)
+                                try:
+                                    page.wait_for_load_state("networkidle", timeout=timeout_ms)
+                                except Exception:
+                                    pass
+                                dismiss_cookie_banner(page)
+                                child_html = page.content()
+                                child_payload = payload_from_event_html(cu, child_html, [])
+                                tp = (child_payload.get("text_preview") or "").strip()
+                                if tp:
+                                    payload["child_text_previews"] = [tp[:8000]]
+                                    base_tp = (payload.get("text_preview") or "").strip()
+                                    payload["text_preview"] = (base_tp + "\n\n" + tp).strip()
+                            except Exception:
+                                # Ignore child failures; keep base payload.
+                                pass
                 except Exception:
-                    meta_warnings.append("networkidle_timeout")
-                dismiss_cookie_banner(page)
-                html = page.content()
-                out.append(payload_from_event_html(norm, html, meta_warnings))
+                    pass
+
+                out.append(payload)
                 if i < len(ordered_unique) - 1 and delay_s > 0:
                     time.sleep(delay_s)
         finally:

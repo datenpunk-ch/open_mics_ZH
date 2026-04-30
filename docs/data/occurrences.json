@@ -1,21 +1,21 @@
 {
-  "generated_at": "2026-04-26T16:57:21.615992+00:00",
-  "build_stamp": "2026-04-26T16:57:21Z",
-  "listing_scraped_at": "2026-04-26T16:51:04.036512+00:00",
-  "data_updated_display": "26/04/2026",
-  "occurrences_total": 12,
+  "generated_at": "2026-04-30T11:01:35.586806+00:00",
+  "build_stamp": "2026-04-30T11:01:35Z",
+  "listing_scraped_at": "2026-04-30T10:50:48.747107+00:00",
+  "data_updated_display": "30/04/2026",
+  "occurrences_total": 14,
   "occurrences": [
     {
-      "show_id": "s_ba5a0e4658bb",
+      "show_id": "s_af9957bef32f",
       "venue_id": "v_61e961c9d78a",
-      "weekday": "Wednesday",
-      "time": "19:30",
+      "weekday": "Thursday",
+      "time": "19:00",
       "cost": "",
       "language": "English",
       "regularity": "recurring",
-      "title": "Wednesday Open Mic Comedy, Zurich",
-      "url": "https://eventfrog.ch/de/p/gruppen/wednesday-open-mic-comedy-zurich-7322872166394914763.html",
-      "image_url": "https://eventfrog.ch/upload/rm/op/en/open-mic-new-F661R910.webp?_=1774463489000"
+      "title": "Thursday Open Mic Comedy, Zurich",
+      "url": "https://eventfrog.ch/de/p/gruppen/thursday-open-mic-comedy-zurich-7322895273490950362.html",
+      "image_url": "https://eventfrog.ch/upload/rm/op/en/open-mic-new-7UZ27E9C.webp?_=1774463511000"
     },
     {
       "show_id": "s_f6013279c5b1",
@@ -30,16 +30,28 @@
       "image_url": "https://eventfrog.ch/upload/rm/op/en/open-mic-zurich-5-YH4QJKOB.webp?_=1769961581000"
     },
     {
-      "show_id": "s_7729f3ec7935",
-      "venue_id": "v_2998b8d5acd1",
+      "show_id": "s_ba5a0e4658bb",
+      "venue_id": "v_61e961c9d78a",
+      "weekday": "Wednesday",
+      "time": "19:30",
+      "cost": "",
+      "language": "English",
+      "regularity": "recurring",
+      "title": "Wednesday Open Mic Comedy, Zurich",
+      "url": "https://eventfrog.ch/de/p/gruppen/wednesday-open-mic-comedy-zurich-7322872166394914763.html",
+      "image_url": "https://eventfrog.ch/upload/rm/op/en/open-mic-new-F661R910.webp?_=1774463489000"
+    },
+    {
+      "show_id": "s_636309ad5468",
+      "venue_id": "v_a76b642db7bb",
       "weekday": "Sunday",
       "time": "18:00",
       "cost": "",
       "language": "German",
       "regularity": "recurring",
-      "title": "StandUp: Dini Muetter Comedy - Open Mic",
-      "url": "https://www.guidle.com/hosted/template_portal/microsite/de/mr_e8X87y/standup-dini-muetter-comedy-open-mic-zuerich_AyCT5rY",
-      "image_url": "https://ik.imagekit.io/guidle/tr:n-small/f/86/0d/f860d20de464d21f704873958e845b4700a0e901_905876832.png"
+      "title": "Dini Muetter Comedy - Open Mic",
+      "url": "https://eventfrog.ch/de/p/gruppen/dini-muetter-comedy-open-mic-7402400053803883617.html",
+      "image_url": "https://res.eventfrog.net/production_res_public/eventfrog-ZXBA1R12.webp?_=1776765382000"
     },
     {
       "show_id": "s_adca915266c7",
@@ -52,18 +64,6 @@
       "title": "Pulp Non-Fiction Storytelling Open Mic Zurich",
       "url": "https://eventfrog.ch/de/p/gruppen/pulp-non-fiction-storytelling-open-mic-zurich-7447274382609654226.html",
       "image_url": "https://eventfrog.ch/upload/rm/pu/lp/pulpnon-fiction-2026-ef-FMULTCHP.png?_=1775568499000"
-    },
-    {
-      "show_id": "s_31a5c7cb90a9",
-      "venue_id": "v_2d0c324000d2",
-      "weekday": "Thursday",
-      "time": "19:30",
-      "cost": "",
-      "language": "English",
-      "regularity": "recurring",
-      "title": "IN YOUR FACE - English Stand-Up Comedy Open Mic in Zurich",
-      "url": "https://eventfrog.ch/de/p/gruppen/in-your-face-english-stand-up-comedy-open-mic-in-zurich-7132091334890862636.html",
-      "image_url": "https://eventfrog.ch/upload/rm/co/me/comedy-brew-eventfrog-JUS94OAP.png?_=1750329611000"
     },
     {
       "show_id": "s_9377df566d32",
@@ -88,6 +88,18 @@
       "title": "COMEDY CONNECTION – Stand-up Comedy Open Mic Zurich",
       "url": "https://eventfrog.ch/de/p/theater-buehne/comedy-kabarett/comedy-connection-stand-up-comedy-open-mic-zurich-7439773372123216028.html",
       "image_url": "https://eventfrog.ch/upload/rm/fl/ye/flyer-teal-ROIC9YVC.webp?_=1773780196000"
+    },
+    {
+      "show_id": "s_31a5c7cb90a9",
+      "venue_id": "v_2d0c324000d2",
+      "weekday": "Thursday",
+      "time": "19:30",
+      "cost": "",
+      "language": "English",
+      "regularity": "recurring",
+      "title": "IN YOUR FACE - English Stand-Up Comedy Open Mic in Zurich",
+      "url": "https://eventfrog.ch/de/p/gruppen/in-your-face-english-stand-up-comedy-open-mic-in-zurich-7132091334890862636.html",
+      "image_url": "https://eventfrog.ch/upload/rm/co/me/comedy-brew-eventfrog-JUS94OAP.png?_=1750329611000"
     },
     {
       "show_id": "s_2fbd07e01dc9",
@@ -126,7 +138,7 @@
       "image_url": "https://res.eventfrog.net/production_res_public/jokes-jokes-jokes-eventfrog-FN55B1LQ.png?_=1776704537000"
     },
     {
-      "show_id": "s_db870c524e22",
+      "show_id": "s_2669904451e1",
       "venue_id": "v_5c2ba6051238",
       "weekday": "Tuesday",
       "time": "19:30",
@@ -134,8 +146,8 @@
       "language": "English",
       "regularity": "recurring",
       "title": "Kon-Tiki Comedy",
-      "url": "https://eventfrog.ch/de/p/theater-buehne/comedy-kabarett/kon-tiki-comedy-april-28th-7441817850271023595.html",
-      "image_url": "https://eventfrog.ch/upload/rm/ed/it/edited-imh4017-min-PD7XAROA.webp?_=1774267654000"
+      "url": "https://eventfrog.ch/de/p/theater-buehne/comedy-kabarett/kon-tiki-comedy-may-5th-7444770727775980641.html",
+      "image_url": "https://eventfrog.ch/upload/rm/ed/it/edited-imh4017-min-PD7XAROA.webp"
     },
     {
       "show_id": "s_bd3f0d2a823b",
@@ -148,6 +160,18 @@
       "title": "Stubä Comedy",
       "url": "https://www.milanski-comedy.ch/stubae-comedy",
       "image_url": ""
+    },
+    {
+      "show_id": "s_bff2be9cf408",
+      "venue_id": "v_a76b642db7bb",
+      "weekday": "Sunday",
+      "time": "19:00",
+      "cost": "",
+      "language": "German",
+      "regularity": "recurring",
+      "title": "StandUp: Dini Muetter Comedy - Open Mic",
+      "url": "https://www.guidle.com/hosted/template_portal/microsite/de/mr_e8X87y/standup-dini-muetter-comedy-open-mic-zuerich_A8fMjCK",
+      "image_url": "https://ik.imagekit.io/guidle/tr:n-small/2/6a/7f/26a7fc50b1772b95f018bdb7c6256899981f7cc7_928226143.png"
     }
   ]
 }
