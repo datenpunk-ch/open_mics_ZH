@@ -746,6 +746,44 @@
           return "";
         }
 
+        function languageSelfName(lang) {
+          const s = (lang || "").toString().trim().toLowerCase();
+          if (!s) return "";
+          if (s === "german" || s === "de" || s.startsWith("german ")) return "Deutsch";
+          if (s === "english" || s === "en" || s.startsWith("english ")) return "English";
+          if (s === "spanish" || s === "es" || s.startsWith("spanish ")) return "Español";
+          if (s === "french" || s === "fr" || s.startsWith("french ")) return "Français";
+          if (s === "italian" || s === "it" || s.startsWith("italian ")) return "Italiano";
+          if (s === "unspecified") return "Unbestimmt";
+          return (lang || "").toString().trim();
+        }
+
+        function weekdayDeFull(d) {
+          const x = (d || "").toString().trim().toLowerCase();
+          if (!x) return "";
+          if (x === "monday" || x.startsWith("mon")) return "Montag";
+          if (x === "tuesday" || x.startsWith("tue")) return "Dienstag";
+          if (x === "wednesday" || x.startsWith("wed")) return "Mittwoch";
+          if (x === "thursday" || x.startsWith("thu")) return "Donnerstag";
+          if (x === "friday" || x.startsWith("fri")) return "Freitag";
+          if (x === "saturday" || x.startsWith("sat")) return "Samstag";
+          if (x === "sunday" || x.startsWith("sun")) return "Sonntag";
+          return (d || "").toString().trim();
+        }
+
+        function weekdayDeAbbr(d) {
+          const x = (d || "").toString().trim().toLowerCase();
+          if (!x) return "";
+          if (x === "monday" || x.startsWith("mon")) return "Mo";
+          if (x === "tuesday" || x.startsWith("tue")) return "Di";
+          if (x === "wednesday" || x.startsWith("wed")) return "Mi";
+          if (x === "thursday" || x.startsWith("thu")) return "Do";
+          if (x === "friday" || x.startsWith("fri")) return "Fr";
+          if (x === "saturday" || x.startsWith("sat")) return "Sa";
+          if (x === "sunday" || x.startsWith("sun")) return "So";
+          return (d || "").toString().trim().slice(0, 2);
+        }
+
         function pushManualCard(container, { n, label, isAlert, isManual } = {}) {
           if (!container) return;
           const card = document.createElement("div");
@@ -831,13 +869,13 @@
 
             pushManualCard(manualCards, {
               n: addressFixCount,
-              label: "Address\nfixes",
+              label: "Adress-\nkorrekturen",
               isAlert: dataTag === "incomplete" || dataTag === "stale",
               isManual: true,
             });
             pushManualCard(manualCards, {
               n: fineVenues,
-              label: totalVenues > 0 ? "Venues\nfine" : "Venues\nfine (n/a)",
+              label: totalVenues > 0 ? "Orte\nok" : "Orte\nok (n/a)",
               isManual: true,
             });
 
@@ -889,7 +927,7 @@
 
             const k = document.createElement("div");
             k.className = "k";
-            k.textContent = lang;
+            k.textContent = languageSelfName(lang);
 
             card.appendChild(v);
             card.appendChild(k);
@@ -934,7 +972,7 @@
             const strip = document.createElement("div");
             strip.className = "weekday-strip";
             strip.setAttribute("role", "group");
-            strip.setAttribute("aria-label", "Recurring shows counted per weekday");
+            strip.setAttribute("aria-label", "Wiederkehrende Shows pro Wochentag");
 
             for (const d of WEEKDAYS) {
               const n = dayCounts.get(d) || 0;
@@ -947,12 +985,12 @@
               const fill = document.createElement("div");
               fill.className = "weekday-bar-fill";
               fill.style.height = pct + "%";
-              fill.title = d + ": " + n + (n === 1 ? " show" : " shows");
+              fill.title = weekdayDeFull(d) + ": " + n + (n === 1 ? " Show" : " Shows");
               track.appendChild(fill);
 
               const abbr = document.createElement("div");
               abbr.className = "weekday-abbr";
-              abbr.textContent = d.slice(0, 3);
+              abbr.textContent = weekdayDeAbbr(d);
 
               const num = document.createElement("div");
               num.className = "weekday-count";
@@ -969,14 +1007,14 @@
           cards.innerHTML = "";
           const card = document.createElement("div");
           card.className = "stat-card is-loading";
-          card.textContent = "Couldn’t load stats.";
+          card.textContent = "Statistiken konnten nicht geladen werden.";
           cards.appendChild(card);
           if (weekdayWrap) {
             weekdayWrap.innerHTML = "";
             const w = document.createElement("div");
             w.className = "stat-card is-loading";
             w.style.cssText = "width:100%;max-width:100%;height:auto;min-height:72px;";
-            w.textContent = "Couldn’t load stats.";
+            w.textContent = "Statistiken konnten nicht geladen werden.";
             weekdayWrap.appendChild(w);
           }
         }

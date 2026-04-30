@@ -35,58 +35,45 @@ Das Besondere an Open Mics ist, dass sie zwei völlig verschiedene Abende gleich
 Als **Zuschauer:in** ist es unvorhersehbares, echtes Entertainment. Kein poliertes Programm, kein sicheres Lachen. Dafür das Risiko, dass jemand auf der Bühne scheitert. Oder überraschend gut ist. Meistens beides an einem Abend.
 Als **Auftretende:r** ist es ein Testlabor. Neues Material, vor echtem Publikum, ohne Netz. Wer Stand-up lernen will, kommt an Open Mics nicht vorbei. Wer schon kann, kommt trotzdem. Und dass das meistens auch noch günstig ist, schadet in Zürich nicht.
 
-      <div class="stats reveal" id="weekdayStats" aria-live="polite">
-        <div class="stats-label">Shows nach Wochentag</div>
-        <p class="weekday-strip-hint">Die Balkenhöhe ist relativ zum geschäftigsten Abend in diesem Datensatz (wenn dieselbe Show an zwei Tagen stattfindet, zählt sie doppelt).</p>
-        <div id="weekdayStatsInner">
-          <div class="stat-card is-loading" style="width:100%;max-width:100%;height:auto;min-height:72px;">Lädt…</div>
-        </div>
-      </div>
-
-Dienstag ist Zürichs heimlicher Comedy-Abend. Nicht Freitag, nicht Samstag. Warum genau, verraten die Daten nicht. Vielleicht günstigere Venue-Konditionen, vielleicht bewusste Konkurrenzvermeidung. Wahrscheinlich beides.
-
-      <div class="stats reveal" id="langStats" aria-live="polite">
-        <div class="stats-label">Shows nach Sprache</div>
-        <div class="stats-cards" id="langStatsCards">
-          <div class="stat-card is-loading">Lädt…</div>
-        </div>
-      </div>
-
-Wer in Zürich auf die Bühne will oder ins Publikum, spricht meistens Englisch. Zumindest laut Internet. Das könnte ein echtes Abbild der Szene sein. Zürich hat einen hohen Expat-Anteil, und Englisch vergrössert das potenzielle Publikum auf beiden Seiten der Bühne. Vielleicht ist Englisch hier schlicht inklusiver als Hochdeutsch, ganz zu schweigen von Schweizerdeutsch.
-Aber es könnte auch ein Artefakt sein. Englischsprachige Events landen auf Eventplattformen. Deutschsprachige und schweizerdeutsche Open Mics leben eher auf Instagram-Stories oder per Mundpropaganda. Insiderwissen statt Suchmaschinenresultat.
-
-      <div class="stats reveal" id="manualStats" aria-live="polite">
-        <div class="stats-label">Datenstatus &amp; Venue-Overrides</div>
-        <div class="stats-cards" id="manualStatsCards">
-          <div class="stat-card is-loading">Lädt…</div>
-        </div>
-      </div>
-
     </div>
   </div>
 </section>
 
 <section>
   <div class="container">
-    <div class="section-label reveal">So funktioniert’s</div>
+    <div class="section-label reveal">Statistiken</div>
     <div class="sec-head reveal">
       <div class="sec-num">02</div>
-      <h2>Von «mal schauen» zu «ich geh hin»</h2>
+      <h2>Ein paar Statistiken</h2>
     </div>
     <div class="measure">
+      <div class="note-box reveal" style="max-width: none;">
+        <div class="stats reveal" id="weekdayStats" aria-live="polite" style="margin: 0;">
+          <div class="stats-label">Shows nach Wochentag</div>
+          <p class="weekday-strip-hint">Die Balkenhöhe ist relativ zum geschäftigsten Abend in diesem Datensatz (wenn dieselbe Show an zwei Tagen stattfindet, zählt sie doppelt).</p>
+          <div id="weekdayStatsInner">
+            <div class="stat-card is-loading" style="width:100%;max-width:100%;height:auto;min-height:72px;">Lädt…</div>
+          </div>
+        </div>
 
-### Wenn du zuschauen willst
+        <p class="reveal" style="margin-top: 1rem;">Dienstag ist Zürichs heimlicher Comedy-Abend. Nicht Freitag, nicht Samstag. Warum genau, verraten die Daten nicht. Vielleicht günstigere Venue-Konditionen, vielleicht bewusste Konkurrenzvermeidung. Wahrscheinlich beides.</p>
 
-- **Komm früh** für einen Platz und um Sets nicht zu unterbrechen.
-- **Check den Venue-/Organiser-Link** (wenn vorhanden).
-- **Respektiere den Raum**: Handy weg, zuhören.
+        <div class="stats reveal" id="langStats" aria-live="polite" style="margin: 1.25rem 0 0;">
+          <div class="stats-label">Shows nach Sprache</div>
+          <div class="stats-cards" id="langStatsCards">
+            <div class="stat-card is-loading">Lädt…</div>
+          </div>
+        </div>
 
-### Wenn du auftreten willst
+        <p class="reveal" style="margin-top: 1rem;">Wer in Zürich auf die Bühne will oder ins Publikum, spricht meistens Englisch. Zumindest laut Internet. Das könnte ein echtes Abbild der Szene sein. Zürich hat einen hohen Expat-Anteil, und Englisch vergrössert das potenzielle Publikum auf beiden Seiten der Bühne. Vielleicht ist Englisch hier schlicht inklusiver als Hochdeutsch, ganz zu schweigen von Schweizerdeutsch. Aber es könnte auch ein Artefakt sein. Englischsprachige Events landen auf Eventplattformen. Deutschsprachige und schweizerdeutsche Open Mics leben eher auf Instagram-Stories oder per Mundpropaganda. Insiderwissen statt Suchmaschinenresultat.</p>
 
-- **Kenn das Format**: Sign-up und Set-Länge unterscheiden sich je nach Event.
-- **Bring ein tightes 3–5**: eine klare Prämisse ist besser als fünf halbe Jokes.
-- **Sprich mit dem Host**: der/die steuert den Ablauf und kann praktische Fragen schnell klären.
-
+        <div class="stats reveal" id="manualStats" aria-live="polite" style="margin: 1.25rem 0 0;">
+          <div class="stats-label">Datenstatus &amp; Venue-Overrides</div>
+          <div class="stats-cards" id="manualStatsCards">
+            <div class="stat-card is-loading">Lädt…</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
