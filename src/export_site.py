@@ -954,6 +954,19 @@ def _write_map_html(
         return (d || '').toString().trim();
       }}
 
+      function weekdayDe(d) {{
+        const x = (d || '').toString().trim().toLowerCase();
+        if (!x) return '';
+        if (x === 'monday' || x.startsWith('mon')) return 'Montag';
+        if (x === 'tuesday' || x.startsWith('tue')) return 'Dienstag';
+        if (x === 'wednesday' || x.startsWith('wed')) return 'Mittwoch';
+        if (x === 'thursday' || x.startsWith('thu')) return 'Donnerstag';
+        if (x === 'friday' || x.startsWith('fri')) return 'Freitag';
+        if (x === 'saturday' || x.startsWith('sat')) return 'Samstag';
+        if (x === 'sunday' || x.startsWith('sun')) return 'Sonntag';
+        return (d || '').toString().trim();
+      }}
+
       function venueGroupKey(e) {{
         const venueText = (e.venue || (e.location_display || e.location || '').split(',')[0] || '').toString().trim();
         let k = norm(cleanVenueLabel(venueText));
@@ -1024,7 +1037,7 @@ def _write_map_html(
         const rows = idxs.map(i => {{
           const e = filtered[i] || {{}};
           const t = escapeHtml(e.title || '(untitled)');
-          const w = escapeHtml(weekdayAbbr(e.weekday));
+          const w = escapeHtml(weekdayDe(e.weekday));
           const tm = escapeHtml(e.time || '');
           const line = [w, tm].filter(Boolean).join(' ');
           const link = e.url ? `<a href="${{e.url}}" target="_blank" rel="noreferrer">${{t}}</a>` : t;
@@ -1185,7 +1198,7 @@ def _write_map_html(
 
           const mt = document.createElement('div');
           mt.className = 'meta-strong';
-          mt.textContent = [e.weekday, e.time].filter(Boolean).join(' · ');
+          mt.textContent = [weekdayDe(e.weekday), e.time].filter(Boolean).join(' · ');
           textCol.appendChild(mt);
 
           const ml = document.createElement('div');
@@ -1206,7 +1219,7 @@ def _write_map_html(
           for (const p of [e.language, e.cost].filter(Boolean)) {{
             const s = document.createElement('span');
             s.className = 'pill';
-            s.textContent = p;
+            s.textContent = (p === e.language) ? languageDisplay(p) : p;
             pills.appendChild(s);
           }}
           textCol.appendChild(pills);
@@ -1417,6 +1430,24 @@ def _write_map_html(
         return "";
       }}
 
+      function languageSelfName(lang) {{
+        const s = (lang || '').toString().trim().toLowerCase();
+        if (!s) return '';
+        if (s === 'german' || s === 'de' || s.startsWith('german ')) return 'Deutsch';
+        if (s === 'english' || s === 'en' || s.startsWith('english ')) return 'English';
+        if (s === 'spanish' || s === 'es' || s.startsWith('spanish ')) return 'Español';
+        if (s === 'french' || s === 'fr' || s.startsWith('french ')) return 'Français';
+        if (s === 'italian' || s === 'it' || s.startsWith('italian ')) return 'Italiano';
+        return (lang || '').toString().trim();
+      }}
+
+      function languageDisplay(cell) {{
+        const parts = (cell || '').toString().split(/[;,]/).map(x => x.trim()).filter(Boolean);
+        if (!parts.length) return (cell || '').toString().trim();
+        const mapped = parts.map(languageSelfName);
+        return mapped.join(', ');
+      }}
+
       async function boot() {{
         const UI_TEXT = {{
           title: "Open Mics Zurich",
@@ -1485,6 +1516,7 @@ def _write_map_html(
         function mountChecks(containerId, values, metaId, options) {{
           options = options || {{}};
           const flagSrcFor = options.flagSrcFor;
+          const labelFor = options.labelFor;
           const root = document.getElementById(containerId);
           if (!root) return;
           root.innerHTML = '';
@@ -1527,7 +1559,7 @@ def _write_map_html(
                 const maxNames = 3;
                 const head = ordered.slice(0, maxNames);
                 const rest = Math.max(0, ordered.length - head.length);
-                const headText = head.join(', ');
+                const headText = (typeof labelFor === 'function') ? head.map(labelFor).join(', ') : head.join(', ');
                 metaEl.textContent = rest ? `${{headText}} (+${{rest}})` : headText;
               }}
             }}
@@ -1569,7 +1601,7 @@ def _write_map_html(
               render(events);
             }});
             const span = document.createElement('span');
-            span.textContent = v;
+            span.textContent = (typeof labelFor === 'function') ? labelFor(v) : v;
             span.className = 'label';
             lab.appendChild(cb);
             if (typeof flagSrcFor === 'function') {{
@@ -1591,7 +1623,7 @@ def _write_map_html(
           updateSelectAll();
         }}
 
-        mountChecks('weekdayChecks', {json.dumps(WEEKDAYS)}, 'weekdayMeta');
+        mountChecks('weekdayChecks', {json.dumps(WEEKDAYS)}, 'weekdayMeta', {{ labelFor: weekdayDe }});
 
         const langSet = new Set();
         for (const e of events) {{
@@ -1599,7 +1631,7 @@ def _write_map_html(
           for (const p of parts) langSet.add(p);
         }}
         const langs = Array.from(langSet).sort((a, b) => a.localeCompare(b));
-        mountChecks('languageChecks', langs, 'languageMeta', {{ flagSrcFor: langFlagSrc }});
+        mountChecks('languageChecks', langs, 'languageMeta', {{ flagSrcFor: langFlagSrc, labelFor: languageSelfName }});
 
         function setOpen(btnId, popId, open) {{
           const btn = document.getElementById(btnId);
