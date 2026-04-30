@@ -35,6 +35,11 @@ Das Besondere an Open Mics ist, dass sie zwei völlig verschiedene Abende gleich
 Als **Zuschauer:in** ist es unvorhersehbares, echtes Entertainment. Kein poliertes Programm, kein sicheres Lachen. Dafür das Risiko, dass jemand auf der Bühne scheitert. Oder überraschend gut ist. Meistens beides an einem Abend.
 Als **Auftretende:r** ist es ein Testlabor. Neues Material, vor echtem Publikum, ohne Netz. Wer Stand-up lernen will, kommt an Open Mics nicht vorbei. Wer schon kann, kommt trotzdem. Und dass das meistens auch noch günstig ist, schadet in Zürich nicht.
 
+ <div class="note-box reveal" style="margin-top: 1.5rem;">
+   <div class="note-box-label">Hinweis</div>
+   <p>Falls die Karte auf dem Phone sich zu gequetscht anfühlt, versuche die Karte <a href="./map.html">hier</a> direkt.</p>
+ </div>
+
     </div>
   </div>
 </section>
@@ -49,9 +54,9 @@ Als **Auftretende:r** ist es ein Testlabor. Neues Material, vor echtem Publikum,
     <div class="measure">
       <div class="note-box reveal" style="max-width: none; border-top: 0; border-bottom: 0; padding-top: 0; padding-bottom: 0;"><p class="reveal" style="margin: 0 0 0.75rem;">Dienstag ist Zürichs heimlicher Comedy-Abend. Nicht Freitag, nicht Samstag. Warum genau, verraten die Daten nicht. Vielleicht günstigere Venue-Konditionen, vielleicht bewusste Konkurrenzvermeidung. Wahrscheinlich beides.</p>
         <div class="stats reveal" id="weekdayStats" aria-live="polite" style="margin: 0;"><div class="stats-label">Shows nach Wochentag</div><div id="weekdayStatsInner"><div class="stat-card is-loading" style="width:100%;max-width:100%;height:auto;min-height:72px;">Lädt…</div></div></div>
-        <p class="reveal" style="margin: 1.25rem 0 0.75rem;">Wer in Zürich auf die Bühne will oder ins Publikum, spricht meistens Englisch. Zumindest laut Internet. Das könnte ein echtes Abbild der Szene sein. Zürich hat einen hohen Expat-Anteil, und Englisch vergrössert das potenzielle Publikum auf beiden Seiten der Bühne. Vielleicht ist Englisch hier schlicht inklusiver als Hochdeutsch, ganz zu schweigen von Schweizerdeutsch. Aber es könnte auch ein Artefakt sein. Englischsprachige Events landen auf Eventplattformen. Deutschsprachige und schweizerdeutsche Open Mics leben eher auf Instagram-Stories oder per Mundpropaganda. Insiderwissen statt Suchmaschinenresultat.</p>
+        <p class="reveal" style="margin: 1.25rem 0 0.75rem;">Wer in Zürich auf die Bühne will oder ins Publikum, spricht meistens Englisch. Zumindest laut Internet. Zürich hat einen hohen Expat-Anteil, und Englisch vergrössert das potenzielle Publikum auf beiden Seiten der Bühne. Vielleicht ist Englisch hier schlicht inklusiver als Hochdeutsch, ganz zu schweigen von Schweizerdeutsch. Französisch und Italienisch fehlen komplett. Sagt das etwas über Humor? Das Ungleichgewicht könnte aber auch an der automatisierten Methodik der Datensammlung liegen. Englischsprachige Events landen auf Eventplattformen. Schweizerdeutsche Open Mics leben eher auf Instagram-Stories oder per Mundpropaganda. Insiderwissen statt Suchmaschinenresultat.</p>
         <div class="stats reveal" id="langStats" aria-live="polite" style="margin: 0;"><div class="stats-label">Shows nach Sprache</div><div class="stats-cards" id="langStatsCards"><div class="stat-card is-loading">Lädt…</div></div></div>
-        <p class="reveal" style="margin: 1.25rem 0 0.75rem;">Platzhalter: Hier kommt ein kurzer Hinweis, was an Venue-Fixes/Overrides „manuell“ ist und was automatisch aus den Quellen kommt.</p>
+        <p class="reveal" style="margin: 1.25rem 0 0.75rem;">Noch wichtig zu erwähnen wäre, das die Einträge zum Teil kuratiert werden mussten. Ohne Bezahlfunktion bei Google Maps konnten nicht alle Adressen der Lokale ausgelesen werden. In den meisten Fällen waren die Angaben aber vollständig.</p>
         <div class="stats reveal" id="manualStats" aria-live="polite" style="margin: 0;"><div class="stats-label">Datenstatus &amp; Venue-Overrides</div><div class="stats-cards" id="manualStatsCards"><div class="stat-card is-loading">Lädt…</div></div></div>
       </div>
     </div>
@@ -63,20 +68,12 @@ Als **Auftretende:r** ist es ein Testlabor. Neues Material, vor echtem Publikum,
     <div class="section-label reveal">Wo und wann jetzt genau?</div>
     <div class="sec-head reveal">
       <div class="sec-num">03</div>
-      <h2>Ein guter Abend</h2>
+      <h2>Die Karte</h2>
     </div>
   </div>
   <div class="wide-bleed">
     <div class="embed-frame reveal" style="height: min(64vh, 700px);">
       <iframe title="Open MicZH Karte" src="./map.html" loading="lazy" referrerpolicy="no-referrer"></iframe>
-    </div>
-    <div class="container">
-      <div class="measure">
-        <div class="note-box reveal" style="margin-top: 1.5rem;">
-          <div class="note-box-label">Hinweis</div>
-          <p>Falls die Karte auf dem Phone sich zu gequetscht anfühlt, versuche die Karte hier direkt: <a href="./map.html">Open MicZH Karte</a>.</p>
-        </div>
-      </div>
     </div>
   </div>
 </section>
@@ -96,7 +93,7 @@ Die Szene verändert sich laufend: Zeiten und Orte wechseln, der Wochentag wird 
 - **Falsche Zeit?** Gerne mit Source link.
 - **Neues Open-Mic?** Wochentag, Uhrzeit, Location.
 
-Projekt GitHub repo: [open_mics_ZH](https://github.com/datenpunk-ch/open_mics_ZH).
+Projekt auf [GitHub](https://github.com/datenpunk-ch/open_mics_ZH).
 
     </div>
   </div>

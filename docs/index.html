@@ -157,7 +157,7 @@
       }
 
       section { padding: 5.25rem 0; }
-      section:nth-child(even) { background: var(--color-bg-soft); }
+      section:nth-child(odd) { background: var(--color-bg-soft); }
 
       .section-label {
         font-family: var(--font-mono);
@@ -245,7 +245,6 @@
         max-width: none;
       }
       .stats {
-        border-top: var(--rule-w) solid var(--color-rule);
         border-bottom: var(--rule-w) solid var(--color-rule);
         padding: 1rem 0;
         margin: 2rem 0;
@@ -896,6 +895,11 @@
             for (const lang of langs) {
               counts.set(lang, (counts.get(lang) || 0) + 1);
             }
+          }
+
+          // Always show key scene languages (even when count is 0).
+          for (const k of ["French", "Italian"]) {
+            if (!counts.has(k)) counts.set(k, 0);
           }
 
           const rows = Array.from(counts.entries())
