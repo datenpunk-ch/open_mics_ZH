@@ -73,7 +73,7 @@
       }
       /* Editorial measure: constrain overall chrome a bit */
       .layout {
-        max-width: 1440px;
+        max-width: 1240px;
         margin: 0 auto;
       }
       a {
@@ -131,7 +131,7 @@
         display: grid;
         align-items: start;
         /* Match Streamlit layout: filters / map / events */
-        grid-template-columns: minmax(260px, 320px) minmax(520px, 1fr) minmax(340px, 420px);
+        grid-template-columns: minmax(200px, 240px) minmax(520px, 1fr) minmax(340px, 420px);
         gap: var(--space-3);
         padding: var(--space-3) var(--gutter-end) var(--space-3) var(--gutter-start);
       }
@@ -380,6 +380,14 @@
       .item {
         padding: 10px 0;
         border-bottom: var(--rule-w) solid var(--color-rule);
+      }
+      .item .title-link,
+      .item .meta-strong,
+      .item .meta,
+      .item .pill {
+        text-align: justify;
+        text-justify: inter-word;
+        hyphens: auto;
       }
       .item-inner {
         display: grid;

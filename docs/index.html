@@ -36,7 +36,8 @@
         --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
           "Liberation Mono", "Courier New", monospace;
 
-        --measure: 42rem;
+        /* Text column width (target ~80% of headline/container width). */
+        --measure: 52rem;
       }
 
       * { box-sizing: border-box; }
@@ -133,7 +134,7 @@
       .hero-sub {
         font-size: 1.125rem;
         color: var(--color-ink-body);
-        max-width: 64ch;
+        max-width: var(--measure);
         margin: 0 0 2rem;
         line-height: 1.7;
       }
@@ -147,6 +148,7 @@
         flex-wrap: wrap;
         text-transform: uppercase;
         align-items: baseline;
+        max-width: var(--measure);
       }
       .hero-byline a {
         text-decoration: none;
@@ -212,13 +214,19 @@
         font-size: 1.0625rem;
         color: var(--color-ink-body);
         margin: 0 0 1.25rem;
-        max-width: 70ch;
+        max-width: var(--measure);
+        text-align: justify;
+        text-justify: inter-word;
+        hyphens: auto;
       }
       ul {
         margin: 0 0 1.5rem 1.25rem;
         padding: 0;
-        max-width: 70ch;
+        max-width: var(--measure);
         color: var(--color-ink-body);
+        text-align: justify;
+        text-justify: inter-word;
+        hyphens: auto;
       }
       li { margin-bottom: 0.5rem; }
       code { font-family: var(--font-mono); font-size: 0.95em; }
@@ -227,8 +235,8 @@
         border-top: var(--rule-w) solid var(--color-rule);
         border-bottom: var(--rule-w) solid var(--color-rule);
         padding: 1rem 0;
-        margin: 2rem 0;
-        max-width: 70ch;
+        margin: 2rem auto;
+        max-width: calc(var(--measure) * 0.8);
       }
       .note-box-label {
         font-family: var(--font-mono);

@@ -8,9 +8,9 @@
 <div class="container">
   <div class="hero-tag reveal">Guide · Zürich · Comedy</div>
   <h1 class="reveal">Live, love, laugh in Züri </h1>
-  <p class="hero-sub reveal">Schon die Grosi wusste: Lachen ist die beste Medizin. Und im besten Fall kostet es nichts. Allerdings kannte sie wohl auch nicht das Leben in der teuersten Stadt der Welt oder die aktuellen Ticketpreise der Standuplegenden. Wo und wann es trotzdem günstig ist, findest du auf der Karte der Open-Mic-Szene in Zürich. Abwechslungsreich und mehrsprachig kannst du hier Newcomer entdecken, erprobten Comedians mit neuem Material beim Bomben zuschauen oder einfach selbst auftreten.</p>
+  <p class="hero-sub reveal">Schon die Grosi wusste: Lachen ist die beste Medizin. Und im besten Fall kostet es nichts. Allerdings kannte sie wohl auch nicht das Leben in der teuersten Stadt der Welt oder die aktuellen Ticketpreise der Standuplegenden. Wo und wann es trotzdem günstig ist, findest du auf der Karte der Comedy Szene in Zürich. Abwechslungsreich und mehrsprachig kannst du hier Newcomer entdecken, erprobten Comedians mit neuem Material beim Bomben zuschauen oder einfach selbst auftreten.</p>
   <div class="hero-byline reveal">
-    <span><a href="#interactive">Direkt zur Karte</a></span>
+    <span><a href="#interactive">↓ Direkt zur Karte</a></span>
   </div>
 </div>
 
@@ -34,11 +34,6 @@ Es gibt Abende in dieser Stadt, an denen man in einem kleinen Saal sitzt, einen 
 Das Besondere an Open Mics ist, dass sie zwei völlig verschiedene Abende gleichzeitig sind. Je nachdem, auf welcher Seite des Mikrofons man sitzt. Oder steht. Pun intended.
 Als **Zuschauer:in** ist es unvorhersehbares, echtes Entertainment. Kein poliertes Programm, kein sicheres Lachen. Dafür das Risiko, dass jemand auf der Bühne scheitert. Oder überraschend gut ist. Meistens beides an einem Abend.
 Als **Auftretende:r** ist es ein Testlabor. Neues Material, vor echtem Publikum, ohne Netz. Wer Stand-up lernen will, kommt an Open Mics nicht vorbei. Wer schon kann, kommt trotzdem. Und dass das meistens auch noch günstig ist, schadet in Zürich nicht.
-
- <div class="note-box reveal" style="margin-top: 1.5rem;">
-   <div class="note-box-label">Hinweis</div>
-   <p>Falls die Karte auf dem Phone sich zu gequetscht anfühlt, versuche die Karte <a href="./map.html">hier</a> direkt.</p>
- </div>
 
     </div>
   </div>
@@ -72,7 +67,7 @@ Als **Auftretende:r** ist es ein Testlabor. Neues Material, vor echtem Publikum,
     </div>
   </div>
   <div class="wide-bleed">
-    <div class="embed-frame reveal" style="height: min(64vh, 700px);">
+    <div class="embed-frame reveal" style="height: min(64vh, 700px); max-width: 1240px; margin: 0 auto;">
       <iframe title="Open MicZH Karte" src="./map.html" loading="lazy" referrerpolicy="no-referrer"></iframe>
     </div>
   </div>
