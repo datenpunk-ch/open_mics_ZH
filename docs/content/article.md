@@ -44,35 +44,15 @@ Als **Auftretende:r** ist es ein Testlabor. Neues Material, vor echtem Publikum,
     <div class="section-label reveal">Statistiken</div>
     <div class="sec-head reveal">
       <div class="sec-num">02</div>
-      <h2>Ein paar Statistiken</h2>
+      <h2>Ein paar Zahlen</h2>
     </div>
     <div class="measure">
-      <div class="note-box reveal" style="max-width: none;">
-        <div class="stats reveal" id="weekdayStats" aria-live="polite" style="margin: 0;">
-          <div class="stats-label">Shows nach Wochentag</div>
-          <p class="weekday-strip-hint">Die Balkenhöhe ist relativ zum geschäftigsten Abend in diesem Datensatz (wenn dieselbe Show an zwei Tagen stattfindet, zählt sie doppelt).</p>
-          <div id="weekdayStatsInner">
-            <div class="stat-card is-loading" style="width:100%;max-width:100%;height:auto;min-height:72px;">Lädt…</div>
-          </div>
-        </div>
-
-        <p class="reveal" style="margin-top: 1rem;">Dienstag ist Zürichs heimlicher Comedy-Abend. Nicht Freitag, nicht Samstag. Warum genau, verraten die Daten nicht. Vielleicht günstigere Venue-Konditionen, vielleicht bewusste Konkurrenzvermeidung. Wahrscheinlich beides.</p>
-
-        <div class="stats reveal" id="langStats" aria-live="polite" style="margin: 1.25rem 0 0;">
-          <div class="stats-label">Shows nach Sprache</div>
-          <div class="stats-cards" id="langStatsCards">
-            <div class="stat-card is-loading">Lädt…</div>
-          </div>
-        </div>
-
-        <p class="reveal" style="margin-top: 1rem;">Wer in Zürich auf die Bühne will oder ins Publikum, spricht meistens Englisch. Zumindest laut Internet. Das könnte ein echtes Abbild der Szene sein. Zürich hat einen hohen Expat-Anteil, und Englisch vergrössert das potenzielle Publikum auf beiden Seiten der Bühne. Vielleicht ist Englisch hier schlicht inklusiver als Hochdeutsch, ganz zu schweigen von Schweizerdeutsch. Aber es könnte auch ein Artefakt sein. Englischsprachige Events landen auf Eventplattformen. Deutschsprachige und schweizerdeutsche Open Mics leben eher auf Instagram-Stories oder per Mundpropaganda. Insiderwissen statt Suchmaschinenresultat.</p>
-
-        <div class="stats reveal" id="manualStats" aria-live="polite" style="margin: 1.25rem 0 0;">
-          <div class="stats-label">Datenstatus &amp; Venue-Overrides</div>
-          <div class="stats-cards" id="manualStatsCards">
-            <div class="stat-card is-loading">Lädt…</div>
-          </div>
-        </div>
+      <div class="note-box reveal" style="max-width: none; border-top: 0; border-bottom: 0; padding-top: 0; padding-bottom: 0;"><p class="reveal" style="margin: 0 0 0.75rem;">Dienstag ist Zürichs heimlicher Comedy-Abend. Nicht Freitag, nicht Samstag. Warum genau, verraten die Daten nicht. Vielleicht günstigere Venue-Konditionen, vielleicht bewusste Konkurrenzvermeidung. Wahrscheinlich beides.</p>
+        <div class="stats reveal" id="weekdayStats" aria-live="polite" style="margin: 0;"><div class="stats-label">Shows nach Wochentag</div><div id="weekdayStatsInner"><div class="stat-card is-loading" style="width:100%;max-width:100%;height:auto;min-height:72px;">Lädt…</div></div></div>
+        <p class="reveal" style="margin: 1.25rem 0 0.75rem;">Wer in Zürich auf die Bühne will oder ins Publikum, spricht meistens Englisch. Zumindest laut Internet. Das könnte ein echtes Abbild der Szene sein. Zürich hat einen hohen Expat-Anteil, und Englisch vergrössert das potenzielle Publikum auf beiden Seiten der Bühne. Vielleicht ist Englisch hier schlicht inklusiver als Hochdeutsch, ganz zu schweigen von Schweizerdeutsch. Aber es könnte auch ein Artefakt sein. Englischsprachige Events landen auf Eventplattformen. Deutschsprachige und schweizerdeutsche Open Mics leben eher auf Instagram-Stories oder per Mundpropaganda. Insiderwissen statt Suchmaschinenresultat.</p>
+        <div class="stats reveal" id="langStats" aria-live="polite" style="margin: 0;"><div class="stats-label">Shows nach Sprache</div><div class="stats-cards" id="langStatsCards"><div class="stat-card is-loading">Lädt…</div></div></div>
+        <p class="reveal" style="margin: 1.25rem 0 0.75rem;">Platzhalter: Hier kommt ein kurzer Hinweis, was an Venue-Fixes/Overrides „manuell“ ist und was automatisch aus den Quellen kommt.</p>
+        <div class="stats reveal" id="manualStats" aria-live="polite" style="margin: 0;"><div class="stats-label">Datenstatus &amp; Venue-Overrides</div><div class="stats-cards" id="manualStatsCards"><div class="stat-card is-loading">Lädt…</div></div></div>
       </div>
     </div>
   </div>
