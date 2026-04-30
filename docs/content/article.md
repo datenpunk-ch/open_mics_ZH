@@ -8,7 +8,7 @@
 <div class="container">
   <div class="hero-tag reveal">Guide · Zürich · Comedy</div>
   <h1 class="reveal">Live, love, laugh in Züri </h1>
-  <p class="hero-sub reveal">Schon die Grosi wusste: Lachen kostet nichts. Allerdings kannte sie wohl auch nicht das Leben in der teuersten Stadt der Welt oder die aktuellen Ticketpreise der Standuplegenden. Wo und wann es trotzdem günstig ist, findest du auf der Karte der Open-Mic-Szene in Zürich. Abwechslungsreich und mehrsprachig kannst du hier Newcomer entdecken, erprobten Comedians mit neuem Material beim Bomben zuschauen oder einfach selbst auftreten.</p>
+  <p class="hero-sub reveal">Schon die Grosi wusste: Lachen ist die beste Medizin. Und im besten Fall kostet es nichts. Allerdings kannte sie wohl auch nicht das Leben in der teuersten Stadt der Welt oder die aktuellen Ticketpreise der Standuplegenden. Wo und wann es trotzdem günstig ist, findest du auf der Karte der Open-Mic-Szene in Zürich. Abwechslungsreich und mehrsprachig kannst du hier Newcomer entdecken, erprobten Comedians mit neuem Material beim Bomben zuschauen oder einfach selbst auftreten.</p>
   <div class="hero-byline reveal">
     <span><a href="#interactive">Direkt zur Karte</a></span>
   </div>
@@ -20,7 +20,7 @@
     <div class="section-label reveal">Open-Mics</div>
     <div class="sec-head reveal">
       <div class="sec-num">01</div>
-      <h2>Lachen ist die beste Medizin</h2>
+      <h2>Ein guter Abend</h2>
     </div>
     <div class="measure">
 
