@@ -8,7 +8,7 @@
 <div class="container">
   <div class="hero-tag reveal">Guide · Zürich · Comedy</div>
   <h1 class="reveal">Live, love, laugh in Züri </h1>
-  <p class="hero-sub reveal">Schon die Grosi wusste: Lachen ist die beste Medizin. Und im besten Fall kostet es nichts. Allerdings kannte sie wohl auch nicht das Leben in der teuersten Stadt der Welt oder die aktuellen Ticketpreise der Standuplegenden. Wo und wann es trotzdem günstig ist, findest du auf der Karte der Comedy Szene in Zürich. Abwechslungsreich und mehrsprachig kannst du hier Newcomer entdecken, erprobten Comedians mit neuem Material beim Bomben zuschauen oder einfach selbst auftreten.</p>
+  <p class="hero-sub reveal">Schon die Grosi wusste: Lachen ist die beste Medizin. Und im besten Fall kostet es nichts. Allerdings kannte sie wohl auch nicht das Leben in der teuersten Stadt der Welt oder die aktuellen Ticketpreise der Standup-Legenden. Wo und wann es trotzdem günstig ist, findest du auf der Karte der Comedy-Szene in Zürich. Abwechslungsreich und mehrsprachig kannst du hier Newcomer entdecken, erprobten Comedians mit neuem Material beim Bomben zuschauen oder einfach selbst auftreten.</p>
   <div class="hero-byline reveal">
     <span><a href="#interactive">↓ Direkt zur Karte</a></span>
   </div>
@@ -51,7 +51,7 @@ Als **Auftretende:r** ist es ein Testlabor. Neues Material, vor echtem Publikum,
         <div class="stats reveal" id="weekdayStats" aria-live="polite" style="margin: 0;"><div class="stats-label">Shows nach Wochentag</div><div id="weekdayStatsInner"><div class="stat-card is-loading" style="width:100%;max-width:100%;height:auto;min-height:72px;">Lädt…</div></div></div>
         <p class="reveal" style="margin: 1.25rem 0 0.75rem;">Wer in Zürich auf die Bühne will oder ins Publikum, spricht meistens Englisch. Zumindest laut Internet. Zürich hat einen hohen Expat-Anteil, und Englisch vergrössert das potenzielle Publikum auf beiden Seiten der Bühne. Vielleicht ist Englisch hier schlicht inklusiver als Hochdeutsch, ganz zu schweigen von Schweizerdeutsch. Französisch und Italienisch fehlen komplett. Sagt das etwas über Humor? Das Ungleichgewicht könnte aber auch an der automatisierten Methodik der Datensammlung liegen. Englischsprachige Events landen auf Eventplattformen. Schweizerdeutsche Open Mics leben eher auf Instagram-Stories oder per Mundpropaganda. Insiderwissen statt Suchmaschinenresultat.</p>
         <div class="stats reveal" id="langStats" aria-live="polite" style="margin: 0;"><div class="stats-label">Shows nach Sprache</div><div class="stats-cards" id="langStatsCards"><div class="stat-card is-loading">Lädt…</div></div></div>
-        <p class="reveal" style="margin: 1.25rem 0 0.75rem;">Noch wichtig zu erwähnen wäre, das die Einträge zum Teil kuratiert werden mussten. Ohne Bezahlfunktion bei Google Maps konnten nicht alle Adressen der Lokale ausgelesen werden. In den meisten Fällen waren die Angaben aber vollständig.</p>
+        <p class="reveal" style="margin: 1.25rem 0 0.75rem;">Noch zu erwähnen wäre, dass einige Einträge manuell kuratiert wurden. Ohne kostenpflichtige Google Maps API konnten nicht alle Adressen automatisch gefunden werden. In den meisten Fällen waren die Angaben vollständig.</p>
         <div class="stats reveal" id="manualStats" aria-live="polite" style="margin: 0;"><div class="stats-label">Datenstatus &amp; Venue-Overrides</div><div class="stats-cards" id="manualStatsCards"><div class="stat-card is-loading">Lädt…</div></div></div>
       </div>
     </div>
@@ -82,7 +82,7 @@ Als **Auftretende:r** ist es ein Testlabor. Neues Material, vor echtem Publikum,
     </div>
     <div class="measure">
 
-Die Szene verändert sich laufend: Zeiten und Orte wechseln, der Wochentag wird gestrichen oder es kommen neue Abende hinzu. Auch Insidertipps, die nicht direkt auf den üblichen Eventseiten zu finden sind, sind immer willkommmen.
+Die Szene verändert sich laufend: Zeiten und Orte wechseln, der Wochentag wird gestrichen oder es kommen neue Abende hinzu. Auch Insidertipps, die nicht direkt auf den üblichen Eventseiten zu finden sind, sind immer willkommen.
 
 - **Falscher Ort?** Teile die Venue und Adresse.
 - **Falsche Zeit?** Gerne mit Source link.
