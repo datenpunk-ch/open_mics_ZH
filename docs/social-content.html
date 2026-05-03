@@ -1,6 +1,17 @@
 <!doctype html>
 <html lang="de">
   <head>
+    <script>
+      (function () {
+        try {
+          var p = new URLSearchParams(window.location.search);
+          var v = (p.get("embed") || "").toLowerCase();
+          if (v === "1" || v === "true" || v === "yes") {
+            document.documentElement.classList.add("is-embed");
+          }
+        } catch (e) {}
+      })();
+    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Open MicZH — Social Content</title>
@@ -325,11 +336,29 @@
         text-align: center;
         line-height: 1.4;
       }
+      /* ?embed=1: linksbündig, schmaler — für iframe-Einbettung ohne Abhopp zu Artikel/Karte */
+      html.is-embed .page {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 336px;
+        margin: 0;
+        margin-right: auto;
+        padding: 16px 12px 40px 10px;
+      }
+      html.is-embed .hint {
+        text-align: left;
+      }
+      html.is-embed .footer-note {
+        text-align: left;
+      }
+      html.is-embed .social-embed-hide {
+        display: none !important;
+      }
     </style>
   </head>
   <body>
     <div class="page">
-      <p class="hint">
+      <p class="hint social-embed-hide">
         Vorschau im Instagram-Stil ·
         <a href="./index.html">Zum Artikel</a>
       </p>
@@ -397,7 +426,7 @@
               >Open MicZH: Guide + Karte. Wischen oder tippen für die nächste Karte.</span
             >
           </div>
-          <div class="cta-row">
+          <div class="cta-row social-embed-hide">
             <a class="cta primary" href="./index.html">Artikel öffnen</a>
             <a class="cta" href="./map.html">Nur Karte</a>
           </div>

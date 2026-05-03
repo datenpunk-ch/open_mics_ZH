@@ -1,6 +1,17 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      (function () {
+        try {
+          var p = new URLSearchParams(window.location.search);
+          var v = (p.get("embed") || "").toLowerCase();
+          if (v === "1" || v === "true" || v === "yes") {
+            document.documentElement.classList.add("is-embed");
+          }
+        } catch (e) {}
+      })();
+    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Open MicZH — An article</title>
@@ -454,6 +465,17 @@
         border-top: var(--rule-w) solid var(--color-ink);
         text-align: center;
       }
+      /* Embedded article view: hide in-site subpage links (map, social). Use ?embed=1 on the URL. */
+      html.is-embed .site-footer-selfref {
+        display: none;
+      }
+      html.is-embed .site-footer-subnav {
+        display: none;
+      }
+      /* Absatz „Projekt auf GitHub …“ im Artikel — im Embed ausblenden */
+      html.is-embed #content p:has(a[href*="github.com/datenpunk-ch/open_mics"]) {
+        display: none;
+      }
 
       @media (prefers-reduced-motion: reduce){
         html{ scroll-behavior:auto; }
@@ -473,8 +495,7 @@
     <main id="content" data-src="./content/article.md" data-part="body"></main>
 
     <footer class="site-footer reveal">
-      Open MicZH · <a href="#content">Article page</a> · <a href="./map.html">Map / interactive</a> ·
-      <a href="./social-content.html">Social-Vorschau</a>
+      Open MicZH<span class="site-footer-selfref"> · <a href="#content">Article page</a></span><span class="site-footer-subnav" aria-label="Weitere Seiten dieser Site"> · <a href="./map.html">Map / interactive</a> · <a href="./social-content.html">Social-Vorschau</a></span>
     </footer>
 
     <script>
