@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Open MicZH — Social (Instagram-Stil)</title>
+    <meta
+      name="description"
+      content="Kurzversion zum Teilen: Open Mics in Zürich, Karte und Guide — optisch wie ein Instagram-Post."
+    />
+    <link rel="stylesheet" href="./assets/fonts.css" />
+    <style>
+      :root {
+        --ig-bg: #fafafa;
+        --ig-card: #ffffff;
+        --ig-ink: #262626;
+        --ig-muted: #8e8e8e;
+        --ig-link: #00376b;
+        --ig-line: #dbdbdb;
+        --ig-accent: #b5542a;
+        --font-ui: "Karla", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        --font-display: "Spectral", "Georgia", serif;
+        --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--ig-bg);
+        color: var(--ig-ink);
+        font-family: var(--font-ui);
+        font-size: 14px;
+        line-height: 1.45;
+        -webkit-font-smoothing: antialiased;
+      }
+      .page {
+        max-width: 440px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
+      }
+      .hint {
+        font-size: 12px;
+        color: var(--ig-muted);
+        text-align: center;
+        margin-bottom: 16px;
+      }
+      .hint a {
+        color: var(--ig-link);
+        text-decoration: none;
+      }
+      .hint a:hover {
+        text-decoration: underline;
+      }
+      /* IG-ish post card */
+      .post {
+        background: var(--ig-card);
+        border: 1px solid var(--ig-line);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+      }
+      .post-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--ig-line);
+      }
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--ig-accent), #e8a87c);
+        flex: 0 0 auto;
+      }
+      .post-head-main {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      .username {
+        font-weight: 700;
+        font-size: 14px;
+        letter-spacing: 0.01em;
+      }
+      .subtle {
+        font-size: 12px;
+        color: var(--ig-muted);
+      }
+      .menu-dots {
+        font-weight: 700;
+        letter-spacing: 2px;
+        color: var(--ig-ink);
+        padding: 4px 2px;
+        user-select: none;
+      }
+      /* Carousel */
+      .carousel {
+        position: relative;
+        background: #000;
+        aspect-ratio: 4 / 5;
+        touch-action: pan-y;
+      }
+      .slides {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        padding: 28px 22px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 14px;
+        opacity: 0;
+        transform: translateX(6%);
+        transition: opacity 0.22s ease, transform 0.22s ease;
+        background: #0b0d10;
+        color: #f4f4f4;
+      }
+      .slide.active {
+        opacity: 1;
+        transform: translateX(0);
+        z-index: 1;
+      }
+      .slide-kicker {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.55);
+      }
+      .slide h2 {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: clamp(1.45rem, 5.2vw, 1.85rem);
+        font-weight: 700;
+        line-height: 1.12;
+        letter-spacing: -0.02em;
+      }
+      .slide p {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.55;
+        color: rgba(244, 244, 244, 0.92);
+      }
+      .slide .accent {
+        color: #f0c4a8;
+      }
+      .slide .stat-lead {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.35;
+        color: #fff;
+      }
+      .slide .stat-detail {
+        font-size: 14px;
+        line-height: 1.55;
+        color: rgba(244, 244, 244, 0.9);
+      }
+      .slide .stat-detail strong {
+        color: #f0c4a8;
+        font-weight: 600;
+      }
+      .stat-microbars {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 4px;
+        margin-top: 6px;
+        height: 108px;
+      }
+      .stat-microbars .wcol {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+      }
+      .stat-microbars .track {
+        width: 100%;
+        height: 76px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        overflow: hidden;
+      }
+      .stat-microbars .fill {
+        width: 100%;
+        border-radius: 3px 3px 0 0;
+        min-height: 2px;
+        background: rgba(181, 84, 42, 0.85);
+      }
+      .stat-microbars .wcol.is-peak .fill {
+        background: #f0c4a8;
+      }
+      .stat-microbars .abbr {
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: rgba(255, 255, 255, 0.45);
+      }
+      .stat-microbars .num {
+        font-size: 11px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.88);
+      }
+      .lang-rows {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .lang-rows li {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 12px;
+        font-size: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        padding-bottom: 8px;
+      }
+      .lang-rows li:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+      }
+      .lang-rows .lang-n {
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        color: #f0c4a8;
+      }
+      .slide.is-error .stat-detail {
+        color: rgba(255, 200, 200, 0.95);
+      }
+      .tap-zones {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        z-index: 2;
+      }
+      .tap-zones button {
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        padding: 0;
+      }
+      .dots {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        padding: 10px 0 8px;
+        background: var(--ig-card);
+      }
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #c7c7c7;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+      }
+      .dot[aria-current="true"] {
+        background: #0095f6;
+      }
+      .post-body {
+        padding: 10px 12px 14px;
+        border-top: 1px solid var(--ig-line);
+      }
+      .likes {
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 6px;
+      }
+      .caption {
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .caption .user {
+        font-weight: 700;
+        margin-right: 6px;
+      }
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid var(--ig-line);
+        background: #fafafa;
+        color: var(--ig-ink);
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .cta.primary {
+        background: var(--ig-accent);
+        border-color: var(--ig-accent);
+        color: #fff;
+      }
+      .cta:hover {
+        filter: brightness(0.97);
+      }
+      .footer-note {
+        margin-top: 18px;
+        font-size: 11px;
+        color: var(--ig-muted);
+        text-align: center;
+        line-height: 1.4;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <p class="hint">
+        Vorschau im Instagram-Stil ·
+        <a href="./index.html">Zum Artikel</a>
+      </p>
+
+      <article class="post" aria-label="Instagram-ähnliche Vorschau">
+        <header class="post-head">
+          <div class="avatar" aria-hidden="true"></div>
+          <div class="post-head-main">
+            <div class="username">open_mic_zh</div>
+            <div class="subtle">Zürich · Comedy · Guide</div>
+          </div>
+          <div class="menu-dots" aria-hidden="true">···</div>
+        </header>
+
+        <div class="carousel" id="carousel">
+          <div class="slides" id="slides">
+            <section class="slide active" data-index="0" aria-hidden="false" id="slide0">
+              <div class="slide-kicker">Open MicZH · Daten live</div>
+              <h2>Open Mics in Zürich</h2>
+              <p class="stat-lead" id="statIntroLead">Lädt Kennzahlen …</p>
+              <p class="stat-detail" id="statIntroDetail">
+                Dieselben Listings wie im Artikel und auf der Karte — nach jedem Export aktualisiert.
+              </p>
+            </section>
+            <section class="slide" data-index="1" aria-hidden="true" id="slide1">
+              <div class="slide-kicker">Wie im Artikel · Wochentag</div>
+              <h2>Shows nach Wochentag</h2>
+              <div class="stat-microbars" id="statWeekdayBars" aria-hidden="true"></div>
+              <p class="stat-detail" id="statWeekdayText"></p>
+            </section>
+            <section class="slide" data-index="2" aria-hidden="true" id="slide2">
+              <div class="slide-kicker">Wie im Artikel · Sprache</div>
+              <h2>Shows nach Sprache</h2>
+              <ul class="lang-rows" id="statLangRows"></ul>
+              <p class="stat-detail" id="statLangFoot"></p>
+            </section>
+            <section class="slide" data-index="3" aria-hidden="true" id="slide3">
+              <div class="slide-kicker">Die Karte</div>
+              <h2>Interaktiv, filterbar</h2>
+              <p class="stat-lead" id="statMapLead"></p>
+              <p class="stat-detail" id="statMapDetail"></p>
+            </section>
+            <section class="slide" data-index="4" aria-hidden="true">
+              <div class="slide-kicker">Mehr Kontext</div>
+              <h2>Artikel + Link in Bio</h2>
+              <p class="stat-detail">
+                Im langen Text: Szene, Methodik, warum Englisch in den Listings dominiert — und warum
+                <span class="accent">Schweizerdeutsch</span> oft ausserhalb der Crawler-Daten lebt.
+              </p>
+            </section>
+          </div>
+          <div class="tap-zones" aria-hidden="true">
+            <button type="button" id="tapPrev" title="Zurück"></button>
+            <button type="button" id="tapNext" title="Weiter"></button>
+          </div>
+        </div>
+
+        <div class="dots" id="dots" role="tablist" aria-label="Karussell-Position"></div>
+
+        <div class="post-body">
+          <div class="likes">Gefällt Open MicZH und anderen</div>
+          <div class="caption">
+            <span class="user">open_mic_zh</span>
+            <span id="statCaptionLine"
+              >Open MicZH: Guide + Karte. Wischen oder tippen für die nächste Karte.</span
+            >
+          </div>
+          <div class="cta-row">
+            <a class="cta primary" href="./index.html">Artikel öffnen</a>
+            <a class="cta" href="./map.html">Nur Karte</a>
+          </div>
+        </div>
+      </article>
+
+      <p class="footer-note">
+        Hinweis: Das ist eine Web-Vorschau im Stil von Instagram — für echte Karussell-Posts exportierst du die Slides
+        weiterhin als Bilder (z.&nbsp;B. 1080×1350&nbsp;px).
+      </p>
+    </div>
+
+    <script>
+      (async function loadPromoStats() {
+        const WEEKDAYS = [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday",
+        ];
+        const WDAY_LOWER = new Map(WEEKDAYS.map((d) => [d.toLowerCase(), d]));
+
+        function normWeekdayToken(s) {
+          const t = String(s || "")
+            .trim()
+            .replace(/\.$/, "");
+          if (!t) return "";
+          return WDAY_LOWER.get(t.toLowerCase()) || "";
+        }
+
+        function weekdayDeFull(d) {
+          const x = (d || "").toString().trim().toLowerCase();
+          if (!x) return "";
+          if (x === "monday" || x.startsWith("mon")) return "Montag";
+          if (x === "tuesday" || x.startsWith("tue")) return "Dienstag";
+          if (x === "wednesday" || x.startsWith("wed")) return "Mittwoch";
+          if (x === "thursday" || x.startsWith("thu")) return "Donnerstag";
+          if (x === "friday" || x.startsWith("fri")) return "Freitag";
+          if (x === "saturday" || x.startsWith("sat")) return "Samstag";
+          if (x === "sunday" || x.startsWith("sun")) return "Sonntag";
+          return (d || "").toString().trim();
+        }
+
+        function weekdayDeAbbr(d) {
+          const x = (d || "").toString().trim().toLowerCase();
+          if (!x) return "";
+          if (x === "monday" || x.startsWith("mon")) return "Mo";
+          if (x === "tuesday" || x.startsWith("tue")) return "Di";
+          if (x === "wednesday" || x.startsWith("wed")) return "Mi";
+          if (x === "thursday" || x.startsWith("thu")) return "Do";
+          if (x === "friday" || x.startsWith("fri")) return "Fr";
+          if (x === "saturday" || x.startsWith("sat")) return "Sa";
+          if (x === "sunday" || x.startsWith("sun")) return "So";
+          return (d || "").toString().trim().slice(0, 2);
+        }
+
+        function languageSelfName(lang) {
+          const s = (lang || "").toString().trim().toLowerCase();
+          if (!s) return "";
+          if (s === "german" || s === "de" || s.startsWith("german ")) return "Deutsch";
+          if (s === "english" || s === "en" || s.startsWith("english ")) return "English";
+          if (s === "spanish" || s === "es" || s.startsWith("spanish ")) return "Español";
+          if (s === "french" || s === "fr" || s.startsWith("french ")) return "Français";
+          if (s === "italian" || s === "it" || s.startsWith("italian ")) return "Italiano";
+          if (s === "unspecified") return "Unbestimmt";
+          return (lang || "").toString().trim();
+        }
+
+        function coordPinKey(lat, lon) {
+          return `${Number(lat).toFixed(4)},${Number(lon).toFixed(4)}`;
+        }
+
+        function setError(msg) {
+          document.getElementById("statIntroLead").textContent = msg;
+          document.getElementById("statIntroDetail").textContent =
+            "Bitte später erneut laden oder direkt zum Artikel wechseln.";
+          document.getElementById("statWeekdayBars").innerHTML = "";
+          document.getElementById("statWeekdayText").textContent = "";
+          document.getElementById("statLangRows").innerHTML = "";
+          document.getElementById("statLangFoot").textContent = "";
+          document.getElementById("statMapLead").textContent = "";
+          document.getElementById("statMapDetail").textContent = "";
+          ["slide0", "slide1", "slide2", "slide3"].forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add("is-error");
+          });
+        }
+
+        try {
+          const r = await fetch("./data/events.json", { cache: "no-cache" });
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          const payload = await r.json();
+          const events = Array.isArray(payload.events) ? payload.events : [];
+          ["slide0", "slide1", "slide2", "slide3"].forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.classList.remove("is-error");
+          });
+          const dataUpdated =
+            (payload && typeof payload.data_updated_display === "string" && payload.data_updated_display.trim()) ||
+            "";
+
+          const nListings =
+            typeof payload.events_total === "number" && Number.isFinite(payload.events_total)
+              ? payload.events_total
+              : events.length;
+          const missingCoords =
+            typeof payload.events_missing_coords === "number" && Number.isFinite(payload.events_missing_coords)
+              ? payload.events_missing_coords
+              : events.filter((e) => !Number.isFinite(Number(e && e.lat)) || !Number.isFinite(Number(e && e.lon)))
+                  .length;
+
+          const venueNames = new Set();
+          const pinKeys = new Set();
+          for (const e of events) {
+            const v = (e && e.venue) ? String(e.venue).trim() : "";
+            if (v) venueNames.add(v);
+            const lat = Number(e && e.lat);
+            const lon = Number(e && e.lon);
+            if (Number.isFinite(lat) && Number.isFinite(lon)) pinKeys.add(coordPinKey(lat, lon));
+          }
+          const nVenues = venueNames.size;
+          const nPins = pinKeys.size;
+
+          const introDate = dataUpdated ? " Stand: " + dataUpdated + "." : "";
+          document.getElementById("statIntroLead").textContent =
+            nListings +
+            (nListings === 1 ? " wiederkehrender Slot" : " wiederkehrende Slots") +
+            " in den exportierten Listings · " +
+            nVenues +
+            (nVenues === 1 ? " Venue" : " Venues") +
+            "." +
+            introDate;
+
+          const counts = new Map();
+          for (const e of events) {
+            const raw = (e && e.language) ? String(e.language) : "";
+            const parts = raw.split(/[;,]/).map((s) => s.trim()).filter(Boolean);
+            const langs = parts.length ? parts : ["Unspecified"];
+            for (const lang of langs) {
+              counts.set(lang, (counts.get(lang) || 0) + 1);
+            }
+          }
+          for (const k of ["French", "Italian"]) {
+            if (!counts.has(k)) counts.set(k, 0);
+          }
+          const langRows = Array.from(counts.entries()).sort((a, b) => (b[1] - a[1]) || a[0].localeCompare(b[0]));
+
+          const ul = document.getElementById("statLangRows");
+          ul.innerHTML = "";
+          for (const [lang, n] of langRows) {
+            const li = document.createElement("li");
+            const lab = document.createElement("span");
+            lab.textContent = languageSelfName(lang);
+            const num = document.createElement("span");
+            num.className = "lang-n";
+            num.textContent = String(n);
+            li.appendChild(lab);
+            li.appendChild(num);
+            ul.appendChild(li);
+          }
+          document.getElementById("statLangFoot").innerHTML =
+            "Wie im Artikel: in <strong>diesem</strong> Export dominieren oft englischsprachige Listings; " +
+            "<strong>Français</strong> und <strong>Italiano</strong> sind hier häufig bei null — " +
+            "Spiegel der Quellen, nicht zwingend der Szene vor Ort.";
+
+          const dayCounts = new Map(WEEKDAYS.map((d) => [d, 0]));
+          for (const e of events) {
+            const raw = (e && e.weekday) ? String(e.weekday) : "";
+            const parts = raw.split(/[,;/]/).map((x) => x.trim()).filter(Boolean);
+            const toks = parts.length ? parts : [];
+            for (const tok of toks) {
+              const d = normWeekdayToken(tok);
+              if (d) dayCounts.set(d, (dayCounts.get(d) || 0) + 1);
+            }
+          }
+          const peak = Math.max(0, ...WEEKDAYS.map((d) => dayCounts.get(d) || 0));
+          const maxScale = Math.max(1, peak);
+          const peakDays = WEEKDAYS.filter((d) => (dayCounts.get(d) || 0) === peak && peak > 0);
+          const peakDe = peakDays.map(weekdayDeFull).join(" und ");
+
+          const bars = document.getElementById("statWeekdayBars");
+          bars.innerHTML = "";
+          for (const d of WEEKDAYS) {
+            const n = dayCounts.get(d) || 0;
+            const col = document.createElement("div");
+            col.className = "wcol" + (peak > 0 && n === peak ? " is-peak" : "");
+            const pct = peak > 0 ? (n / maxScale) * 100 : 0;
+            col.innerHTML =
+              "<div class=\"track\"><div class=\"fill\" style=\"height:" +
+              pct +
+              '%"></div></div><div class="abbr">' +
+              weekdayDeAbbr(d) +
+              '</div><div class="num">' +
+              n +
+              "</div>";
+            bars.appendChild(col);
+          }
+
+          let wText = "";
+          if (peak === 0) {
+            wText = "Keine Wochentags-Angaben in den aktuellen Listings.";
+          } else {
+            const slotPhrase =
+              peak === 1 ? "1 Slot" : peak + " Slots";
+            const countPhrase =
+              peakDays.length > 1
+                ? "mit je <strong>" + slotPhrase + "</strong>."
+                : "mit <strong>" + slotPhrase + "</strong>.";
+            wText =
+              "Stärkster Tag in <em>diesen</em> Daten: <strong>" +
+              peakDe +
+              "</strong> " +
+              countPhrase;
+            if (peakDays.indexOf("Tuesday") !== -1) {
+              wText +=
+                " Passt zur These im Artikel: Dienstag als Zürichs heimlicher Comedy-Abend.";
+            } else {
+              wText += " Im Artikel liest du, warum der Dienstag oft zentral ist — unabhängig von diesem Schnappschuss.";
+            }
+          }
+          document.getElementById("statWeekdayText").innerHTML = wText;
+
+          document.getElementById("statMapLead").textContent =
+            nListings +
+            " Slots · " +
+            nPins +
+            (nPins === 1 ? " Pin" : " Pins") +
+            " (gerundete Koordinaten wie auf der Karte) · " +
+            nVenues +
+            (nVenues === 1 ? " Venue-Name" : " Venue-Namen");
+
+          let mapDetail =
+            "Filter nach Wochentag und Sprache, Freitext-Suche, Links zu den Original-Events — dieselbe Datenbasis wie im eingebetteten iframe im Artikel.";
+          if (missingCoords > 0) {
+            mapDetail +=
+              " Hinweis: " +
+              missingCoords +
+              (missingCoords === 1 ? " Eintrag ohne" : " Einträge ohne") +
+              " Koordinaten.";
+          } else {
+            mapDetail += " Alle Einträge haben Koordinaten.";
+          }
+          document.getElementById("statMapDetail").textContent = mapDetail;
+
+          const cap =
+            nListings +
+            " Slots · " +
+            nVenues +
+            " Venues" +
+            (dataUpdated ? " · Stand " + dataUpdated : "") +
+            ". Guide + Karte — wischen für mehr.";
+          document.getElementById("statCaptionLine").textContent = cap;
+        } catch (e) {
+          console.error(e);
+          setError("Zahlen konnten nicht geladen werden.");
+          document.getElementById("statCaptionLine").textContent =
+            "Open MicZH: Guide + Karte. Wischen oder tippen für die nächste Karte.";
+        }
+      })();
+    </script>
+    <script>
+      (function () {
+        const slides = Array.from(document.querySelectorAll(".slide"));
+        const dotsWrap = document.getElementById("dots");
+        const tapPrev = document.getElementById("tapPrev");
+        const tapNext = document.getElementById("tapNext");
+        let i = 0;
+
+        function renderDots() {
+          dotsWrap.innerHTML = "";
+          slides.forEach((_, idx) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = "dot";
+            b.setAttribute("role", "tab");
+            b.setAttribute("aria-label", "Slide " + (idx + 1));
+            b.setAttribute("aria-current", idx === i ? "true" : "false");
+            b.addEventListener("click", () => go(idx));
+            dotsWrap.appendChild(b);
+          });
+        }
+
+        function go(next) {
+          const n = (next + slides.length) % slides.length;
+          slides[i].classList.remove("active");
+          slides[i].setAttribute("aria-hidden", "true");
+          i = n;
+          slides[i].classList.add("active");
+          slides[i].setAttribute("aria-hidden", "false");
+          Array.from(dotsWrap.querySelectorAll(".dot")).forEach((d, idx) => {
+            d.setAttribute("aria-current", idx === i ? "true" : "false");
+          });
+        }
+
+        tapPrev.addEventListener("click", () => go(i - 1));
+        tapNext.addEventListener("click", () => go(i + 1));
+
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "ArrowLeft") go(i - 1);
+          if (e.key === "ArrowRight") go(i + 1);
+        });
+
+        let x0 = null;
+        const carousel = document.getElementById("carousel");
+        carousel.addEventListener(
+          "touchstart",
+          (e) => {
+            x0 = e.changedTouches[0].screenX;
+          },
+          { passive: true }
+        );
+        carousel.addEventListener(
+          "touchend",
+          (e) => {
+            if (x0 === null) return;
+            const x1 = e.changedTouches[0].screenX;
+            const dx = x1 - x0;
+            x0 = null;
+            if (dx < -40) go(i + 1);
+            if (dx > 40) go(i - 1);
+          },
+          { passive: true }
+        );
+
+        renderDots();
+      })();
+    </script>
+  </body>
+</html>
