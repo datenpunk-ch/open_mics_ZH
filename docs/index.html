@@ -465,11 +465,8 @@
         border-top: var(--rule-w) solid var(--color-ink);
         text-align: center;
       }
-      /* Embedded article view: hide in-site subpage links (map, social). Use ?embed=1 on the URL. */
-      html.is-embed .site-footer-selfref {
-        display: none;
-      }
-      html.is-embed .site-footer-subnav {
+      /* Embed (?embed=1): gesamte Site-Chrome-Leiste unten ausblenden */
+      html.is-embed .site-footer-chrome {
         display: none;
       }
       /* Absatz „Projekt auf GitHub …“ im Artikel — im Embed ausblenden */
@@ -494,7 +491,7 @@
 
     <main id="content" data-src="./content/article.md" data-part="body"></main>
 
-    <footer class="site-footer reveal">
+    <footer class="site-footer site-footer-chrome reveal">
       Open MicZH<span class="site-footer-selfref"> · <a href="#content">Article page</a></span><span class="site-footer-subnav" aria-label="Weitere Seiten dieser Site"> · <a href="./map.html">Map / interactive</a> · <a href="./social-content.html">Social-Vorschau</a></span>
     </footer>
 

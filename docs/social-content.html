@@ -27,7 +27,6 @@
         --ig-card: #ffffff;
         --ig-ink: #262626;
         --ig-muted: #8e8e8e;
-        --ig-link: #00376b;
         --ig-line: #dbdbdb;
         --ig-accent: #b5542a;
         --font-ui: "Karla", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
@@ -51,19 +50,6 @@
         max-width: 440px;
         margin: 0 auto;
         padding: 24px 16px 48px;
-      }
-      .hint {
-        font-size: 12px;
-        color: var(--ig-muted);
-        text-align: center;
-        margin-bottom: 16px;
-      }
-      .hint a {
-        color: var(--ig-link);
-        text-decoration: none;
-      }
-      .hint a:hover {
-        text-decoration: underline;
       }
       /* IG-ish post card */
       .post {
@@ -302,33 +288,6 @@
         font-weight: 700;
         margin-right: 6px;
       }
-      .cta-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 12px;
-      }
-      .cta {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 8px 12px;
-        border-radius: 8px;
-        border: 1px solid var(--ig-line);
-        background: var(--color-bg-soft);
-        color: var(--ig-ink);
-        font-size: 13px;
-        font-weight: 600;
-        text-decoration: none;
-      }
-      .cta.primary {
-        background: var(--ig-accent);
-        border-color: var(--ig-accent);
-        color: #fff;
-      }
-      .cta:hover {
-        filter: brightness(0.97);
-      }
       .footer-note {
         margin-top: 18px;
         font-size: 11px;
@@ -336,7 +295,7 @@
         text-align: center;
         line-height: 1.4;
       }
-      /* ?embed=1: linksbündig, schmaler — für iframe-Einbettung ohne Abhopp zu Artikel/Karte */
+      /* ?embed=1: schmaler, linksbündig; Site-Footer aus für iframe */
       html.is-embed .page {
         box-sizing: border-box;
         width: 100%;
@@ -345,24 +304,33 @@
         margin-right: auto;
         padding: 16px 12px 40px 10px;
       }
-      html.is-embed .hint {
-        text-align: left;
-      }
       html.is-embed .footer-note {
         text-align: left;
       }
-      html.is-embed .social-embed-hide {
-        display: none !important;
+      .site-footer.site-footer-chrome {
+        padding: 18px 5vw 30px;
+        color: var(--ig-muted);
+        font-size: 12px;
+        font-family: var(--font-mono);
+        border-top: 2px solid var(--ig-ink);
+        text-align: center;
+      }
+      .site-footer-chrome a {
+        color: var(--ig-ink);
+        text-decoration: none;
+        border-bottom: 2px solid var(--ig-line);
+        padding-bottom: 0.05em;
+      }
+      .site-footer-chrome a:hover {
+        border-bottom-color: var(--ig-accent);
+      }
+      html.is-embed .site-footer-chrome {
+        display: none;
       }
     </style>
   </head>
   <body>
     <div class="page">
-      <p class="hint social-embed-hide">
-        Vorschau im Instagram-Stil ·
-        <a href="./index.html">Zum Artikel</a>
-      </p>
-
       <article class="post" aria-label="Instagram-ähnliche Vorschau">
         <header class="post-head">
           <div class="avatar" aria-hidden="true"></div>
@@ -426,10 +394,6 @@
               >Open MicZH: Guide + Karte. Wischen oder tippen für die nächste Karte.</span
             >
           </div>
-          <div class="cta-row social-embed-hide">
-            <a class="cta primary" href="./index.html">Artikel öffnen</a>
-            <a class="cta" href="./map.html">Nur Karte</a>
-          </div>
         </div>
       </article>
 
@@ -437,6 +401,10 @@
         Hinweis: Dies ist eine Web-Vorschau im Stil eines Social Media Posts und kein original Karussell Content.
       </p>
     </div>
+
+    <footer class="site-footer site-footer-chrome">
+      Open MicZH<span class="site-footer-selfref"> · <a href="./index.html#content">Article page</a></span><span class="site-footer-subnav" aria-label="Weitere Seiten dieser Site"> · <a href="./map.html">Map / interactive</a> · <a href="./social-content.html">Social-Vorschau</a></span>
+    </footer>
 
     <script>
       (async function loadPromoStats() {

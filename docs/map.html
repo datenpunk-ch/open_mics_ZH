@@ -1,6 +1,17 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      (function () {
+        try {
+          var p = new URLSearchParams(window.location.search);
+          var v = (p.get("embed") || "").toLowerCase();
+          if (v === "1" || v === "true" || v === "yes") {
+            document.documentElement.classList.add("is-embed");
+          }
+        } catch (e) {}
+      })();
+    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Open MicZH</title>
@@ -482,6 +493,25 @@
         border-top: var(--rule-w) solid var(--color-ink);
         text-align: center;
       }
+      .site-footer-chrome a {
+        color: var(--color-ink);
+        border-bottom: var(--underline-w) solid var(--color-rule);
+        padding-bottom: 0.05em;
+      }
+      .site-footer-chrome a:hover {
+        border-bottom-color: var(--color-accent);
+      }
+      .site-footer-mapmeta {
+        padding: 8px 28px 14px 28px;
+        color: var(--color-muted);
+        font-size: 11px;
+        font-family: var(--font-mono);
+        border-top: 1px solid var(--color-rule);
+        text-align: center;
+      }
+      html.is-embed .site-footer-chrome {
+        display: none;
+      }
       @media (max-width: 980px) {
         .layout {
           grid-template-columns: 1fr;
@@ -549,7 +579,10 @@
       </div>
     </div>
 
-    <footer class="site-footer">Data: 26/04/2026 (UTC) · Build 2026-04-26T15:16:27Z</footer>
+    <footer class="site-footer site-footer-chrome">
+      Open MicZH<span class="site-footer-selfref"> · <a href="./index.html#content">Article page</a></span><span class="site-footer-subnav" aria-label="Weitere Seiten dieser Site"> · <a href="./map.html">Map / interactive</a> · <a href="./social-content.html">Social-Vorschau</a></span>
+    </footer>
+    <footer class="site-footer site-footer-mapmeta">Data: 30/04/2026 (UTC) · Build 2026-05-03T11:08:15Z</footer>
 
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -557,7 +590,7 @@
       crossorigin=""
     ></script>
     <script>
-      const BUILD_STAMP = "2026-04-26T15:16:27Z";
+      const BUILD_STAMP = "2026-05-03T11:08:15Z";
       const PLACEHOLDER_THUMB = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjY3NSIgdmlld0JveD0iMCAwIDEyMDAgNjc1Ij4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMGIwYzEwIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzEyMTQxYiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9Imdsb3ciIHg9Ii00MCUiIHk9Ii00MCUiIHdpZHRoPSIxODAlIiBoZWlnaHQ9IjE4MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSI2IiByZXN1bHQ9ImJsdXIiLz4KICAgICAgPGZlTWVyZ2U+CiAgICAgICAgPGZlTWVyZ2VOb2RlIGluPSJibHVyIi8+CiAgICAgICAgPGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+CiAgICAgIDwvZmVNZXJnZT4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KCiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEyMDAiIGhlaWdodD0iNjc1IiByeD0iMzYiIGZpbGw9InVybCgjYmcpIi8+CiAgPHJlY3QgeD0iMjQiIHk9IjI0IiB3aWR0aD0iMTE1MiIgaGVpZ2h0PSI2MjciIHJ4PSIyOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMTYpIiBzdHJva2Utd2lkdGg9IjIiLz4KCiAgPCEtLSBtaWNyb3Bob25lIC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDYwMCAyOTApIiBmaWx0ZXI9InVybCgjZ2xvdykiPgogICAgPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGRhM2ZmIiBzdHJva2Utd2lkdGg9IjE4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIG9wYWNpdHk9IjAuOTUiPgogICAgICA8cGF0aCBkPSJNMC0xNTBjLTU4IDAtMTA2IDQ2LTEwNiAxMDR2ODJjMCA1OCA0OCAxMDQgMTA2IDEwNHMxMDYtNDYgMTA2LTEwNHYtODJjMC01OC00OC0xMDQtMTA2LTEwNHoiLz4KICAgICAgPHBhdGggZD0iTS0xNjAgNTBjMCA4OCA3MiAxNjAgMTYwIDE2MHMxNjAtNzIgMTYwLTE2MCIvPgogICAgICA8cGF0aCBkPSJNMCAyMTB2NzAiLz4KICAgICAgPHBhdGggZD0iTS04OCAyODBoMTc2Ii8+CiAgICA8L2c+CiAgPC9nPgoKICA8dGV4dCB4PSI2MDAiIHk9IjU2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIKICAgICAgICBmb250LWZhbWlseT0ic3lzdGVtLXVpLC1hcHBsZS1zeXN0ZW0sU2Vnb2UgVUksUm9ib3RvLEhlbHZldGljYSxBcmlhbCxzYW5zLXNlcmlmIgogICAgICAgIGZvbnQtc2l6ZT0iNTQiIGZvbnQtd2VpZ2h0PSI4MDAiCiAgICAgICAgZmlsbD0icmdiYSgyMzMsMjM4LDI1MSwwLjk0KSIKICAgICAgICBsZXR0ZXItc3BhY2luZz0iMyI+CiAgICBEQVRFTlBVTksKICA8L3RleHQ+CiAgPHRleHQgeD0iNjAwIiB5PSI2MTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiCiAgICAgICAgZm9udC1mYW1pbHk9InN5c3RlbS11aSwtYXBwbGUtc3lzdGVtLFNlZ29lIFVJLFJvYm90byxIZWx2ZXRpY2EsQXJpYWwsc2Fucy1zZXJpZiIKICAgICAgICBmb250LXNpemU9IjI2IgogICAgICAgIGZpbGw9InJnYmEoMTY4LDE3OCwxOTksMC45MikiPgogICAgTm8gaW1hZ2UgYXZhaWxhYmxlCiAgPC90ZXh0Pgo8L3N2Zz4KCg==";
       let gmap = null;
       let gInfoWindow = null;

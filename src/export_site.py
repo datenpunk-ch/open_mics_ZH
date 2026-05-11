@@ -302,6 +302,17 @@ def _write_map_html(
     html = f"""<!doctype html>
 <html lang="en">
   <head>
+    <script>
+      (function () {{
+        try {{
+          var p = new URLSearchParams(window.location.search);
+          var v = (p.get("embed") || "").toLowerCase();
+          if (v === "1" || v === "true" || v === "yes") {{
+            document.documentElement.classList.add("is-embed");
+          }}
+        }} catch (e) {{}}
+      }})();
+    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Open MicZH</title>
@@ -783,6 +794,25 @@ def _write_map_html(
         border-top: var(--rule-w) solid var(--color-ink);
         text-align: center;
       }}
+      .site-footer-chrome a {{
+        color: var(--color-ink);
+        border-bottom: var(--underline-w) solid var(--color-rule);
+        padding-bottom: 0.05em;
+      }}
+      .site-footer-chrome a:hover {{
+        border-bottom-color: var(--color-accent);
+      }}
+      .site-footer-mapmeta {{
+        padding: 8px 28px 14px 28px;
+        color: var(--color-muted);
+        font-size: 11px;
+        font-family: var(--font-mono);
+        border-top: 1px solid var(--color-rule);
+        text-align: center;
+      }}
+      html.is-embed .site-footer-chrome {{
+        display: none;
+      }}
       @media (max-width: 980px) {{
         .layout {{
           grid-template-columns: 1fr;
@@ -854,7 +884,10 @@ def _write_map_html(
       </div>
     </div>
 
-    <footer class="site-footer">Data: {site_data_date_display} (UTC) · Build {build_stamp}</footer>
+    <footer class="site-footer site-footer-chrome">
+      Open MicZH<span class="site-footer-selfref"> · <a href="./index.html#content">Article page</a></span><span class="site-footer-subnav" aria-label="Weitere Seiten dieser Site"> · <a href="./map.html">Map / interactive</a> · <a href="./social-content.html">Social-Vorschau</a></span>
+    </footer>
+    <footer class="site-footer site-footer-mapmeta">Data: {site_data_date_display} (UTC) · Build {build_stamp}</footer>
 
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
