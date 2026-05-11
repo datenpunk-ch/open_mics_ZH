@@ -68,7 +68,7 @@ Als **Auftretende:r** ist es ein Testlabor. Neues Material, vor echtem Publikum,
   </div>
   <div class="wide-bleed">
     <div class="embed-frame reveal" style="height: min(64vh, 700px); max-width: 1240px; margin: 0 auto;">
-      <iframe title="Open MicZH Karte" src="./map.html" loading="lazy" referrerpolicy="no-referrer"></iframe>
+      <iframe title="Open MicZH Karte" src="./map.html?embed=1" loading="lazy" referrerpolicy="no-referrer"></iframe>
     </div>
   </div>
 </section>
