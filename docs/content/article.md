@@ -6,7 +6,7 @@
 
 <!--PART:hero-->
 <div class="container">
-  <div class="hero-tag reveal">Guide · Zürich · Comedy</div>
+  <div class="hero-tag reveal">Kultur · Zürich · Comedy</div>
   <h1 class="reveal">Live, love, laugh in Züri </h1>
   <p class="hero-sub reveal">Schon die Grosi wusste: Lachen ist die beste Medizin. Und im besten Fall kostet es nichts. Allerdings kannte sie wohl auch nicht das Leben in der teuersten Stadt der Welt oder die aktuellen Ticketpreise der Standup-Legenden. Wo und wann es trotzdem günstig ist, findest du auf der Karte der Comedy-Szene in Zürich. Abwechslungsreich und mehrsprachig kannst du hier Newcomer entdecken, erprobten Comedians mit neuem Material beim Bomben zuschauen oder einfach selbst auftreten.</p>
   <div class="hero-byline reveal">
