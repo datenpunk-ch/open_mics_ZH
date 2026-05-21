@@ -171,26 +171,15 @@
 
       .hero-figure-wrap {
         width: 100%;
-        max-width: var(--measure);
-        margin: 0 auto 1.75rem;
+        max-width: 100%;
+        margin: 0 0 1.75rem;
         padding: 0;
       }
 
-      .wide-bleed.hero-figure-wrap {
-        width: 100%;
-        max-width: var(--measure);
-        margin-left: auto;
-        margin-right: auto;
-        padding-left: 0;
-        padding-right: 0;
-      }
-
       .hero-figure {
-        margin: 0 auto;
+        margin: 0;
         width: 100%;
-        max-width: 100%;
         aspect-ratio: 16 / 9;
-        max-height: clamp(10.5rem, 24vw, 15rem);
         overflow: hidden;
         border: var(--rule-w) solid var(--color-rule);
         background: var(--color-bg);
@@ -219,10 +208,6 @@
 
       html.is-embed .hero-figure-wrap {
         margin-bottom: 1.25rem;
-      }
-
-      html.is-embed .hero-figure {
-        max-height: clamp(9rem, 22vw, 13rem);
       }
 
       html.is-embed .hero h1 {
@@ -548,7 +533,7 @@
       }
     </style>
   </head>
-  <body>
+  <body class="page-article">
     <a class="skip-link" href="#content">Skip to content</a>
     <div class="progress-bar" id="progress"></div>
 
