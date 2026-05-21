@@ -169,6 +169,30 @@
         border-bottom-color: rgba(148, 67, 34, 0.7);
       }
 
+      .hero-figure-wrap {
+        margin: 0 0 2rem;
+      }
+
+      .hero-figure {
+        margin: 0;
+        border: var(--rule-w) solid var(--color-rule);
+        background: var(--color-bg);
+      }
+
+      .hero-figure__img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        max-height: clamp(16rem, 42vw, 28rem);
+        object-fit: cover;
+        object-position: center bottom;
+        filter: saturate(0.96) contrast(1.03) brightness(0.99) sepia(0.08);
+      }
+
+      html.is-embed .hero-figure-wrap {
+        display: none;
+      }
+
       section { padding: 5.25rem 0; }
       section:nth-child(odd) { background: var(--color-bg-soft); }
 
