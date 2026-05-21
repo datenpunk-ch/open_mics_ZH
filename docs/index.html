@@ -169,17 +169,21 @@
         border-bottom-color: rgba(148, 67, 34, 0.7);
       }
 
-      .hero-figure-wrap {
-        width: 100%;
-        max-width: 100%;
-        margin: 0 0 1.75rem;
-        padding: 0;
+      .hero-figure-wrap.wide-bleed {
+        width: 100vw;
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        padding-left: clamp(0.75rem, 3vw, 2rem);
+        padding-right: clamp(0.75rem, 3vw, 2rem);
+        margin-bottom: 1.5rem;
       }
 
-      .hero-figure {
-        margin: 0;
-        width: 100%;
+      .hero-figure-wrap .hero-figure {
+        width: min(100%, 1440px);
+        max-height: clamp(9rem, 18vw, 12.5rem);
+        margin-inline: auto;
         aspect-ratio: 16 / 9;
+        height: auto;
         overflow: hidden;
         border: var(--rule-w) solid var(--color-rule);
         background: var(--color-bg);

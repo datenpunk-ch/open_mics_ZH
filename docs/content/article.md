@@ -6,7 +6,7 @@
 
 <!--PART:hero-->
 <div class="container">
-  <div class="hero-figure-wrap reveal" aria-hidden="false">
+  <div class="wide-bleed hero-figure-wrap reveal" aria-hidden="false">
     <figure class="hero-figure"><img class="hero-figure-img" src="./assets/images/openmiczh-hero.jpg" alt="Open-Mic-Comedy in Zürich — Bühnenbild" width="1600" height="900" loading="eager" decoding="async" /></figure>
   </div>
   <div class="hero-tag reveal">Kultur · Zürich · Comedy</div>
