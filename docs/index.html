@@ -119,6 +119,7 @@
         padding: 0 5vw;
       }
       .measure { max-width: var(--measure); }
+      .measure.stats-measure { padding-top: 0.9rem; }
 
       .hero {
         padding: 6rem 0 3.75rem;
@@ -140,7 +141,7 @@
         color: var(--color-ink);
         letter-spacing: -0.03em;
         margin: 0 0 1rem;
-        max-width: 20ch;
+        max-width: none;
       }
       .hero-sub {
         font-size: 1.125rem;
@@ -148,6 +149,16 @@
         max-width: var(--measure);
         margin: 0 0 2rem;
         line-height: 1.7;
+      }
+      .hero-sub em {
+        font-style: italic;
+      }
+
+      /* Keep title single-line on wide screens; allow wrap on small viewports. */
+      @media (min-width: 920px) {
+        .hero h1 {
+          white-space: nowrap;
+        }
       }
       .hero-byline {
         font-family: var(--font-mono);
@@ -567,6 +578,19 @@
           return out;
         }
 
+        function renderInlineMarkdownInHtmlLine(rawLine) {
+          const line = String(rawLine || "").trimEnd();
+          // Only touch simple one-line paragraphs with plain text content.
+          // If inner HTML contains tags, leave it as-is.
+          const m = line.match(/^(\s*)<p\b([^>]*)>([\s\S]*)<\/p>\s*$/i);
+          if (!m) return rawLine;
+          const indent = m[1] || "";
+          const attrs = m[2] || "";
+          const inner = m[3] || "";
+          if (/<[a-z!/]/i.test(inner)) return rawLine;
+          return `${indent}<p${attrs}>${renderInlineMarkdown(inner)}</p>`;
+        }
+
         // Minimal markdown renderer (enough for our article copy).
         // - Supports headings, paragraphs, unordered lists, and raw HTML blocks.
         function isHtmlLineComplete(t) {
@@ -622,7 +646,7 @@
             // This lets us embed structural wrappers (<section>, <div>, etc.) and still write copy in markdown.
             if (t.startsWith("<")) {
               closeUl();
-              out.push(raw);
+              out.push(renderInlineMarkdownInHtmlLine(raw));
               continue;
             }
 
@@ -659,7 +683,7 @@
 
         function splitParts(md) {
           const text = String(md || "").replace(/\r\n?/g, "\n");
-          const re = /^<!--PART:([a-zA-Z0-9_-]+)-->\s*$/gm;
+          const re = new RegExp("^<!--PART:([a-zA-Z0-9_-]+)-->\\s*$", "gm");
           const matches = Array.from(text.matchAll(re));
           if (!matches.length) return null;
           const parts = {};
