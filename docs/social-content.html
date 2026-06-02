@@ -164,6 +164,38 @@
         color: #f0c4a8;
         font-weight: 600;
       }
+      .hero-shot {
+        margin: 6px 0 2px;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.06);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+      }
+      .hero-shot img {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+        object-position: center bottom;
+      }
+      .map-shot {
+        margin: 6px 0 2px;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.06);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+      }
+      .map-shot img {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 10;
+        object-fit: cover;
+        object-position: center;
+      }
       .stat-microbars {
         display: flex;
         align-items: flex-end;
@@ -230,6 +262,21 @@
       .lang-rows li:last-child {
         border-bottom: 0;
         padding-bottom: 0;
+      }
+      .lang-rows .lang-lab {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+      }
+      .lang-rows .lang-flag {
+        width: 26px;
+        height: 18px;
+        border-radius: 3px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
+        flex: 0 0 auto;
+        object-fit: cover;
       }
       .lang-rows .lang-n {
         font-weight: 700;
@@ -344,21 +391,24 @@
         <div class="carousel" id="carousel">
           <div class="slides" id="slides">
             <section class="slide active" data-index="0" aria-hidden="false" id="slide0">
-              <div class="slide-kicker">Open MicZH · Daten live</div>
-              <h2>Open Mics in Zürich</h2>
-              <p class="stat-lead" id="statIntroLead">Lädt Kennzahlen …</p>
+              <div class="slide-kicker">Kultur · Comedy · Zürich</div>
+              <h2>Lachen in der Limmatstadt</h2>
+              <figure class="hero-shot" aria-hidden="true">
+                <img src="./assets/images/openmiczh-hero.jpg" alt="" loading="lazy" decoding="async" />
+              </figure>
+              <p class="stat-detail" id="statIntroLead">Lädt Kennzahlen …</p>
               <p class="stat-detail" id="statIntroDetail">
-                Dieselben Listings wie im Artikel und auf der Karte — nach jedem Export aktualisiert.
+                Eine Übersicht der Open-Mic-Events in Zürich, für günstige Abende voller Lachen oder Fremdscham.
               </p>
             </section>
             <section class="slide" data-index="1" aria-hidden="true" id="slide1">
-              <div class="slide-kicker">Wie im Artikel · Wochentag</div>
+              <div class="slide-kicker">Terminplanung</div>
               <h2>Shows nach Wochentag</h2>
               <div class="stat-microbars" id="statWeekdayBars" aria-hidden="true"></div>
               <p class="stat-detail" id="statWeekdayText"></p>
             </section>
             <section class="slide" data-index="2" aria-hidden="true" id="slide2">
-              <div class="slide-kicker">Wie im Artikel · Sprache</div>
+              <div class="slide-kicker">Sprachen</div>
               <h2>Shows nach Sprache</h2>
               <ul class="lang-rows" id="statLangRows"></ul>
               <p class="stat-detail" id="statLangFoot"></p>
@@ -366,16 +416,10 @@
             <section class="slide" data-index="3" aria-hidden="true" id="slide3">
               <div class="slide-kicker">Die Karte</div>
               <h2>Interaktiv, filterbar</h2>
-              <p class="stat-lead" id="statMapLead"></p>
+              <figure class="map-shot" aria-hidden="true">
+                <img src="../assets/map_screenshot.jpg" alt="" loading="lazy" decoding="async" />
+              </figure>
               <p class="stat-detail" id="statMapDetail"></p>
-            </section>
-            <section class="slide" data-index="4" aria-hidden="true">
-              <div class="slide-kicker">Mehr Kontext</div>
-              <h2>Artikel + Link in Bio</h2>
-              <p class="stat-detail">
-                Im langen Text: Szene, Methodik, warum Englisch in den Listings dominiert — und warum
-                <span class="accent">Schweizerdeutsch</span> oft ausserhalb der Crawler-Daten lebt.
-              </p>
             </section>
           </div>
           <div class="tap-zones" aria-hidden="true">
@@ -465,19 +509,83 @@
           return (lang || "").toString().trim();
         }
 
+        function langFlagSrc(lang) {
+          const s = (lang || "").toString().trim().toLowerCase();
+          if (!s) return "";
+
+          // Minimal inline SVG flags (data URLs). Keeps the site self-contained.
+          const SVG = {
+            ch:
+              "data:image/svg+xml;utf8," +
+              encodeURIComponent(
+                "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 12'>" +
+                  "<rect width='18' height='12' fill='#d52b1e'/>" +
+                  "<rect x='7.25' y='2.2' width='3.5' height='7.6' fill='#fff'/>" +
+                  "<rect x='5.0' y='4.25' width='8.0' height='3.5' fill='#fff'/>" +
+                "</svg>"
+              ),
+            gb:
+              "data:image/svg+xml;utf8," +
+              encodeURIComponent(
+                "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 12'>" +
+                  "<rect width='18' height='12' fill='#012169'/>" +
+                  "<path d='M0 0 L18 12 M18 0 L0 12' stroke='#fff' stroke-width='2.4'/>" +
+                  "<path d='M0 0 L18 12 M18 0 L0 12' stroke='#C8102E' stroke-width='1.2'/>" +
+                  "<rect x='7.4' width='3.2' height='12' fill='#fff'/>" +
+                  "<rect y='4.4' width='18' height='3.2' fill='#fff'/>" +
+                  "<rect x='8.0' width='2.0' height='12' fill='#C8102E'/>" +
+                  "<rect y='5.0' width='18' height='2.0' fill='#C8102E'/>" +
+                "</svg>"
+              ),
+            es:
+              "data:image/svg+xml;utf8," +
+              encodeURIComponent(
+                "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 12'>" +
+                  "<rect width='18' height='12' fill='#aa151b'/>" +
+                  "<rect y='3' width='18' height='6' fill='#f1bf00'/>" +
+                "</svg>"
+              ),
+            fr:
+              "data:image/svg+xml;utf8," +
+              encodeURIComponent(
+                "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 12'>" +
+                  "<rect width='6' height='12' x='0' fill='#0055a4'/>" +
+                  "<rect width='6' height='12' x='6' fill='#fff'/>" +
+                  "<rect width='6' height='12' x='12' fill='#ef4135'/>" +
+                "</svg>"
+              ),
+            it:
+              "data:image/svg+xml;utf8," +
+              encodeURIComponent(
+                "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 12'>" +
+                  "<rect width='6' height='12' x='0' fill='#009246'/>" +
+                  "<rect width='6' height='12' x='6' fill='#fff'/>" +
+                  "<rect width='6' height='12' x='12' fill='#ce2b37'/>" +
+                "</svg>"
+              ),
+          };
+
+          // German shows are in Zürich → Swiss flag.
+          if (s === "german" || s === "de" || s.startsWith("german ")) return SVG.ch;
+          if (s === "english" || s === "en" || s.startsWith("english ")) return SVG.gb;
+          if (s === "spanish" || s === "es" || s.startsWith("spanish ")) return SVG.es;
+          if (s === "french" || s === "fr" || s.startsWith("french ")) return SVG.fr;
+          if (s === "italian" || s === "it" || s.startsWith("italian ")) return SVG.it;
+          return "";
+        }
+
         function coordPinKey(lat, lon) {
           return `${Number(lat).toFixed(4)},${Number(lon).toFixed(4)}`;
         }
 
         function setError(msg) {
-          document.getElementById("statIntroLead").textContent = msg;
+          document.getElementById("statIntroLead").textContent = "Fehler beim Laden";
           document.getElementById("statIntroDetail").textContent =
-            "Bitte später erneut laden oder direkt zum Artikel wechseln.";
+            msg + " · Bitte später erneut laden oder direkt zum Artikel wechseln.";
           document.getElementById("statWeekdayBars").innerHTML = "";
           document.getElementById("statWeekdayText").textContent = "";
           document.getElementById("statLangRows").innerHTML = "";
           document.getElementById("statLangFoot").textContent = "";
-          document.getElementById("statMapLead").textContent = "";
           document.getElementById("statMapDetail").textContent = "";
           ["slide0", "slide1", "slide2", "slide3"].forEach((id) => {
             const el = document.getElementById(id);
@@ -521,14 +629,19 @@
           const nPins = pinKeys.size;
 
           const introDate = dataUpdated ? " Stand: " + dataUpdated + "." : "";
-          document.getElementById("statIntroLead").textContent =
+          const introStatsLine =
             nListings +
-            (nListings === 1 ? " wiederkehrender Slot" : " wiederkehrende Slots") +
-            " in den exportierten Listings · " +
+            (nListings === 1 ? " wiederkehrendes Event, " : " wiederkehrende Events, ") +
             nVenues +
             (nVenues === 1 ? " Venue" : " Venues") +
             "." +
             introDate;
+
+          // Slide 0: top line (stat-lead) should be bold copy, stats go below in normal weight.
+          document.getElementById("statIntroLead").innerHTML =
+            'Eine Übersicht der <span class="accent">Open-Mic</span>-Events in Zürich.';
+          document.getElementById("statIntroDetail").textContent =
+            "Für günstige Abende voller Lachen oder Fremdscham. " + introStatsLine;
 
           const counts = new Map();
           for (const e of events) {
@@ -549,7 +662,20 @@
           for (const [lang, n] of langRows) {
             const li = document.createElement("li");
             const lab = document.createElement("span");
-            lab.textContent = languageSelfName(lang);
+            lab.className = "lang-lab";
+            const flagSrc = langFlagSrc(lang);
+            if (flagSrc) {
+              const img = document.createElement("img");
+              img.className = "lang-flag";
+              img.alt = "";
+              img.decoding = "async";
+              img.loading = "lazy";
+              img.src = flagSrc;
+              lab.appendChild(img);
+            }
+            const txt = document.createElement("span");
+            txt.textContent = languageSelfName(lang);
+            lab.appendChild(txt);
             const num = document.createElement("span");
             num.className = "lang-n";
             num.textContent = String(n);
@@ -558,9 +684,9 @@
             ul.appendChild(li);
           }
           document.getElementById("statLangFoot").innerHTML =
-            "Wie im Artikel: in <strong>diesem</strong> Export dominieren oft englischsprachige Listings; " +
-            "<strong>Français</strong> und <strong>Italiano</strong> sind hier häufig bei null — " +
-            "Spiegel der Quellen, nicht zwingend der Szene vor Ort.";
+            "Die meisten Shows sind auf Englisch; " +
+            "<strong>Französische</strong> und <strong>Italienische</strong> Shows gar nicht im Angebot.  " +
+            "<strong>Schweizerdeutsche</strong> Shows wohl eher Insiderwissen.";
 
           const dayCounts = new Map(WEEKDAYS.map((d) => [d, 0]));
           for (const e of events) {
@@ -606,44 +732,26 @@
                 ? "mit je <strong>" + slotPhrase + "</strong>."
                 : "mit <strong>" + slotPhrase + "</strong>.";
             wText =
-              "Stärkster Tag in <em>diesen</em> Daten: <strong>" +
+              "Stärkster Comedy-Abend in Zürich: <strong>" +
               peakDe +
               "</strong> " +
               countPhrase;
             if (peakDays.indexOf("Tuesday") !== -1) {
               wText +=
-                " Passt zur These im Artikel: Dienstag als Zürichs heimlicher Comedy-Abend.";
+                " Das Wochenende ist wohl für anderes reserviert, oder die Venues zu teuer.";
             } else {
-              wText += " Im Artikel liest du, warum der Dienstag oft zentral ist — unabhängig von diesem Schnappschuss.";
+              wText += " Mehr dazu im Artikel.";
             }
           }
           document.getElementById("statWeekdayText").innerHTML = wText;
 
-          document.getElementById("statMapLead").textContent =
-            nListings +
-            " Slots · " +
-            nPins +
-            (nPins === 1 ? " Pin" : " Pins") +
-            " (gerundete Koordinaten wie auf der Karte) · " +
-            nVenues +
-            (nVenues === 1 ? " Venue-Name" : " Venue-Namen");
-
           let mapDetail =
-            "Filter nach Wochentag und Sprache, Freitext-Suche, Links zu den Original-Events — dieselbe Datenbasis wie im eingebetteten iframe im Artikel.";
-          if (missingCoords > 0) {
-            mapDetail +=
-              " Hinweis: " +
-              missingCoords +
-              (missingCoords === 1 ? " Eintrag ohne" : " Einträge ohne") +
-              " Koordinaten.";
-          } else {
-            mapDetail += " Alle Einträge haben Koordinaten.";
-          }
+            "Filter nach Wochentag und Sprache, Freitext-Suche, Links zu den Original-Events und Ticketseiten.";
           document.getElementById("statMapDetail").textContent = mapDetail;
 
           const cap =
             nListings +
-            " Slots · " +
+            " Events · " +
             nVenues +
             " Venues" +
             (dataUpdated ? " · Stand " + dataUpdated : "") +
